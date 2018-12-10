@@ -18,9 +18,9 @@
     <modelVersion>4.0.0</modelVersion>
 
     <groupId>com.adobe.cq</groupId>
-    <artifactId>com.adobe.cq.testing.it.platform</artifactId>
+    <artifactId>com.adobe.cq.testing.it.smoke</artifactId>
     <version>0.1.0-SNAPSHOT</version>
-    <name>CQ Platform Integration Tests</name>
+    <name>CQ Smoke HTTP Tests</name>
 
     <!-- SVN Settings -->
     <scm>
@@ -127,8 +127,8 @@
         <!-- integration testing -->
         <dependency>
             <groupId>com.adobe.cq</groupId>
-            <artifactId>cq-testing-clients-64</artifactId>
-            <version>0.1.1-SNAPSHOT</version>
+            <artifactId>cq-testing-clients-65</artifactId>
+            <version>0.1.0</version>
         </dependency>
 
         <!-- logging -->

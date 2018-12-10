@@ -3,7 +3,7 @@ This is a collection of test modules that can be run to validate an AEM-based de
 Tests are written according to [Best practices](https://github.com/adobe/aem-testing-clients/wiki/Best-practices).
 
 ## Modules
-* [platform](./platform) - generic tests that are testing platform features (e.g. all jsps are compiling)
+* [smoke](./smoke) - generic smoke tests
 
 
 ## How to use
