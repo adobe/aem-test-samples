@@ -35,7 +35,7 @@ import static org.apache.http.HttpStatus.SC_OK;
 
 public class CreatePageIT {
 
-    private static final long TIMEOUT = MINUTES.toMillis(5);
+    private static final long TIMEOUT = MINUTES.toMillis(3);
 
     @ClassRule
     public static CQAuthorClassRule cqBaseClassRule = new CQAuthorClassRule();

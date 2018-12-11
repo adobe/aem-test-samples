@@ -29,7 +29,7 @@ import static java.util.concurrent.TimeUnit.MINUTES;
 
 public class GetPageIT {
 
-    private static final long TIMEOUT = MINUTES.toMillis(3);
+    private static final long TIMEOUT = MINUTES.toMillis(2);
 
     @ClassRule
     public static CQAuthorPublishClassRule cqBaseClassRule = new CQAuthorPublishClassRule();

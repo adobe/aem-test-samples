@@ -31,7 +31,7 @@ import static org.apache.http.HttpStatus.SC_OK;
 
 public class BasicReplicationActionsIT {
 
-    private static final long TIMEOUT = MINUTES.toMillis(10);
+    private static final long TIMEOUT = MINUTES.toMillis(5);
 
     @ClassRule
     public static CQAuthorPublishClassRule cqBaseClassRule = new CQAuthorPublishClassRule();
