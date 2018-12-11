@@ -13,19 +13,16 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.adobe.cq.testing.it.platform.replication;
+package com.adobe.cq.testing.it.smoke;
 
 import com.adobe.cq.testing.client.CQClient;
 import com.adobe.cq.testing.client.ReplicationClient;
-import com.adobe.cq.testing.junit.assertion.CQAssert;
 import com.adobe.cq.testing.junit.rules.CQAuthorPublishClassRule;
 import com.adobe.cq.testing.junit.rules.CQRule;
 import com.adobe.cq.testing.junit.rules.Page;
 import org.apache.sling.testing.clients.ClientException;
-import org.junit.BeforeClass;
-import org.junit.ClassRule;
-import org.junit.Rule;
-import org.junit.Test;
+import org.apache.sling.testing.clients.util.poller.Polling;
+import org.junit.*;
 
 import java.util.concurrent.TimeoutException;
 
@@ -34,7 +31,7 @@ import static org.apache.http.HttpStatus.SC_OK;
 
 public class BasicReplicationActionsIT {
 
-    private static final long TIMEOUT = MINUTES.toMillis(3);
+    private static final long TIMEOUT = MINUTES.toMillis(10);
 
     @ClassRule
     public static CQAuthorPublishClassRule cqBaseClassRule = new CQAuthorPublishClassRule();
@@ -57,15 +54,27 @@ public class BasicReplicationActionsIT {
     }
 
     /**
+     * Checks that a GET on the page has the {{expectedStatus}} in the response
+     */
+    private void checkPage(final int expectedStatus) throws TimeoutException, InterruptedException {
+        // verify path is on publish
+        new Polling() {
+            @Override
+            public Boolean call() throws Exception {
+                anonymousPublish.doGet(root.getPath() + ".html", expectedStatus);
+                return true;
+            }
+        }.poll(TIMEOUT, 500);
+    }
+
+    /**
      * Activates a page as admin, than deletes it. Verifies the deleted page gets removed from publish.
      */
     @Test
-    public void testActivate() throws ClientException, InterruptedException {
+    public void testActivate() throws ClientException, InterruptedException, TimeoutException {
         ReplicationClient rClient = adminAuthor.adaptTo(ReplicationClient.class);
         rClient.activate(root.getPath());
-
-        // verify that page is present on publish
-        CQAssert.assertCQPageExistsWithTimeout(anonymousPublish, root.getPath(), TIMEOUT, 500);
+        checkPage(200);
     }
 
     /**
@@ -75,12 +84,12 @@ public class BasicReplicationActionsIT {
     public void testActivateAndDeactivate() throws ClientException, InterruptedException, TimeoutException {
         ReplicationClient rClient = adminAuthor.adaptTo(ReplicationClient.class);
         rClient.activate(root.getPath());
-        anonymousPublish.waitExists(root.getPath(), TIMEOUT, 500);
+        checkPage(200);
 
         rClient.deactivate(root.getPath(), SC_OK);
 
         // verify that page is not present on publish
-        CQAssert.assertPathDoesNotExistWithTimeout(adminPublish, root.getPath(), TIMEOUT, 500);
+        checkPage(404);
     }
 
     /**
@@ -90,11 +99,11 @@ public class BasicReplicationActionsIT {
     public void testActivateAndDelete() throws ClientException, InterruptedException, TimeoutException {
         ReplicationClient rClient = adminAuthor.adaptTo(ReplicationClient.class);
         rClient.activate(root.getPath());
-        anonymousPublish.waitExists(root.getPath(), TIMEOUT * 1000, 500);
+        checkPage(200);
 
         adminAuthor.deletePage(new String[]{root.getPath()}, false, false);
 
         // verify that page is not present on publish
-        CQAssert.assertPathDoesNotExistWithTimeout(adminPublish, root.getPath(), TIMEOUT, 500);
+        checkPage(404);
     }
 }
