@@ -29,6 +29,7 @@ import java.util.concurrent.TimeoutException;
 import static java.util.concurrent.TimeUnit.MINUTES;
 import static org.apache.http.HttpStatus.SC_OK;
 
+@Ignore
 public class BasicReplicationActionsIT {
 
     private static final long TIMEOUT = MINUTES.toMillis(5);
@@ -81,7 +82,6 @@ public class BasicReplicationActionsIT {
      * Activates a page as admin, than deactivates it. Verifies that the page gets removed from publish.
      */
     @Test
-    @Ignore
     public void testActivateAndDeactivate() throws ClientException, InterruptedException, TimeoutException {
         ReplicationClient rClient = adminAuthor.adaptTo(ReplicationClient.class);
         rClient.activate(root.getPath());
@@ -97,7 +97,6 @@ public class BasicReplicationActionsIT {
      * Activates a page as admin, than deletes it. Verifies that deleted page gets removed from publish.
      */
     @Test
-    @Ignore
     public void testActivateAndDelete() throws ClientException, InterruptedException, TimeoutException {
         ReplicationClient rClient = adminAuthor.adaptTo(ReplicationClient.class);
         rClient.activate(root.getPath());

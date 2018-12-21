@@ -26,10 +26,7 @@ import org.junit.ClassRule;
 import org.junit.Rule;
 import org.junit.Test;
 
-import java.util.concurrent.TimeoutException;
-
 import static java.util.concurrent.TimeUnit.MINUTES;
-import static org.apache.http.HttpStatus.SC_OK;
 
 public class CreatePageIT {
 
