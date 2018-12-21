@@ -81,6 +81,7 @@ public class BasicReplicationActionsIT {
      * Activates a page as admin, than deactivates it. Verifies that the page gets removed from publish.
      */
     @Test
+    @Ignore
     public void testActivateAndDeactivate() throws ClientException, InterruptedException, TimeoutException {
         ReplicationClient rClient = adminAuthor.adaptTo(ReplicationClient.class);
         rClient.activate(root.getPath());
@@ -96,6 +97,7 @@ public class BasicReplicationActionsIT {
      * Activates a page as admin, than deletes it. Verifies that deleted page gets removed from publish.
      */
     @Test
+    @Ignore
     public void testActivateAndDelete() throws ClientException, InterruptedException, TimeoutException {
         ReplicationClient rClient = adminAuthor.adaptTo(ReplicationClient.class);
         rClient.activate(root.getPath());

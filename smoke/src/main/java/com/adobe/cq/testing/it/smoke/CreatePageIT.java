@@ -16,10 +16,8 @@
 package com.adobe.cq.testing.it.smoke;
 
 import com.adobe.cq.testing.client.CQClient;
-import com.adobe.cq.testing.client.ReplicationClient;
 import com.adobe.cq.testing.junit.assertion.CQAssert;
 import com.adobe.cq.testing.junit.rules.CQAuthorClassRule;
-import com.adobe.cq.testing.junit.rules.CQAuthorPublishClassRule;
 import com.adobe.cq.testing.junit.rules.CQRule;
 import com.adobe.cq.testing.junit.rules.Page;
 import org.apache.sling.testing.clients.ClientException;
