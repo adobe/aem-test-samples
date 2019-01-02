@@ -20,16 +20,9 @@ import com.adobe.cq.testing.junit.rules.CQAuthorPublishClassRule;
 import com.adobe.cq.testing.junit.rules.CQRule;
 import com.adobe.cq.testing.junit.rules.Page;
 import org.apache.sling.testing.clients.ClientException;
-import org.junit.BeforeClass;
-import org.junit.ClassRule;
-import org.junit.Rule;
-import org.junit.Test;
-
-import static java.util.concurrent.TimeUnit.MINUTES;
+import org.junit.*;
 
 public class GetPageIT {
-
-    private static final long TIMEOUT = MINUTES.toMillis(2);
 
     @ClassRule
     public static CQAuthorPublishClassRule cqBaseClassRule = new CQAuthorPublishClassRule();
@@ -42,13 +35,11 @@ public class GetPageIT {
 
     static CQClient adminAuthor;
     static CQClient adminPublish;
-    static CQClient anonymousPublish;
 
     @BeforeClass
     public static void beforeClass() throws ClientException {
         adminAuthor = cqBaseClassRule.authorRule.getAdminClient(CQClient.class);
         adminPublish = cqBaseClassRule.publishRule.getAdminClient(CQClient.class);
-        anonymousPublish = cqBaseClassRule.publishRule.getClient(CQClient.class, null, null);
     }
 
     /**
@@ -61,20 +52,47 @@ public class GetPageIT {
     }
 
     /**
+     * Verifies that the sites console exists on author
+     */
+    @Test
+    public void testSitesAuthor() throws ClientException {
+        // verify that page is present on author
+        adminAuthor.doGet("/sites.html", 200);
+    }
+
+    /**
+     * Verifies that the assets console exists on author
+     */
+    @Test
+    public void testAssetsAuthor() throws ClientException {
+        // verify that page is present on author
+        adminAuthor.doGet("/assets.html", 200);
+    }
+
+    /**
+     * Verifies that the commerce console exists on author
+     */
+    @Test
+    public void testCommerceAuthor() throws ClientException {
+        // verify that page is present on author
+        adminAuthor.doGet("/aem/products.html", 200);
+    }
+
+    /**
+     * Verifies that the projects console exists on author
+     */
+    @Test
+    public void testProjectsAuthor() throws ClientException {
+        // verify that page is present on author
+        adminAuthor.doGet("/projects.html", 200);
+    }
+
+    /**
      * Verifies that the homepage exists on publish
      */
     @Test
     public void testHomePagePublish() throws ClientException {
         // verify that page is present on author
         adminPublish.doGet("/", 200);
-    }
-
-    /**
-     * Verifies that the homepage exists on publish for anonymous
-     */
-    @Test
-    public void testHomePagePublishAnonymous() throws ClientException {
-        // verify that page is present on author
-        anonymousPublish.doGet("/", 200);
     }
 }
