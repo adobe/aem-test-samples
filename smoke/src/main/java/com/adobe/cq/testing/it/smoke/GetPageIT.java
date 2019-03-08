@@ -70,15 +70,6 @@ public class GetPageIT {
     }
 
     /**
-     * Verifies that the commerce console exists on author
-     */
-    @Test
-    public void testCommerceAuthor() throws ClientException {
-        // verify that page is present on author
-        adminAuthor.doGet("/aem/products.html", 200);
-    }
-
-    /**
      * Verifies that the projects console exists on author
      */
     @Test
@@ -89,10 +80,11 @@ public class GetPageIT {
 
     /**
      * Verifies that the homepage exists on publish
+     * TODO remove the reference to the skyline sample content and do the get request to / once CQ-4265255 is fixed
      */
     @Test
     public void testHomePagePublish() throws ClientException {
         // verify that page is present on author
-        adminPublish.doGet("/", 200);
+        adminPublish.doGet("/content/skyline-sample.html", 200);
     }
 }
