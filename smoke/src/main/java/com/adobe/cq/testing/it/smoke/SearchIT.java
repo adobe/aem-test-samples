@@ -32,7 +32,7 @@ import static org.apache.http.HttpStatus.SC_OK;
 
 public class SearchIT {
 
-    private static final long TIMEOUT = SECONDS.toMillis(15);
+    private static final long TIMEOUT = SECONDS.toMillis(30);
     private static final String OMNISEARCH_PATH = "/mnt/overlay/granite/ui/content/shell/omnisearch/searchresults.html";
     private static final String SEARCH_TEXT = "Lorem ipsum dolor sit amet, consectetur adipiscing elit";
 
@@ -47,10 +47,12 @@ public class SearchIT {
 
     static CQClient adminAuthor;
 
+
+    static String damParentPath = "/content/dam/test-" + System.currentTimeMillis();
+    
     static String imgName = "testPicture.png";
     static String imgResourcePath = "/com/adobe/cq/testing/it/smoke/picture/" + imgName;
     static String imgMimeType = "image/png";
-    static String damParentPath = "/content/dam";
 
     static String pdfName = "testPDF.pdf";
     static String pdfResourcePath = "/com/adobe/cq/testing/it/smoke/pdf/" + pdfName;
@@ -70,8 +72,7 @@ public class SearchIT {
 
     @AfterClass
     public static void afterClass() throws ClientException {
-        adminAuthor.deletePath(damParentPath + "/" + imgName);
-        adminAuthor.deletePath(damParentPath + "/" + pdfName);
+        adminAuthor.deletePath(damParentPath);
     }
 
     /**
