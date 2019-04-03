@@ -15,6 +15,7 @@
  */
 package com.adobe.cq.testing.it.smoke;
 
+import static org.apache.http.HttpStatus.SC_NOT_FOUND;
 import static org.apache.http.HttpStatus.SC_OK;
 
 import java.util.concurrent.TimeUnit;
@@ -36,13 +37,9 @@ import com.adobe.cq.testing.junit.rules.CQRule;
 import com.adobe.cq.testing.junit.rules.Page;
 
 public class ReplicationIT {
-    private static final int NOT_FOUND = 404;
-
-    private static final int FOUND = 200;
-
     private Logger log = LoggerFactory.getLogger(ReplicationIT.class);
 
-    private static final long TIMEOUT = TimeUnit.SECONDS.toMillis(20);
+    private static final long TIMEOUT = TimeUnit.SECONDS.toMillis(120);
 
     @ClassRule
     public static CQAuthorPublishClassRule cqBaseClassRule = new CQAuthorPublishClassRule();
@@ -73,10 +70,10 @@ public class ReplicationIT {
     @Test
     public void testActivateAndDeactivate() throws ClientException, InterruptedException, TimeoutException {
         rClient.activate(root.getPath());
-        checkPage(FOUND);
+        checkPage(SC_OK);
 
         rClient.deactivate(root.getPath(), SC_OK);
-        checkPage(NOT_FOUND);
+        checkPage(SC_NOT_FOUND);
     }
 
     /**
@@ -85,23 +82,22 @@ public class ReplicationIT {
     @Test
     public void testActivateAndDelete() throws ClientException, InterruptedException, TimeoutException {
         rClient.activate(root.getPath());
-        checkPage(FOUND);
+        checkPage(SC_OK);
 
         adminAuthor.deletePage(new String[]{root.getPath()}, false, false);
-        checkPage(NOT_FOUND);
+        checkPage(SC_NOT_FOUND);
     }
     
     /**
-     * Checks that a GET on the page has the {{expectedStatus}} in the response
+     * Checks that a GET on the page on publish has the {{expectedStatus}} in the response
      */
     private void checkPage(final int expectedStatus) throws TimeoutException, InterruptedException {
-        final String url = root.getPath() + ".html";
-        log.info("Checking page " + anonymousPublish.getUrl() + url);
-        // verify path is on publish
+        final String path = root.getPath() + ".html";
+        log.info("Checking page {} returns status {}", anonymousPublish.getUrl(path), expectedStatus);
         new Polling() {
             @Override
             public Boolean call() throws Exception {
-                anonymousPublish.doGet(root.getPath() + ".html", expectedStatus);
+                anonymousPublish.doGet(path, expectedStatus);
                 return true;
             }
         }.poll(TIMEOUT, 500);
