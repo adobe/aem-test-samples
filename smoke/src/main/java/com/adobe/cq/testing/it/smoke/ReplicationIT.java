@@ -15,24 +15,31 @@
  */
 package com.adobe.cq.testing.it.smoke;
 
+import static org.apache.http.HttpStatus.SC_NOT_FOUND;
+import static org.apache.http.HttpStatus.SC_OK;
+
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.TimeoutException;
+
+import org.apache.sling.testing.clients.ClientException;
+import org.apache.sling.testing.clients.util.poller.Polling;
+import org.junit.BeforeClass;
+import org.junit.ClassRule;
+import org.junit.Rule;
+import org.junit.Test;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import com.adobe.cq.testing.client.CQClient;
 import com.adobe.cq.testing.client.ReplicationClient;
 import com.adobe.cq.testing.junit.rules.CQAuthorPublishClassRule;
 import com.adobe.cq.testing.junit.rules.CQRule;
 import com.adobe.cq.testing.junit.rules.Page;
-import org.apache.sling.testing.clients.ClientException;
-import org.apache.sling.testing.clients.util.poller.Polling;
-import org.junit.*;
 
-import java.util.concurrent.TimeoutException;
+public class ReplicationIT {
+    private Logger log = LoggerFactory.getLogger(ReplicationIT.class);
 
-import static java.util.concurrent.TimeUnit.MINUTES;
-import static org.apache.http.HttpStatus.SC_OK;
-
-@Ignore
-public class BasicReplicationActionsIT {
-
-    private static final long TIMEOUT = MINUTES.toMillis(5);
+    private static final long TIMEOUT = TimeUnit.SECONDS.toMillis(120);
 
     @ClassRule
     public static CQAuthorPublishClassRule cqBaseClassRule = new CQAuthorPublishClassRule();
@@ -47,50 +54,26 @@ public class BasicReplicationActionsIT {
     static CQClient adminPublish;
     static CQClient anonymousPublish;
 
+    private static ReplicationClient rClient;
+
     @BeforeClass
     public static void beforeClass() throws ClientException {
         adminAuthor = cqBaseClassRule.authorRule.getAdminClient(CQClient.class);
         adminPublish = cqBaseClassRule.publishRule.getAdminClient(CQClient.class);
         anonymousPublish = cqBaseClassRule.publishRule.getClient(CQClient.class, null, null);
+        rClient = adminAuthor.adaptTo(ReplicationClient.class);
     }
 
     /**
-     * Checks that a GET on the page has the {{expectedStatus}} in the response
-     */
-    private void checkPage(final int expectedStatus) throws TimeoutException, InterruptedException {
-        // verify path is on publish
-        new Polling() {
-            @Override
-            public Boolean call() throws Exception {
-                anonymousPublish.doGet(root.getPath() + ".html", expectedStatus);
-                return true;
-            }
-        }.poll(TIMEOUT, 500);
-    }
-
-    /**
-     * Activates a page as admin, than deletes it. Verifies the deleted page gets removed from publish.
-     */
-    @Test
-    public void testActivate() throws ClientException, InterruptedException, TimeoutException {
-        ReplicationClient rClient = adminAuthor.adaptTo(ReplicationClient.class);
-        rClient.activate(root.getPath());
-        checkPage(200);
-    }
-
-    /**
-     * Activates a page as admin, than deactivates it. Verifies that the page gets removed from publish.
+     * Activates a page as admin, then deactivates it. Verifies that the page gets removed from publish.
      */
     @Test
     public void testActivateAndDeactivate() throws ClientException, InterruptedException, TimeoutException {
-        ReplicationClient rClient = adminAuthor.adaptTo(ReplicationClient.class);
         rClient.activate(root.getPath());
-        checkPage(200);
+        checkPage(SC_OK);
 
         rClient.deactivate(root.getPath(), SC_OK);
-
-        // verify that page is not present on publish
-        checkPage(404);
+        checkPage(SC_NOT_FOUND);
     }
 
     /**
@@ -98,13 +81,26 @@ public class BasicReplicationActionsIT {
      */
     @Test
     public void testActivateAndDelete() throws ClientException, InterruptedException, TimeoutException {
-        ReplicationClient rClient = adminAuthor.adaptTo(ReplicationClient.class);
         rClient.activate(root.getPath());
-        checkPage(200);
+        checkPage(SC_OK);
 
         adminAuthor.deletePage(new String[]{root.getPath()}, false, false);
-
-        // verify that page is not present on publish
-        checkPage(404);
+        checkPage(SC_NOT_FOUND);
     }
+    
+    /**
+     * Checks that a GET on the page on publish has the {{expectedStatus}} in the response
+     */
+    private void checkPage(final int expectedStatus) throws TimeoutException, InterruptedException {
+        final String path = root.getPath() + ".html";
+        log.info("Checking page {} returns status {}", anonymousPublish.getUrl(path), expectedStatus);
+        new Polling() {
+            @Override
+            public Boolean call() throws Exception {
+                anonymousPublish.doGet(path, expectedStatus);
+                return true;
+            }
+        }.poll(TIMEOUT, 500);
+    }
+
 }
