@@ -93,11 +93,11 @@ public class ReplicationIT {
      */
     private void checkPage(final int expectedStatus) throws TimeoutException, InterruptedException {
         final String path = root.getPath() + ".html";
-        log.info("Checking page {} returns status {}", anonymousPublish.getUrl(path), expectedStatus);
+        log.info("Checking page {} returns status {}", adminPublish.getUrl(path), expectedStatus);
         new Polling() {
             @Override
             public Boolean call() throws Exception {
-                anonymousPublish.doGet(path, expectedStatus);
+                adminPublish.doGet(path, expectedStatus);
                 return true;
             }
         }.poll(TIMEOUT, 500);
