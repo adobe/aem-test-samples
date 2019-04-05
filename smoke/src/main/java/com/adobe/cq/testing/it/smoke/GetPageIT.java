@@ -80,11 +80,11 @@ public class GetPageIT {
 
     /**
      * Verifies that the homepage exists on publish
-     * TODO remove the reference to the skyline sample content and do the get request to / once CQ-4265255 is fixed
+     * TODO remove @Ignore once CQ-4265255 and NPR-29209 are fixed
      */
-    @Test
+    @Test @Ignore
     public void testHomePagePublish() throws ClientException {
         // verify that page is present on author
-        adminPublish.doGet("/content/skyline-sample.html", 200);
+        adminPublish.doGet("/", 200);
     }
 }
