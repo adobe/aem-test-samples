@@ -131,6 +131,7 @@ public class SearchIT {
      * Uses omnisearch to search for text inside PDF uploaded during test setup
      */
     @Test
+    @Ignore("CQ-4274795: Text extraction issue, re-enable when nui asset processing is enabled")
     public void searchTextInPdf() throws Exception {
 
         checkSearchResults(SEARCH_TEXT, "asset", pdfName);
