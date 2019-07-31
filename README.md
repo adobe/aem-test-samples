@@ -7,13 +7,28 @@ Tests are written according to [Best practices](https://github.com/adobe/aem-tes
 
 
 ## How to use
-Clone the repository and use maven for running each of the test modules:
+Clone the repository and use maven for running each of the test modules.
+
+The build also produces a `jar-with-dependencies` that can be run as a self-contained test module
+(using java directly or a small maven pom with failsafe configured).
+
+### Run the tests against localhost
 ```bash
 mvn clean verify -Ptest-all
 ```
 
-The build also produces a `jar-with-dependencies` that can be run as a self-contained test module 
-(using java directly or a small maven pom with failsafe configured).
+### Run the test against Skyline author and publish service
+The `eaas-local` profile allows to run the test locally but against Skyline author and publish service. The same test client configuration is used like when the test module is executed using EAAS:
+
+```bash
+mvn -Peaas-local clean verify \
+-Dskyline.author.url=<your-skyline-author-url> \
+-Dskyline.author.user=admin \
+-Dskyline.author.password=<your-admin-password> \
+-Dskyline.publish.url=<your-skyline-publish-url \
+-Dskyline.publish.user=admin \
+-Dskyline.publish.password=<your-admin-password> \
+```
 
 ## How to release
 

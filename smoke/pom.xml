@@ -121,6 +121,86 @@
                 </plugins>
             </build>
         </profile>
+        <!-- Run integration tests agains Skyline author and publish services. This profiles uses the same properties
+             as when run with EAAS. -->
+         <profile>
+            <id>eaas-local</id>
+            <properties>
+                <!-- Skyline author service (LB) -->
+                <skyline.author.url />
+                <skyline.author.user>admin</skyline.author.user>
+                <skyline.author.password />
+
+                <!-- Skyline publish service (LB) -->
+                <skyline.publish.url />
+                <skyline.publish.user>admin</skyline.publish.user>
+                <skyline.publish.password />
+            </properties>
+            <build>
+                <plugins>
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-surefire-plugin</artifactId>
+                        <version>2.21.0</version>
+                        <configuration>
+                            <skip>true</skip>
+                        </configuration>
+                    </plugin>
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-failsafe-plugin</artifactId>
+                        <version>2.21.0</version>
+                        <configuration>
+                            <testSourceDirectory>${basedir}/src/main/java/</testSourceDirectory>
+                            <testClassesDirectory>${project.build.directory}/classes/</testClassesDirectory>
+                            <systemPropertyVariables>
+                                <!-- same properties as used when run in EAAS -->
+                                <sling.it.configure.default.replication.agents>false
+                                </sling.it.configure.default.replication.agents>
+                                <com.sun.security.enableAIAcaIssuers>true</com.sun.security.enableAIAcaIssuers>
+                                <it.logintokenauth>true</it.logintokenauth>
+
+                                <!-- sling testing tools properties for configuring the test instances -->
+                                <sling.it.instances>2</sling.it.instances>
+
+                                <!-- Author service -->
+                                <sling.it.instance.url.1>${skyline.author.url}</sling.it.instance.url.1>
+                                <sling.it.instance.runmode.1>author</sling.it.instance.runmode.1>
+                                <sling.it.instance.adminUser.1>${skyline.author.user}</sling.it.instance.adminUser.1>
+                                <sling.it.instance.adminPassword.1>${skyline.author.password}
+                                </sling.it.instance.adminPassword.1>
+
+                                <!-- Publish service -->
+                                <sling.it.instance.url.2>${skyline.publish.url}</sling.it.instance.url.2>
+                                <sling.it.instance.runmode.2>publish</sling.it.instance.runmode.2>
+                                <sling.it.instance.adminUser.2>${skyline.publish.user}</sling.it.instance.adminUser.2>
+                                <sling.it.instance.adminPassword.2>${skyline.publish.password}
+                                </sling.it.instance.adminPassword.2>
+                            </systemPropertyVariables>
+                        </configuration>
+                        <executions>
+                            <execution>
+                                <id>default-integration-test</id>
+                                <goals>
+                                    <goal>integration-test</goal>
+                                </goals>
+                                <configuration>
+                                    <includes>
+                                        <include>**/*IT.java</include>
+                                    </includes>
+                                </configuration>
+                            </execution>
+                            <execution>
+                                <id>default-verify</id>
+                                <goals>
+                                    <goal>verify</goal>
+                                </goals>
+                            </execution>
+                        </executions>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
     </profiles>
 
     <dependencies>
