@@ -18,10 +18,10 @@ mvn clean verify -Ptest-all
 ```
 
 ### Run the test against Skyline author and publish service
-The `EAAS-local` profile allows to run the test locally but against Skyline author and publish service. The same test client configuration is used like when the test module is executed using EAAS:
+The `eaas-local` profile allows to run the test locally but against Skyline author and publish service. The same test client configuration is used like when the test module is executed using EAAS:
 
 ```bash
-mvn -PEAAS-local clean verify \
+mvn -Peaas-local clean verify \
 -Dskyline.author.url=<your-skyline-author-url> \
 -Dskyline.author.user=admin \
 -Dskyline.author.password=<your-admin-password> \

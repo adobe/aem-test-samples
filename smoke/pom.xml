@@ -124,7 +124,7 @@
         <!-- Run integration tests agains Skyline author and publish services. This profiles uses the same properties
              as when run with EAAS. -->
          <profile>
-            <id>EAAS-local</id>
+            <id>eaas-local</id>
             <properties>
                 <!-- Skyline author service (LB) -->
                 <skyline.author.url />
