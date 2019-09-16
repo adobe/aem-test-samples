@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<jcr:root xmlns:sling="http://sling.apache.org/jcr/sling/1.0" xmlns:cq="http://www.day.com/jcr/cq/1.0" xmlns:jcr="http://www.jcp.org/jcr/1.0" xmlns:mix="http://www.jcp.org/jcr/mix/1.0" xmlns:nt="http://www.jcp.org/jcr/nt/1.0"
+    jcr:primaryType="cq:Page">
+    <jcr:content
+        cq:lastModified="{Date}2016-10-27T15:00:11.597+03:00"
+        cq:lastModifiedBy="admin"
+        cq:lastReplicated="{Date}2017-03-09T14:12:09.698+02:00"
+        cq:lastReplicatedBy="ksaner"
+        cq:lastReplicationAction="Activate"
+        cq:policy="wcm/foundation/components/page/default"
+        jcr:isCheckedOut="{Boolean}true"
+        jcr:mixinTypes="[cq:ReplicationStatus,mix:versionable]"
+        jcr:primaryType="nt:unstructured"
+        jcr:uuid="98f097e4-41bc-41c5-9e26-28b79a091268"
+        sling:resourceType="wcm/core/components/policies/mappings">
+        <root
+            cq:policy="wcm/foundation/components/responsivegrid/default"
+            jcr:primaryType="nt:unstructured"
+            sling:resourceType="wcm/core/components/policies/mapping">
+            <responsivegrid
+                cq:policy="wcm/foundation/components/responsivegrid/policy_134835588608611"
+                jcr:primaryType="nt:unstructured"
+                sling:resourceType="wcm/core/components/policies/mapping"/>
+        </root>
+    </jcr:content>
+</jcr:root>

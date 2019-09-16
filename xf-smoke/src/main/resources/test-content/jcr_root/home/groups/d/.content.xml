@@ -1,0 +1,4 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<jcr:root xmlns:jcr="http://www.jcp.org/jcr/1.0" xmlns:mix="http://www.jcp.org/jcr/mix/1.0" xmlns:rep="internal"
+    jcr:mixinTypes="[mix:lockable]"
+    jcr:primaryType="rep:AuthorizableFolder"/>

@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<workspaceFilter version="1.0">
+    <filter root="/home/users/we-retail/GiD2HN-AG3sjkijGqU1g"/>
+    <filter root="/home/groups/c/content-authors"/>
+    <filter root="/home/groups/d/dam-users"/>
+    <filter root="/home/groups/e/experience-fragments-editors"/>
+    <filter root="/home/groups/w/workflow-users"/>
+    <filter root="/home/groups/t/tag-administrators"/>
+    <filter root="/content/dam/xf-testing/cat.jpg"/>
+    <filter root="/content/xf-testing"/>
+    <filter root="/content/experience-fragments"/>
+    <filter root="/content/cq:tags/experience-fragments"/>
+    <filter root="/conf/xf-testing-templates"/>
+    <filter root="/conf/we-retail/settings/wcm/templates/fixed-experience-fragment-on-page"/>
+    <filter root="/content/we-retail/language-masters/en/fixed-xf-on-page"/>
+</workspaceFilter>

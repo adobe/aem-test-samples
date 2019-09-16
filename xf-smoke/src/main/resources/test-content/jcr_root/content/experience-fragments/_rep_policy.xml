@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<jcr:root xmlns:crx="http://www.day.com/crx/1.0" xmlns:jcr="http://www.jcp.org/jcr/1.0" xmlns:rep="internal"
+    jcr:primaryType="rep:ACL">
+    <allow
+        jcr:primaryType="rep:GrantACE"
+        rep:principalName="experience-fragments-service"
+        rep:privileges="{Name}[jcr:read,rep:write]"/>
+    <deny1
+        jcr:primaryType="rep:DenyACE"
+        rep:principalName="everyone"
+        rep:privileges="{Name}[jcr:versionManagement,jcr:modifyAccessControl,jcr:namespaceManagement,rep:userManagement,jcr:readAccessControl,jcr:nodeTypeDefinitionManagement,rep:write,jcr:lifecycleManagement,jcr:retentionManagement,jcr:lockManagement,rep:indexDefinitionManagement,rep:privilegeManagement,crx:replicate,jcr:workspaceManagement]"/>
+    <allow2
+        jcr:primaryType="rep:GrantACE"
+        rep:principalName="experience-fragments-editors"
+        rep:privileges="{Name}[jcr:versionManagement,crx:replicate,rep:write,jcr:lockManagement]"/>
+    <allow3
+        jcr:primaryType="rep:GrantACE"
+        rep:principalName="everyone"
+        rep:privileges="{Name}[jcr:read]"/>
+</jcr:root>

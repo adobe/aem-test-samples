@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<jcr:root xmlns:sling="http://sling.apache.org/jcr/sling/1.0" xmlns:jcr="http://www.jcp.org/jcr/1.0" xmlns:nt="http://www.jcp.org/jcr/nt/1.0" xmlns:rep="internal"
+    jcr:mixinTypes="[rep:AccessControllable]"
+    jcr:primaryType="rep:Group"
+    jcr:uuid="3ebb1c04-76dd-317e-a9ee-5164182bc390"
+    rep:authorizableId="content-authors"
+    rep:members="{WeakReference}[94bf4658-721f-30ee-94b9-fd1931312de4]"
+    rep:principalName="content-authors"
+    sling:resourceType="rep:Group">
+    <profile
+        jcr:mixinTypes="[rep:AccessControllable]"
+        jcr:primaryType="nt:unstructured"
+        sling:resourceType="cq/security/components/profile"
+        aboutMe="The group responsible for content editing."
+        givenName="Authors"/>
+</jcr:root>
