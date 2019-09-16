@@ -17,10 +17,10 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
-    <groupId>com.adobe.cq</groupId>
-    <artifactId>com.adobe.cq.testing.it.smoke</artifactId>
-    <version>0.1.0-42-SNAPSHOT</version>
-    <name>CQ Smoke HTTP Tests</name>
+    <groupId>com.adobe.cq.cloud</groupId>
+    <artifactId>com.adobe.cq.cloud.testing.it.smoke</artifactId>
+    <version>0.1.0-SNAPSHOT</version>
+    <name>CQ Cloud Smoke HTTP Tests</name>
 
     <!-- SVN Settings -->
     <scm>
@@ -121,20 +121,20 @@
                 </plugins>
             </build>
         </profile>
-        <!-- Run integration tests agains Skyline author and publish services. This profiles uses the same properties
+        <!-- Run integration tests against the cloud author and publish services. This profiles uses the same properties
              as when run with EAAS. -->
          <profile>
             <id>eaas-local</id>
             <properties>
-                <!-- Skyline author service (LB) -->
-                <skyline.author.url />
-                <skyline.author.user>admin</skyline.author.user>
-                <skyline.author.password />
+                <!-- cloud author service (LB) -->
+                <cloud.author.url />
+                <cloud.author.user>admin</cloud.author.user>
+                <cloud.author.password />
 
-                <!-- Skyline publish service (LB) -->
-                <skyline.publish.url />
-                <skyline.publish.user>admin</skyline.publish.user>
-                <skyline.publish.password />
+                <!-- cloud publish service (LB) -->
+                <cloud.publish.url />
+                <cloud.publish.user>admin</cloud.publish.user>
+                <cloud.publish.password />
             </properties>
             <build>
                 <plugins>
@@ -164,17 +164,17 @@
                                 <sling.it.instances>2</sling.it.instances>
 
                                 <!-- Author service -->
-                                <sling.it.instance.url.1>${skyline.author.url}</sling.it.instance.url.1>
+                                <sling.it.instance.url.1>${cloud.author.url}</sling.it.instance.url.1>
                                 <sling.it.instance.runmode.1>author</sling.it.instance.runmode.1>
-                                <sling.it.instance.adminUser.1>${skyline.author.user}</sling.it.instance.adminUser.1>
-                                <sling.it.instance.adminPassword.1>${skyline.author.password}
+                                <sling.it.instance.adminUser.1>${cloud.author.user}</sling.it.instance.adminUser.1>
+                                <sling.it.instance.adminPassword.1>${cloud.author.password}
                                 </sling.it.instance.adminPassword.1>
 
                                 <!-- Publish service -->
-                                <sling.it.instance.url.2>${skyline.publish.url}</sling.it.instance.url.2>
+                                <sling.it.instance.url.2>${cloud.publish.url}</sling.it.instance.url.2>
                                 <sling.it.instance.runmode.2>publish</sling.it.instance.runmode.2>
-                                <sling.it.instance.adminUser.2>${skyline.publish.user}</sling.it.instance.adminUser.2>
-                                <sling.it.instance.adminPassword.2>${skyline.publish.password}
+                                <sling.it.instance.adminUser.2>${cloud.publish.user}</sling.it.instance.adminUser.2>
+                                <sling.it.instance.adminPassword.2>${cloud.publish.password}
                                 </sling.it.instance.adminPassword.2>
                             </systemPropertyVariables>
                         </configuration>

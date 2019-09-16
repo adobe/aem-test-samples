@@ -1,5 +1,5 @@
 # AEM Test Samples
-This is a collection of test modules that can be run to validate an AEM-based deployment.
+This is a collection of test modules that can be run to validate an AEM cloud-based deployment.
 Tests are written according to [Best practices](https://github.com/adobe/aem-testing-clients/wiki/Best-practices).
 
 ## Modules
@@ -22,20 +22,20 @@ The `eaas-local` profile allows to run the test locally but against Skyline auth
 
 ```bash
 mvn -Peaas-local clean verify \
--Dskyline.author.url=<your-skyline-author-url> \
--Dskyline.author.user=admin \
--Dskyline.author.password=<your-admin-password> \
--Dskyline.publish.url=<your-skyline-publish-url \
--Dskyline.publish.user=admin \
--Dskyline.publish.password=<your-admin-password> \
+-Dcloud.author.url=<your-skyline-author-url> \
+-Dcloud.author.user=admin \
+-Dcloud.author.password=<your-admin-password> \
+-Dcloud.publish.url=<your-skyline-publish-url \
+-Dcloud.publish.user=admin \
+-Dcloud.publish.password=<your-admin-password> \
 ```
 
-## How to release
+## How to deploy pre-release (maintainers only)
 
  * Commit your changes
  * Get the git short version hash of the commit e.g. `git rev-parse --short HEAD`
  * Create a package: `mvn clean package`
  * Deploy on artifactory:
     ```
-    mvn deploy:deploy-file -DgroupId=com.adobe.cq -DartifactId=com.adobe.cq.testing.it.smoke -Dversion=0.1.0-42-<git short version hash> -Dpackaging=jar -Dfile=target/com.adobe.cq.testing.it.smoke-0.1.0-42-SNAPSHOT.jar -DrepositoryId=maven-eaas-release -Durl=https://artifactory-uw2.adobeitc.com/artifactory/maven-eaas-release
+    mvn deploy:deploy-file -DgroupId=com.adobe.cq.cloud -DartifactId=com.adobe.cq.cloud.testing.it.smoke -Dversion=0.1.0-<git short version hash> -Dpackaging=jar -Dfile=target/com.adobe.cq.cloud.testing.it.smoke-0.1.0-SNAPSHOT.jar -DrepositoryId=maven-eaas-release -Durl=https://artifactory-uw2.adobeitc.com/artifactory/maven-eaas-release
     ```
