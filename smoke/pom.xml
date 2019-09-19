@@ -24,8 +24,8 @@
 
     <!-- SVN Settings -->
     <scm>
-        <connection>scm:git:git@github.com/adobe/aem-test-samples.git</connection>
-        <developerConnection>scm:git:git@github.com/adobe/aem-test-samples.git</developerConnection>
+        <connection>scm:git:https://github.com/adobe/aem-test-samples.git</connection>
+        <developerConnection>scm:git:https://github.com/adobe/aem-test-samples.git</developerConnection>
         <url>https://github.com/adobe/aem-test-samples</url>
         <tag>HEAD</tag>
     </scm>
