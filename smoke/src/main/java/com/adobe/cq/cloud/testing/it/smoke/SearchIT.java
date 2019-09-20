@@ -51,11 +51,11 @@ public class SearchIT {
     static String damParentPath = "/content/dam/test-" + System.currentTimeMillis();
     
     static String imgName = "testPicture.png";
-    static String imgResourcePath = "/com/adobe/cq/testing/it/smoke/picture/" + imgName;
+    static String imgResourcePath = "/com/adobe/cq/cloud/testing/it/smoke/picture/" + imgName;
     static String imgMimeType = "image/png";
 
     static String pdfName = "testPDF.pdf";
-    static String pdfResourcePath = "/com/adobe/cq/testing/it/smoke/pdf/" + pdfName;
+    static String pdfResourcePath = "/com/adobe/cq/cloud/testing/it/smoke/pdf/" + pdfName;
     static String pdfMimeType = "application/pdf";
 
 
