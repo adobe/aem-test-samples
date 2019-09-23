@@ -39,6 +39,8 @@ import static com.adobe.cq.testing.client.ExperienceFragmentsClient.*;
  * Test the Create Experience Fragments Operation
  */
 public class XfCreateIT {
+    private static final Logger LOG = LoggerFactory.getLogger(XfCreateIT.class);
+
     private static final String PACKAGE_NAME = "com.adobe.cq.cloud.testing.it.xf.smoke";
     private static final String PACKAGE_VERSION = "1.0";
     private static final String PACKAGE_GROUP = "day/cq60/product";

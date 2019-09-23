@@ -16,10 +16,7 @@
 package com.adobe.cq.cloud.testing.it.xf.smoke.rules;
 
 import com.adobe.cq.testing.client.PackageManagerClient;
-import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
-import org.apache.commons.io.filefilter.TrueFileFilter;
-import org.apache.commons.lang3.NotImplementedException;
 import org.apache.sling.testing.clients.ClientException;
 import org.apache.sling.testing.clients.SlingClient;
 import org.apache.sling.testing.clients.SlingHttpResponse;
@@ -38,14 +35,19 @@ import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.lang.management.ManagementFactory;
-import java.net.URL;
+import java.net.URI;
+import java.net.URISyntaxException;
+import java.nio.file.*;
+import java.util.Collections;
 import java.util.Iterator;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.jar.Attributes;
 import java.util.jar.JarEntry;
 import java.util.jar.JarOutputStream;
 import java.util.jar.Manifest;
+import java.util.stream.Stream;
 
+import static java.lang.Integer.MAX_VALUE;
 import static org.apache.http.HttpStatus.SC_OK;
 
 /**
@@ -76,22 +78,27 @@ public class InstallPackageRule implements TestRule {
             @Override
             public void evaluate() throws Throwable {
                 AtomicReference<PackageManagerClient.Package> uploadedPackage = new AtomicReference<>(null);
-                final PackageManagerClient client = instance.getAdminClient(PackageManagerClient.class);
-                final String newPackagePath = buildPath(name, version, group);
+                PackageManagerClient client = null;
+                String newPackagePath = null;
+
                 try {
+                    client = instance.getAdminClient(PackageManagerClient.class);
+                    newPackagePath = buildPath(name, version, group);
                     // before
                     final File packFile = generatePackage(srcPath);
+                    LOG.info("Created package {}", packFile);
+                    String finalNewPackagePath = newPackagePath;
+                    PackageManagerClient finalClient = client;
                     new Polling(() -> {
                         try {
-                            uploadedPackage.set(client.uploadPackage(new FileInputStream(packFile), packFile.getName()));
+                            uploadedPackage.set(finalClient.uploadPackage(new FileInputStream(packFile), packFile.getName()));
                             uploadedPackage.get().install();
                             Assert.assertEquals("Package path does not match expectations",
-                                    newPackagePath, uploadedPackage.get().getPath());
+                                    finalNewPackagePath, uploadedPackage.get().getPath());
                         } catch (Exception e) {
-                            LOG.warn("Package {} was not created.", newPackagePath);
-                            cleanupPackage(client, newPackagePath);
+                            cleanupPackage(finalClient, finalNewPackagePath);
                         }
-                        return client.isPackageCreated(name, version, group);
+                        return finalClient.isPackageCreated(name, version, group);
                     }).poll(20000, 1000);
 
                     // statement
@@ -109,52 +116,50 @@ public class InstallPackageRule implements TestRule {
         };
     }
 
-    private File generatePackage(String resourceFolder) throws IOException {
-        URL res = getClass().getResource(resourceFolder);
-        String srcPath = null;
-        if (res.toString().startsWith("jar:")) {
-            // extract jar in temp folder
-            throw new NotImplementedException("Does not support resources in jars");
+    private File generatePackage(String resourceFolder) throws IOException, URISyntaxException {
+        URI resourceUri = getClass().getResource(resourceFolder).toURI();
+        Path resourcePath;
+        if (resourceUri.getScheme().equals("jar")) {
+            FileSystem fs = FileSystems.newFileSystem(resourceUri, Collections.emptyMap());
+            resourcePath = fs.getPath(resourceFolder);
         } else {
-            // resource is not in jar
-            srcPath = res.toString();
-            if (srcPath.startsWith("file:")) {
-                srcPath = srcPath.substring(5);
-            }
+            resourcePath = Paths.get(resourceUri);
         }
 
-        return buildJarFromFolder(srcPath);
+        LOG.info("Creating package from resources folder {}", resourcePath);
+        return buildJarFromFolder(resourcePath);
     }
 
-    private File buildJarFromFolder(String srcPath) throws IOException {
+    private File buildJarFromFolder(Path srcPath) throws IOException {
         File generatedPackage = File.createTempFile("temp-package-", ".zip");
         generatedPackage.deleteOnExit();
 
         Manifest man = new Manifest();
 
-        Attributes atts = man.getMainAttributes();
-        atts.put(Attributes.Name.MANIFEST_VERSION, "1.0");
-        atts.putValue("Build-Jdk", ManagementFactory.getRuntimeMXBean().getVmVersion());
+        Attributes attributes = man.getMainAttributes();
+        attributes.put(Attributes.Name.MANIFEST_VERSION, "1.0");
+        attributes.putValue("Build-Jdk", ManagementFactory.getRuntimeMXBean().getVmVersion());
 
         JarOutputStream outJar = new JarOutputStream(new FileOutputStream(generatedPackage), man);
 
-        Iterator<File> fileIter = FileUtils.iterateFilesAndDirs(new File(srcPath), TrueFileFilter.INSTANCE, TrueFileFilter.INSTANCE);
-        while (fileIter.hasNext()) {
-            File currFile = fileIter.next();
-            if (currFile.isDirectory()) continue;
-            String entryName = currFile.getAbsolutePath().substring(srcPath.length()+1);
+        Stream<Path> walk = Files.walk(srcPath, MAX_VALUE);
+        for (Iterator<Path> it = walk.iterator(); it.hasNext(); ) {
+            Path path = it.next();
+            if (Files.isDirectory(path)) continue;
+            String entryName = path.toString().substring(srcPath.toString().length()+1);
             JarEntry je = new JarEntry(entryName);
-            je.setTime(currFile.lastModified());
-            je.setSize(currFile.length());
+            je.setTime(Files.getLastModifiedTime(path).toMillis());
+            je.setSize(Files.size(path));
             outJar.putNextEntry(je);
-            IOUtils.copy(new FileInputStream(currFile), outJar);
+            IOUtils.copy(Files.newInputStream(path), outJar);
             outJar.closeEntry();
         }
+
         outJar.close();
         return generatedPackage;
     }
 
-    // TODO should go into aem-testing-clients
+    // TODO move to aem-testing-clients
     private SlingHttpResponse cleanupPackage(SlingClient client, String path, String cmd) throws ClientException {
         FormEntityBuilder feb = FormEntityBuilder.create();
         feb.addParameter("cmd", cmd);
@@ -178,7 +183,4 @@ public class InstallPackageRule implements TestRule {
         }
         return String.format("/etc/packages/%s/%s-%s.zip", group, name, version);
     }
-
-
-
 }
