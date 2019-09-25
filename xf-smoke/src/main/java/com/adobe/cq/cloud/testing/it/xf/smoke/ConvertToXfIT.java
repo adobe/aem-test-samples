@@ -37,17 +37,17 @@ import org.junit.rules.TestRule;
 
 import java.util.List;
 
+import static com.adobe.cq.cloud.testing.it.xf.smoke.Constants.PACKAGE_GROUP;
+import static com.adobe.cq.cloud.testing.it.xf.smoke.Constants.PACKAGE_NAME;
+import static com.adobe.cq.cloud.testing.it.xf.smoke.Constants.PACKAGE_VERSION;
+import static com.adobe.cq.cloud.testing.it.xf.smoke.Constants.RETRY_DELAY;
+import static com.adobe.cq.cloud.testing.it.xf.smoke.Constants.TIMEOUT;
 import static com.adobe.cq.testing.client.ExperienceFragmentsClient.*;
-
 
 /**
  * Test convert to XF operation
  */
 public class ConvertToXfIT {
-    private static final String PACKAGE_NAME = "com.adobe.cq.cloud.testing.it.xf.smoke";
-    private static final String PACKAGE_VERSION = "1.0";
-    private static final String PACKAGE_GROUP = "day/cq60/product";
-
     public static CQAuthorPublishClassRule cqAuthorPublishClassRule = new CQAuthorPublishClassRule();
 
     public static InstallPackageRule installPackageRule = new InstallPackageRule(cqAuthorPublishClassRule.authorRule, "/test-content",
@@ -62,9 +62,6 @@ public class ConvertToXfIT {
 
     @Rule
     public TestRule rules = RuleChain.outerRule(cqRule).around(cleanupRule).around(allowedTemplatesRule);
-
-    private static final long TIMEOUT = 3000;
-    private static final long RETRY_DELAY = 500;
 
     private static final String TEST_EF_XF_TITLE = ConvertToXfIT.class.getSimpleName();
     private static final String TEST_EF_VARIANT_TITLE = "Test Experience Fragment Variant";
