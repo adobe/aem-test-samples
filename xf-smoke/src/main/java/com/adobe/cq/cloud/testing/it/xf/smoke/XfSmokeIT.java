@@ -92,6 +92,7 @@ public class XfSmokeIT {
         String folderLocation = cqAuthorPublishClassRule.authorRule.getAdminClient()
                 .createFolder(CREATE_FOLDER, CREATE_FOLDER, CREATE_XF_PARENT_PATH)
                 .getSlingPath();
+        cleanupRule.addPath(folderLocation);
         createExperienceFragments(folderLocation);
     }
 

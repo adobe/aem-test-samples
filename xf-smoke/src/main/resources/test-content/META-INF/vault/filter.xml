@@ -2,7 +2,6 @@
 <workspaceFilter version="1.0">
     <filter root="/content/dam/xf-testing"/>
     <filter root="/content/xf-testing"/>
-    <filter root="/content/experience-fragments"/>
     <filter root="/content/cq:tags/experience-fragments"/>
     <filter root="/conf/xf-testing-templates"/>
     <filter root="/conf/we-retail"/>
