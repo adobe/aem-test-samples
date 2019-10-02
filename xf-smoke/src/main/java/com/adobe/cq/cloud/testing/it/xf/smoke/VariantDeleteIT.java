@@ -64,8 +64,8 @@ public class VariantDeleteIT {
 
     @Test
     public void masterVariantDelete() throws ClientException {
-        final CQClient authorAuthor = cqAuthorPublishClassRule.authorRule.getClient(CQClient.class, AUTHOR_USER_NAME, AUTHOR_PASSWORD);
-        final ExperienceFragmentsClient authorXFClient = authorAuthor.adaptTo(ExperienceFragmentsClient.class);
+        final CQClient adminAuthor = cqAuthorPublishClassRule.authorRule.getAdminClient(CQClient.class);
+        final ExperienceFragmentsClient authorXFClient = adminAuthor.adaptTo(ExperienceFragmentsClient.class);
 
         for(XF_TEMPLATE template : XF_TEMPLATE.values()) {
             if(template == XF_TEMPLATE.CUSTOM) continue;
@@ -83,7 +83,7 @@ public class VariantDeleteIT {
 
     @Test
     public void variantDelete() throws ClientException {
-        final CQClient authorAuthor = cqAuthorPublishClassRule.authorRule.getClient(CQClient.class, AUTHOR_USER_NAME, AUTHOR_PASSWORD);
+        final CQClient authorAuthor = cqAuthorPublishClassRule.authorRule.getAdminClient(CQClient.class);
         final ExperienceFragmentsClient authorXFClient = authorAuthor.adaptTo(ExperienceFragmentsClient.class);
 
         String xfPath = authorXFClient

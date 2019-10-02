@@ -65,9 +65,9 @@ public class VariantCreateIT {
 
     @Test
     public void createXFVariantTest() throws ClientException {
-        final CQClient authorAuthor = cqAuthorPublishClassRule.authorRule.getClient(CQClient.class, AUTHOR_USER_NAME, AUTHOR_PASSWORD);
-        final ExperienceFragmentsClient authorXFClient = authorAuthor.adaptTo(ExperienceFragmentsClient.class);
-        String xfPath = authorXFClient
+        final CQClient adminAuthor = cqAuthorPublishClassRule.authorRule.getAdminClient(CQClient.class);
+        final ExperienceFragmentsClient adminXFClient = adminAuthor.adaptTo(ExperienceFragmentsClient.class);
+        String xfPath = adminXFClient
                 .createExperienceFragment(TEST_EF_XF_TITLE, TEST_EF_MASTER_VARIANT_TITLE, XF_TEMPLATE.WEB)
                 .getSlingParentLocation();
         cleanupRule.addPath(xfPath);
@@ -75,13 +75,13 @@ public class VariantCreateIT {
         for(XF_TEMPLATE template : XF_TEMPLATE.values()) {
             if (template == XF_TEMPLATE.CUSTOM) continue;
 
-            String variantPath = authorXFClient.xfVariantBuilder(xfPath, template, TEST_EF_VARIANT_TITLE)
+            String variantPath = adminXFClient.xfVariantBuilder(xfPath, template, TEST_EF_VARIANT_TITLE)
                 .withName(TEST_EF_VARIANT_NAME)
                 .withDescription(TEST_DESCRIPTION)
                 .create()
                 .getSlingLocation();
 
-            ExperienceFragmentVariant variant = authorXFClient.getXFVariant(variantPath);
+            ExperienceFragmentVariant variant = adminXFClient.getXFVariant(variantPath);
 
             Assert.assertFalse("Variant should not be master", variant.isMasterVariant());
             Assert.assertFalse("Variant should not be live copy", variant.isLiveCopy());
@@ -95,7 +95,7 @@ public class VariantCreateIT {
             Assert.assertEquals("Variant template", template, variant.getTemplateType());
             Assert.assertTrue("Variant tags", variant.getTags().size() == 0);
 
-            authorXFClient.deletePage(new String[] { variantPath }, true, false);
+            adminXFClient.deletePage(new String[] { variantPath }, true, false);
         }
     }
 

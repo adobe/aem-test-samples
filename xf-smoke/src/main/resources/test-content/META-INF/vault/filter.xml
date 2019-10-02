@@ -1,11 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <workspaceFilter version="1.0">
-    <filter root="/home/users/we-retail"/>
-    <filter root="/home/groups/c/content-authors"/>
-    <filter root="/home/groups/d/dam-users"/>
-    <filter root="/home/groups/e/experience-fragments-editors"/>
-    <filter root="/home/groups/w/workflow-users"/>
-    <filter root="/home/groups/t/tag-administrators"/>
     <filter root="/content/dam/xf-testing"/>
     <filter root="/content/xf-testing"/>
     <filter root="/content/experience-fragments"/>
