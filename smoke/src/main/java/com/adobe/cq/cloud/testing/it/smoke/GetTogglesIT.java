@@ -19,8 +19,15 @@ import com.adobe.cq.testing.client.CQClient;
 import com.adobe.cq.testing.junit.rules.CQAuthorPublishClassRule;
 import com.adobe.cq.testing.junit.rules.CQRule;
 import com.adobe.cq.testing.junit.rules.Page;
+
+import com.google.gson.Gson;
+
 import org.apache.sling.testing.clients.ClientException;
+import org.apache.sling.testing.clients.SlingHttpResponse;
 import org.junit.*;
+
+import java.util.Arrays;
+import java.util.List;
 
 public class GetTogglesIT {
 
@@ -37,27 +44,36 @@ public class GetTogglesIT {
     static CQClient adminPublish;
 
     @BeforeClass
-    public static void beforeClass() throws ClientException {
+    public static void beforeClass() {
         adminAuthor = cqBaseClassRule.authorRule.getAdminClient(CQClient.class);
 
         adminPublish = cqBaseClassRule.publishRule.getAdminClient(CQClient.class);
     }
 
-    /**
-     * Verifies that the homepage exists on author
-     */
-    @Test @Ignore
-    public void testHomePageAuthor() throws ClientException {
-        // verify that page is present on author
-        adminAuthor.doGet("/bin/system/toggles", 200);
+    public final class ToggleResponse {
+        public String[] enabled;
     }
 
     /**
-     * Verifies that the homepage exists on publish
+     * Verifies if the "ENABLED" flag is always enabled on Author Instance
      */
-    @Test @Ignore
-    public void testHomePagePublish() throws ClientException {
-        // verify that page is present on author
-        adminPublish.doGet("/bin/system/toggles", 200);
+    @Test
+    public void testTogglesEndpointReturnsStaticEnabledFlagInJsonResponseOnAuthor() throws ClientException {
+        sharedTestResponseAlwaysContainsEnabledFlag(adminAuthor);
+    }
+
+    /**
+     * Verifies if the "ENABLED" flag is always enabled on Publish Instance
+     */
+    @Test
+    public void testTogglesEndpointReturnsStaticEnabledFlagInJsonResponseOnPublish() throws ClientException {
+        sharedTestResponseAlwaysContainsEnabledFlag(adminPublish);
+    }
+
+    private void sharedTestResponseAlwaysContainsEnabledFlag(CQClient cqClient) throws ClientException {
+        SlingHttpResponse response = cqClient.doGet("/libs/system/toggles", 200);
+        ToggleResponse tr = new Gson().fromJson(response.getContent(), ToggleResponse.class);
+        List<String> _list = Arrays.asList(tr.enabled);
+        assert _list.contains("ENABLED");
     }
 }
