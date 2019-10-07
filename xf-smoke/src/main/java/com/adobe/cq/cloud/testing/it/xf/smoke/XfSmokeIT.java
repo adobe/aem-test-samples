@@ -33,17 +33,19 @@ import org.slf4j.LoggerFactory;
 import java.util.UUID;
 import java.util.concurrent.TimeoutException;
 
-import static com.adobe.cq.cloud.testing.it.xf.smoke.Constants.PACKAGE_GROUP;
-import static com.adobe.cq.cloud.testing.it.xf.smoke.Constants.PACKAGE_NAME;
-import static com.adobe.cq.cloud.testing.it.xf.smoke.Constants.PACKAGE_VERSION;
-import static com.adobe.cq.cloud.testing.it.xf.smoke.Constants.RETRY_DELAY;
-import static com.adobe.cq.cloud.testing.it.xf.smoke.Constants.TIMEOUT;
 import static com.adobe.cq.testing.client.ExperienceFragmentsClient.XF_TEMPLATE;
 
 /**
  * Test Delete Experience Fragment Operation
  */
 public class XfSmokeIT {
+
+    private static final String PACKAGE_NAME = "com.adobe.cq.cloud.testing.it.xf.smoke";
+    private static final String PACKAGE_VERSION = "1.0";
+    private static final String PACKAGE_GROUP = "day/cq60/product";
+
+    private static final long TIMEOUT = 3000;
+    private static final long RETRY_DELAY = 500;
 
     private static final Logger LOGGER = LoggerFactory.getLogger(XfSmokeIT.class);
 
