@@ -82,9 +82,9 @@ public class ConvertToXfIT {
     private static final String FOLDER_TITLE = "test";
     private static final String PAGE_GRID_PATH = "/jcr:content/root/responsivegrid/";
     private static final String CONVERTABLE_GRID_PATH = PAGE_GRID_PATH + "responsivegrid/";
-    private static final String PAGE_TEMPLATE_PATH = "/conf/xf-testing-templates/settings/wcm/templates/xf-testing-template";
-    private static final String SITE_PATH = "/content/xf-testing";
-    private static final String IMAGE_ASSET_PATH = "/content/dam/xf-testing/cat.jpg";
+    private static final String PAGE_TEMPLATE_PATH = "/conf/xf-testing-templates-1570463639751/settings/wcm/templates/xf-testing-template";
+    private static final String SITE_PATH = "/content/xf-testing-1570463639751";
+    private static final String IMAGE_ASSET_PATH = "/content/dam/xf-testing-1570463639751/cat.jpg";
 
     private ThreadLocal<String> containerPath = new ThreadLocal<String>() {};
 

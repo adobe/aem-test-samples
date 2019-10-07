@@ -5,7 +5,7 @@
         cq:deviceGroups="[/etc/mobile/groups/responsive]"
         cq:lastModified="{Date}2016-07-04T15:09:46.794+03:00"
         cq:lastModifiedBy="admin"
-        cq:template="/conf/xf-testing-templates/settings/wcm/templates/xf-variant-testing-template"
+        cq:template="/conf/xf-testing-templates-1570463639751/settings/wcm/templates/xf-variant-testing-template"
         jcr:primaryType="cq:PageContent"
         sling:resourceType="cq/experience-fragments/components/xfpage">
         <root

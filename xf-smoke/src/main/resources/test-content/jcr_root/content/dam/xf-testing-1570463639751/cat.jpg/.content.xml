@@ -6,9 +6,9 @@
     jcr:uuid="cbd47bd8-cff8-473b-9829-60987b844020">
     <jcr:content
         cq:name="cat.jpg"
-        cq:parentPath="/content/dam/xf-testing"
+        cq:parentPath="/content/dam/xf-testing-1570463639751"
         dam:assetState="processed"
-        dam:relativePath="xf-testing/cat.jpg"
+        dam:relativePath="xf-testing-1570463639751/cat.jpg"
         jcr:lastModified="{Date}2017-09-03T16:04:05.925+03:00"
         jcr:lastModifiedBy="admin"
         jcr:primaryType="dam:AssetContent">

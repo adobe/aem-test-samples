@@ -8,7 +8,7 @@
         cq:lastReplicated="{Date}2017-03-09T14:12:09.698+02:00"
         cq:lastReplicatedBy="ksaner"
         cq:lastReplicationAction="Activate"
-        cq:template="/conf/xf-testing-templates/settings/wcm/templates/xf-testing-template"
+        cq:template="/conf/xf-testing-templates-1570463639751/settings/wcm/templates/xf-testing-template"
         jcr:isCheckedOut="{Boolean}true"
         jcr:mixinTypes="[mix:versionable]"
         jcr:primaryType="cq:PageContent"
