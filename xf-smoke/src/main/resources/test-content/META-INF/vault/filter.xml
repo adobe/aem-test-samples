@@ -4,6 +4,4 @@
     <filter root="/content/xf-testing"/>
     <filter root="/content/cq:tags/experience-fragments"/>
     <filter root="/conf/xf-testing-templates"/>
-    <filter root="/conf/we-retail"/>
-    <filter root="/content/we-retail"/>
 </workspaceFilter>

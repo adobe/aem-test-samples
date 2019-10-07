@@ -40,21 +40,15 @@ import static com.adobe.cq.testing.client.ExperienceFragmentsClient.XF_TEMPLATE;
  */
 public class XfSmokeIT {
 
-    private static final String PACKAGE_NAME = "com.adobe.cq.cloud.testing.it.xf.smoke";
-    private static final String PACKAGE_VERSION = "1.0";
-    private static final String PACKAGE_GROUP = "day/cq60/product";
-
     private static final long TIMEOUT = 3000;
     private static final long RETRY_DELAY = 500;
 
     private static final Logger LOGGER = LoggerFactory.getLogger(XfSmokeIT.class);
 
     private static CQAuthorPublishClassRule cqAuthorPublishClassRule = new CQAuthorPublishClassRule();
-    private static InstallPackageRule installPackageRule = new InstallPackageRule(cqAuthorPublishClassRule.authorRule, "/test-content",
-            PACKAGE_NAME, PACKAGE_VERSION, PACKAGE_GROUP);
 
     @ClassRule
-    public static TestRule ruleChain = RuleChain.outerRule(cqAuthorPublishClassRule).around(installPackageRule);
+    public static TestRule ruleChain = RuleChain.outerRule(cqAuthorPublishClassRule);
 
     @Rule
     public CQRule cqRule = new CQRule();
