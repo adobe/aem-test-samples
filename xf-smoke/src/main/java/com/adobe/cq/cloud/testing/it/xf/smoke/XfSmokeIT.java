@@ -16,7 +16,6 @@
 package com.adobe.cq.cloud.testing.it.xf.smoke;
 
 import com.adobe.cq.cloud.testing.it.xf.smoke.rules.CleanupRule;
-import com.adobe.cq.cloud.testing.it.xf.smoke.rules.InstallPackageRule;
 import com.adobe.cq.testing.client.CQClient;
 import com.adobe.cq.testing.client.ExperienceFragmentsClient;
 import com.adobe.cq.testing.junit.rules.CQAuthorPublishClassRule;

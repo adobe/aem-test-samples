@@ -1,7 +1,0 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<workspaceFilter version="1.0">
-    <filter root="/content/dam/xf-testing-1570463639751"/>
-    <filter root="/content/xf-testing-1570463639751"/>
-    <filter root="/content/cq:tags/experience-fragments-1570463639751"/>
-    <filter root="/conf/xf-testing-templates-1570463639751"/>
-</workspaceFilter>
