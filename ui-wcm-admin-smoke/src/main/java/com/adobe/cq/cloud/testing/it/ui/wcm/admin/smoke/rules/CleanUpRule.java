@@ -17,12 +17,18 @@ package com.adobe.cq.cloud.testing.it.ui.wcm.admin.smoke.rules;
 
 import org.apache.sling.testing.clients.util.poller.Polling;
 import org.apache.sling.testing.junit.rules.instance.Instance;
+import org.junit.Assert;
 import org.junit.rules.ExternalResource;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.TimeoutException;
 
 public class CleanUpRule extends ExternalResource {
+    private static final Logger LOGGER = LoggerFactory.getLogger(TempFolderRule.class);
+
     public ThreadLocal<List<String>> toDelete = ThreadLocal.withInitial(() -> new ArrayList<>(15));
     private final Instance rule;
     private final long timeout;
@@ -50,14 +56,20 @@ public class CleanUpRule extends ExternalResource {
 
     @Override
     protected void after() {
-        toDelete.get().stream().forEach((path) -> {
+        toDelete.get().forEach((path) -> {
             try {
+
                 new Polling(() -> {
                     rule.getAdminClient().deletePath(path);
-                    return rule.getAdminClient().exists(path);
+                    return !rule.getAdminClient().exists(path);
                 }).poll(timeout, delay);
-            } catch (Throwable t) {
+
+            } catch (InterruptedException t) {
+                Assert.fail("Could not clean up path " + path + " due to being interrupted.");
+            } catch (TimeoutException t) {
+                Assert.fail("Could not clean up path " + path + " due to reaching timeout.");
             }
+            LOGGER.info("Cleaned up: " + path + ".");
         });
     }
 }

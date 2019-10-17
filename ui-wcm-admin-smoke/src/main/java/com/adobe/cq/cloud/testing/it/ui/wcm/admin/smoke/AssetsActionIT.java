@@ -18,12 +18,15 @@ package com.adobe.cq.cloud.testing.it.ui.wcm.admin.smoke;
 import com.adobe.cq.cloud.testing.it.ui.wcm.admin.smoke.rules.CleanUpRule;
 import com.adobe.cq.cloud.testing.it.ui.wcm.admin.smoke.rules.TempFolderRule;
 import com.adobe.cq.testing.client.CQClient;
-import com.adobe.cq.testing.junit.assertion.CQAssert;
+import com.adobe.cq.testing.client.JsonClient;
 import com.adobe.cq.testing.junit.rules.CQAuthorPublishClassRule;
 import com.adobe.cq.testing.junit.rules.CQRule;
+import com.adobe.cq.testing.util.TestUtil;
 import org.apache.sling.testing.clients.ClientException;
 import org.apache.sling.testing.clients.util.ResourceUtil;
 import org.apache.sling.testing.clients.util.poller.Polling;
+import org.codehaus.jackson.JsonNode;
+import org.junit.Assert;
 import org.junit.ClassRule;
 import org.junit.Rule;
 import org.junit.Test;
@@ -32,6 +35,7 @@ import org.junit.rules.TestRule;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.io.InputStream;
 import java.util.concurrent.TimeoutException;
 
 /**
@@ -69,22 +73,126 @@ public class AssetsActionIT {
      * @throws TimeoutException
      */
     @Test
-    public void testCreateDeleteAssetAsAdmin() throws ClientException, InterruptedException, TimeoutException {
+    public void testCreateDeleteAssetAsAdmin() throws ClientException, InterruptedException {
         CQClient adminAuthor = cqAuthorPublishClassRule.authorRule.getAdminClient(CQClient.class);
         String damRootFolder = damRootFolderRule.getTempFolder();
 
-        LOGGER.info("Testing asset upload through Admin Console.");
+        LOGGER.info("Testing asset creation through Admin Console.");
         String fileName = ASSET_TO_UPLOAD.substring(ASSET_TO_UPLOAD.lastIndexOf('/') + 1);
         String mimeType = "image/jpeg";
 
-        LOGGER.info("Uploading asset..");
-        adminAuthor.waitExists(damRootFolder, TIMEOUT, RETRY_DELAY);
+        LOGGER.info("Creating asset..");
         String newFileHandle = adminAuthor.uploadAsset(fileName, ASSET_TO_UPLOAD, mimeType, damRootFolder, 200, 201).getSlingPath();
         cleanUpRule.addPath(newFileHandle);
 
-        new Polling(() -> adminAuthor.exists(newFileHandle)).poll(TIMEOUT, RETRY_DELAY);
+        try {
 
-        CQAssert.assertAssetExists(adminAuthor, newFileHandle, ResourceUtil.getResourceAsStream(ASSET_TO_UPLOAD), mimeType);
+            LOGGER.info("Polling for file creation.");
+
+            new Polling(() -> {
+                LOGGER.info("Started poll...");
+                return checkIfAssetExists(adminAuthor, newFileHandle, ResourceUtil.getResourceAsStream(ASSET_TO_UPLOAD), mimeType);
+            }).poll(TIMEOUT, RETRY_DELAY);
+
+            LOGGER.info("File was created properly.");
+
+        } catch(TimeoutException e) {
+            LOGGER.error("Polling that file was created reached timeout of {}", TIMEOUT);
+        }
+    }
+
+
+    private boolean checkIfAssetExists(CQClient client, String path, InputStream fileData, String mimeType) {
+        // Get the root node as JsonNode object
+        JsonNode node = null;
+        try {
+            node = client.adaptTo(JsonClient.class).doGetJson(path, -1);
+        } catch (ClientException e) {
+            LOGGER.info("Request for " + path + " failed!");
+            return false;
+        }
+
+        // check if jcr:primaryType is set to dam:Asset
+        if(!node.get("jcr:primaryType").getValueAsText().equals("dam:Asset")) {
+            LOGGER.info("jcr:primaryType of folder node " + path + " is not set to dam:Asset!");
+            return false;
+        }
+
+        // check if jcr:content node exists
+        if(node.path("jcr:content").isMissingNode()) {
+            LOGGER.info("No jcr:content node found below " + path + "!");
+            return false;
+        }
+
+        // Get the jcr:content node
+        node = node.path("jcr:content");
+        path += "/jcr:content";
+
+        // check if jcr:primaryType is set to dam:AssetContent
+        if(!node.get("jcr:primaryType").getTextValue().equals("dam:AssetContent")) {
+            LOGGER.info("jcr:primaryType of jcr:content node below " + path + " is not set to dam:AssetContent!");
+            return false;
+        }
+
+        // check if metadata node exists
+        if(node.path("metadata").isMissingNode()) {
+            LOGGER.info("No metadata node found below " + path + "!");
+            return false;
+        }
+
+        // check if renditions folder exists
+        if(node.path("renditions").isMissingNode()) {
+            LOGGER.info("No renditions folder found below " + path + "!");
+            return false;
+        }
+
+        // Get the renditions node
+        node = node.path("renditions");
+        path += "/renditions";
+
+        // check if original folder exists
+        if(node.path("original").isMissingNode()) {
+            LOGGER.info("No original folder found below " + path + "!");
+            return false;
+        }
+
+        // Get the original node
+        node = node.path("original");
+        path += "/original";
+
+        // check if jcr:primaryType is set to nt:file
+        if(!node.get("jcr:primaryType").getTextValue().equals("nt:file")) {
+            LOGGER.info("jcr:primaryType of node  " + path + " is not set to nt:file!");
+            return false;
+        }
+
+        // check if jcr:content node exists
+        if(node.path("jcr:content").isMissingNode()) {
+            LOGGER.info("No jcr:content node found below " + path + "!");
+            return false;
+        }
+
+        // Get the jcr:content node
+        node = node.path("jcr:content");
+        path += "/jcr:content";
+
+        // check if jcr:mimeType is set correctly
+        if(!node.get("jcr:mimeType").getTextValue().equals(mimeType)) {
+            LOGGER.info("jcr:mimeType is not set to " + mimeType);
+            return false;
+        }
+
+        try {
+            if(!TestUtil.binaryCompare(fileData, client.doStreamGet(path, null, null).getEntity().getContent())) {
+                LOGGER.info("The original file and the requested file are not the same");
+                return false;
+            }
+        } catch (Exception e) {
+            LOGGER.info("Binary compare of files failed!");
+            return false;
+        }
+
+        return true;
     }
 
 }

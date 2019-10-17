@@ -64,6 +64,7 @@ public class TempFolderRule extends ExternalResource {
         String randomName = "test_" + RandomStringUtils.random(10, true, true);
         String randomTitle = "Test " + RandomStringUtils.random(10, true, true);
         temporaryFolder = client.createFolder(randomName, randomTitle, CONTENT_DAM_ROOT, HttpStatus.SC_CREATED).getSlingPath();
+        client.waitExists(temporaryFolder, timeout, delay);
     }
 
     @Override
@@ -81,6 +82,7 @@ public class TempFolderRule extends ExternalResource {
         } catch(InterruptedException e) {
             LOGGER.error("Polling error when trying to delete temporary folder {}", temporaryFolder);
         }
+        LOGGER.info("Successfully deleted temporary folder: " + temporaryFolder + ".");
     }
 
 
