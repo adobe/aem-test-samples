@@ -71,7 +71,7 @@ public class GetTogglesIT {
     }
 
     private void sharedTestResponseAlwaysContainsEnabledFlag(CQClient cqClient) throws ClientException {
-        SlingHttpResponse response = cqClient.doGet("/libs/system/toggles", 200);
+        SlingHttpResponse response = cqClient.doGet("etc.clientlibs/toggles.json", 200);
         ToggleResponse tr = new Gson().fromJson(response.getContent(), ToggleResponse.class);
         List<String> _list = Arrays.asList(tr.enabled);
         assert _list.contains("ENABLED");
