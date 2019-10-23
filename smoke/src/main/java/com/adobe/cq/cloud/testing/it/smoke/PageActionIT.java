@@ -13,9 +13,8 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.adobe.cq.cloud.testing.it.ui.wcm.admin.smoke;
+package com.adobe.cq.cloud.testing.it.smoke;
 
-import com.adobe.cq.cloud.testing.it.ui.wcm.admin.smoke.rules.CleanUpRule;
 import com.adobe.cq.testing.client.CQClient;
 import com.adobe.cq.testing.junit.assertion.CQAssert;
 import com.adobe.cq.testing.junit.rules.CQAuthorPublishClassRule;
@@ -24,17 +23,16 @@ import com.adobe.cq.testing.junit.rules.Page;
 import org.apache.commons.lang3.RandomStringUtils;
 import org.apache.http.HttpStatus;
 import org.apache.sling.testing.clients.ClientException;
-import org.apache.sling.testing.clients.util.poller.Polling;
 import org.junit.ClassRule;
 import org.junit.Rule;
 import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.Arrays;
 import java.util.concurrent.TimeoutException;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotEquals;
 
 /**
  *  Tests basic CQ Page modifications on author instance:</br>
@@ -47,7 +45,7 @@ import static org.junit.Assert.assertEquals;
  */
 public class PageActionIT {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(AssetsAndFilesActionIT.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(PageActionIT.class);
 
     private static final long TIMEOUT = 3000;
     private static final long RETRY_DELAY = 500;
@@ -56,10 +54,7 @@ public class PageActionIT {
     public static CQAuthorPublishClassRule cqBaseClassRule = new CQAuthorPublishClassRule();
 
     @Rule
-    public CQRule cqBaseRule = new CQRule(cqBaseClassRule.authorRule, cqBaseClassRule.publishRule);
-
-    @Rule
-    public CleanUpRule cleanUpRule = new CleanUpRule(cqBaseClassRule.authorRule, TIMEOUT, RETRY_DELAY);
+    public CQRule cqBaseRule = new CQRule(cqBaseClassRule.authorRule);
 
     @Rule
     public Page root = new Page(cqBaseClassRule.authorRule);
@@ -77,7 +72,7 @@ public class PageActionIT {
     @Test
     public void testDeletePageAsAdmin() throws ClientException, InterruptedException, TimeoutException {
         LOGGER.info("Test to check that a page gets deleted properly.");
-        CQClient client = cqBaseClassRule.authorRule.getAdminClient(CQClient.class);
+        final CQClient client = cqBaseClassRule.authorRule.getAdminClient(CQClient.class);
 
         // page title to be set and tested for
         String pageTitle = "QA Test Delete Page " + RandomStringUtils.random(10, true, true);
@@ -85,7 +80,7 @@ public class PageActionIT {
         // first create a page to be deleted
         LOGGER.info("Creating a page to delete.");
         client.waitExists(root.getPath(), TIMEOUT, RETRY_DELAY);
-        String newPath = client.createPage("qatestdeletepage", pageTitle, root.getPath(), root.getTemplatePath()).getSlingPath();
+        final String newPath = client.createPage("qatestdeletepage", pageTitle, root.getPath(), root.getTemplatePath()).getSlingPath();
 
         // make sure the page is created with'admin' account
         client.waitExists(newPath, TIMEOUT, RETRY_DELAY);
@@ -96,7 +91,7 @@ public class PageActionIT {
 
         LOGGER.info("Checking if the page was deleted correctly.");
         // check if the page was deleted with 'admin' account
-        new Polling(()->!client.exists(newPath)).poll(TIMEOUT, RETRY_DELAY);
+        CQAssert.assertPathDoesNotExistWithTimeout(client, newPath, TIMEOUT, RETRY_DELAY);
     }
 
     /**
@@ -123,7 +118,6 @@ public class PageActionIT {
         LOGGER.info("Creating a page to copy.");
         String srcName = "qatestcopypage" + RandomStringUtils.random(10, true, true);
         String originalPath = client.createPage(srcName, pageTitle, root.getPath(), root.getTemplatePath()).getSlingPath();
-        cleanUpRule.addPath(originalPath);
 
         // make sure the page is created
         client.waitExists(originalPath, TIMEOUT, RETRY_DELAY);
@@ -132,19 +126,20 @@ public class PageActionIT {
         LOGGER.info("Copying the page to the same folder.");
         String destName = "qacopydestinationpage" + RandomStringUtils.random(10, true, true);
         String[] destPaths = client.copyPage(new String[]{originalPath}, destName, null, root.getPath(), "", false).getSlingCopyPaths();
-        Arrays.stream(destPaths).forEach((destPath) -> cleanUpRule.addPath(destPath));
 
         LOGGER.info("Checking that the destination path is correct.");
         // check for correct dest path
+        assertNotEquals(destPaths.length, 0);
         assertEquals("Wrong destination path!", root.getPath() + "/" + destName, destPaths[0]);
 
         // check for the copied page
         LOGGER.info("Checking that the copy was successful.");
-        client.waitExists(destPaths[0], TIMEOUT, RETRY_DELAY);
+        CQAssert.assertCQPageExistsWithTimeout(client, destPaths[0], TIMEOUT, RETRY_DELAY);
 
         // check if the original page still exists
         LOGGER.info("Checking that the original page still exists.");
         client.waitExists(originalPath, TIMEOUT, RETRY_DELAY);
+        CQAssert.assertCQPageExistsWithTimeout(client, originalPath, TIMEOUT, RETRY_DELAY);
     }
 
     /**
@@ -170,7 +165,6 @@ public class PageActionIT {
         String subFolderTitle = "QA Test Sub Folder" + RandomStringUtils.random(10, true, true);
         String subFolderName = "qatestsubfolder" + RandomStringUtils.random(10, true, true);
         String subPage = client.createPage(subFolderName, subFolderTitle, root.getPath(),  root.getPath()).getSlingPath();
-        cleanUpRule.addPath(subPage);
 
         // make sure sub folder exists
         client.waitExists(subPage, TIMEOUT, RETRY_DELAY);
@@ -180,7 +174,6 @@ public class PageActionIT {
         String pageTitle = "QA Test Move Page " + RandomStringUtils.random(10, true, true);
         String srcName = "qatestmovepage" + RandomStringUtils.random(10, true, true);
         String originalPath = client.createPage(srcName, pageTitle, subPage, root.getTemplatePath()).getSlingPath();
-        cleanUpRule.addPath(originalPath);
 
         // make sure the page is created
         client.waitExists(originalPath, TIMEOUT, RETRY_DELAY);
@@ -190,8 +183,6 @@ public class PageActionIT {
         String destName = "qamovedestinationpage" + RandomStringUtils.random(10, true, true);
         String[] destPaths = client.movePage(new String[]{originalPath}, destName, null, root.getPath(), "newmovelabel",
                 false, true, null).getSlingCopyPaths();
-        Arrays.stream(destPaths).forEach((destPath) -> cleanUpRule.addPath(destPath));
-
 
         // check for correct dest path
         LOGGER.info("Checking if the destination path is correct.");
@@ -199,15 +190,15 @@ public class PageActionIT {
 
         // check for the moved page
         LOGGER.info("Checking if the page was moved successfully.");
-        client.waitExists(destPaths[0], TIMEOUT, RETRY_DELAY);
+        CQAssert.assertCQPageExistsWithTimeout(client, destPaths[0], TIMEOUT, RETRY_DELAY);
 
         // check if the sub page still exists
         LOGGER.info("Checking if the folder still exists.");
-        client.waitExists(subPage, TIMEOUT, RETRY_DELAY);
+        CQAssert.assertCQPageExistsWithTimeout(client, destPaths[0], TIMEOUT, RETRY_DELAY);
 
-        LOGGER.info("Checking if the original page does not exist anymore.");
+        LOGGER.info("Checking if the original page " + originalPath + " does not exist anymore.");
         // check if the original page should not exists
-        new Polling(() -> !client.exists(originalPath)).poll(TIMEOUT, RETRY_DELAY);
+        CQAssert.assertPathDoesNotExistWithTimeout(client, originalPath, TIMEOUT, RETRY_DELAY);
     }
 
 }
