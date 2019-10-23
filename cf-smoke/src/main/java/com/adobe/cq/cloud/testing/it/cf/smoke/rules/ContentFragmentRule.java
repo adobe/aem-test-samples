@@ -147,8 +147,6 @@ public class ContentFragmentRule extends ExternalResource {
 
     public String createContentFragment() {
         FormEntityBuilder createParams = FormEntityBuilder.create();
-        
-
 
     }
 
