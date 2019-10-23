@@ -1,0 +1,237 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  ~ Copyright 2018 Adobe Systems Incorporated
+  ~
+  ~ Licensed under the Apache License, Version 2.0 (the "License");
+  ~ you may not use this file except in compliance with the License.
+  ~ You may obtain a copy of the License at
+  ~
+  ~     http://www.apache.org/licenses/LICENSE-2.0
+  ~
+  ~ Unless required by applicable law or agreed to in writing, software
+  ~ distributed under the License is distributed on an "AS IS" BASIS,
+  ~ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  ~ See the License for the specific language governing permissions and
+  ~ limitations under the License.
+  -->
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
+    <groupId>com.adobe.cq.cloud</groupId>
+    <artifactId>com.adobe.cq.cloud.testing.it.cf.smoke</artifactId>
+    <version>0.2.1-SNAPSHOT</version>
+    <name>CQ Cloud Content Fragments Smoke HTTP Tests</name>
+
+    <!-- SVN Settings -->
+    <scm>
+        <connection>scm:git:https://github.com/adobe/aem-test-samples.git</connection>
+        <developerConnection>scm:git:https://github.com/adobe/aem-test-samples.git</developerConnection>
+        <url>https://github.com/adobe/aem-test-samples</url>
+        <tag>HEAD</tag>
+    </scm>
+
+    <properties>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+    </properties>
+
+    <build>
+        <plugins>
+            <!-- Create self-contained jar with dependencies -->
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-assembly-plugin</artifactId>
+                <version>3.1.0</version>
+                <configuration>
+                    <descriptorRefs>
+                        <descriptorRef>jar-with-dependencies</descriptorRef>
+                    </descriptorRefs>
+                </configuration>
+                <executions>
+                    <execution>
+                        <id>make-assembly</id>
+                        <phase>package</phase>
+                        <goals>
+                            <goal>single</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+            <!-- Compile for Java 7 and higher -->
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <version>3.7.0</version>
+                <configuration>
+                    <source>8</source>
+                    <target>8</target>
+                </configuration>
+            </plugin>
+        </plugins>
+    </build>
+
+    <profiles>
+        <!-- Run integration tests against CQ only when this profile is activated -->
+        <profile>
+            <id>test-all</id>
+
+            <activation>
+                <property>
+                    <name>it</name>
+                </property>
+            </activation>
+
+            <build>
+                <plugins>
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-surefire-plugin</artifactId>
+                        <version>2.21.0</version>
+                        <configuration>
+                            <skip>true</skip>
+                        </configuration>
+                    </plugin>
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-failsafe-plugin</artifactId>
+                        <version>2.21.0</version>
+                        <configuration>
+                            <testSourceDirectory>${basedir}/src/main/java/</testSourceDirectory>
+                            <testClassesDirectory>${project.build.directory}/classes/</testClassesDirectory>
+                        </configuration>
+                        <executions>
+                            <execution>
+                                <id>default-integration-test</id>
+                                <goals>
+                                    <goal>integration-test</goal>
+                                </goals>
+                                <configuration>
+                                    <includes>
+                                        <include>**/*IT.java</include>
+                                    </includes>
+                                </configuration>
+                            </execution>
+                            <execution>
+                                <id>default-verify</id>
+                                <goals>
+                                    <goal>verify</goal>
+                                </goals>
+                            </execution>
+                        </executions>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
+        <!-- Run integration tests against the cloud author and publish services. This profiles uses the same properties
+             as when run with EAAS. -->
+         <profile>
+            <id>eaas-local</id>
+            <properties>
+                <!-- cloud author service (LB) -->
+                <cloud.author.url />
+                <cloud.author.user />
+                <cloud.author.password />
+
+                <!-- cloud publish service (LB) -->
+                <cloud.publish.url />
+                <cloud.publish.user>admin</cloud.publish.user>
+                <cloud.publish.password />
+            </properties>
+            <build>
+                <plugins>
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-surefire-plugin</artifactId>
+                        <version>2.21.0</version>
+                        <configuration>
+                            <skip>true</skip>
+                        </configuration>
+                    </plugin>
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-failsafe-plugin</artifactId>
+                        <version>2.21.0</version>
+                        <configuration>
+                            <testSourceDirectory>${basedir}/src/main/java/</testSourceDirectory>
+                            <testClassesDirectory>${project.build.directory}/classes/</testClassesDirectory>
+                            <systemPropertyVariables>
+                                <!-- same properties as used when run in EAAS -->
+                                <sling.it.configure.default.replication.agents>false
+                                </sling.it.configure.default.replication.agents>
+                                <com.sun.security.enableAIAcaIssuers>true</com.sun.security.enableAIAcaIssuers>
+                                <it.logintokenauth>true</it.logintokenauth>
+
+                                <!-- sling testing tools properties for configuring the test instances -->
+                                <sling.it.instances>2</sling.it.instances>
+
+                                <!-- Author service -->
+                                <sling.it.instance.url.1>${cloud.author.url}</sling.it.instance.url.1>
+                                <sling.it.instance.runmode.1>author</sling.it.instance.runmode.1>
+                                <sling.it.instance.adminUser.1>${cloud.author.user}</sling.it.instance.adminUser.1>
+                                <sling.it.instance.adminPassword.1>${cloud.author.password}
+                                </sling.it.instance.adminPassword.1>
+
+                                <!-- Publish service -->
+                                <sling.it.instance.url.2>${cloud.publish.url}</sling.it.instance.url.2>
+                                <sling.it.instance.runmode.2>publish</sling.it.instance.runmode.2>
+                                <sling.it.instance.adminUser.2>${cloud.publish.user}</sling.it.instance.adminUser.2>
+                                <sling.it.instance.adminPassword.2>${cloud.publish.password}
+                                </sling.it.instance.adminPassword.2>
+                            </systemPropertyVariables>
+                        </configuration>
+                        <executions>
+                            <execution>
+                                <id>default-integration-test</id>
+                                <goals>
+                                    <goal>integration-test</goal>
+                                </goals>
+                                <configuration>
+                                    <includes>
+                                        <include>**/*IT.java</include>
+                                    </includes>
+                                </configuration>
+                            </execution>
+                            <execution>
+                                <id>default-verify</id>
+                                <goals>
+                                    <goal>verify</goal>
+                                </goals>
+                            </execution>
+                        </executions>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
+    </profiles>
+
+    <dependencies>
+        <!-- integration testing -->
+        <dependency>
+            <groupId>com.adobe.cq</groupId>
+            <artifactId>cq-testing-clients-64</artifactId>
+            <version>0.1.2</version>
+        </dependency>
+
+        <!-- logging -->
+        <dependency>
+            <groupId>org.slf4j</groupId>
+            <artifactId>slf4j-simple</artifactId>
+            <version>1.7.25</version>
+        </dependency>
+    </dependencies>
+
+    <repositories>
+        <!-- For cq-testing-clients -->
+        <repository>
+            <id>adobe-public-releases</id>
+            <name>Adobe Public Repository</name>
+            <url>https://repo.adobe.com/nexus/content/groups/public</url>
+            <releases>
+                <enabled>true</enabled>
+                <updatePolicy>never</updatePolicy>
+            </releases>
+            <snapshots>
+                <enabled>false</enabled>
+            </snapshots>
+        </repository>
+    </repositories>
+</project>
