@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<workspaceFilter version="1.0">
+    <filter root="/content/dam/cfm-sanity-test/en"/>
+    <filter root="/conf/global/settings/dam/cfm/models"/>
+    <filter root="/conf/global/settings/dam/cfm/templates/cfm-sanity-test"/>
+</workspaceFilter>
