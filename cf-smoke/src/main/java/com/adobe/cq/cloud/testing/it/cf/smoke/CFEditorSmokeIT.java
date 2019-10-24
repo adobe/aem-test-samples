@@ -22,6 +22,7 @@ import com.adobe.cq.testing.client.CQClient;
 import com.adobe.cq.testing.junit.rules.CQAuthorClassRule;
 import com.adobe.cq.testing.junit.rules.CQRule;
 import org.apache.sling.testing.clients.ClientException;
+import org.apache.sling.testing.clients.util.poller.Polling;
 import org.junit.ClassRule;
 import org.junit.Rule;
 import org.junit.Test;
@@ -30,9 +31,15 @@ import org.junit.rules.TestRule;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.util.concurrent.Callable;
+import java.util.concurrent.TimeoutException;
+
 public class CFEditorSmokeIT {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(CFEditorSmokeIT.class);
+
+    private static final long TIMEOUT = 3000;
+    private static final long RETRY_DELAY = 500;
 
     private static final String PACKAGE_NAME = "com.adobe.cq.cloud.testing.it.cf.smoke";
     private static final String PACKAGE_VERSION = "1.0";
@@ -50,18 +57,24 @@ public class CFEditorSmokeIT {
     @Rule
     public ContentFragmentRule contentFragmentRule = new ContentFragmentRule(cqBaseClassRule.authorRule);
 
-    @ClassRule
     public static InstallPackageRule installPackageRule = new InstallPackageRule(cqBaseClassRule.authorRule, "/test-content", PACKAGE_NAME, PACKAGE_VERSION, PACKAGE_GROUP);
 
     @ClassRule
     public static TestRule ruleChain = RuleChain.outerRule(cqBaseClassRule).around(installPackageRule);
 
     @Test
-    public void testOpenCFEditor() throws ClientException {
+    public void testOpenCFEditor() throws ClientException, TimeoutException, InterruptedException {
         LOGGER.info("Testing Content Fragment Editor..");
         CQClient client = cqBaseClassRule.authorRule.getAdminClient(CQClient.class);
 
-        client.doGet(TEST_CONTENT_FRAGMENT_PATH, 200);
+        new Polling(new Callable<Boolean>() {
+            @Override
+            public Boolean call() throws Exception {
+                return client.exists(TEST_CONTENT_FRAGMENT_PATH);
+            }
+        }).poll(TIMEOUT, RETRY_DELAY);
+
+        client.doGet("editor.html/" + TEST_CONTENT_FRAGMENT_PATH, 200);
 
         LOGGER.info("Testing Content Fragment Editor starting edit..");
         contentFragmentRule.startEdit(TEST_CONTENT_FRAGMENT_PATH);
@@ -75,7 +88,7 @@ public class CFEditorSmokeIT {
         LOGGER.info("Testing Content Fragment Model Editor..");
         CQClient client = cqBaseClassRule.authorRule.getAdminClient(CQClient.class);
 
-        client.doGet(TEST_CONTENT_FRAGMENT_MODEL_PATH, 200);
+        client.doGet("/mnt/overlay/dam/cfm/models/editor/content/editor.html/" + TEST_CONTENT_FRAGMENT_MODEL_PATH, 200);
     }
 
     @Test
