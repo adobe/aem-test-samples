@@ -20,28 +20,28 @@ import com.adobe.cq.testing.junit.rules.CQAuthorPublishClassRule;
 import com.adobe.cq.testing.junit.rules.CQRule;
 import com.adobe.cq.testing.junit.rules.Page;
 
-import com.google.gson.Gson;
-
 import org.apache.sling.testing.clients.ClientException;
 import org.apache.sling.testing.clients.SlingHttpResponse;
-import org.junit.*;
+import org.codehaus.jackson.map.ObjectMapper;
+import org.junit.Assert;
+import org.junit.BeforeClass;
+import org.junit.ClassRule;
+import org.junit.Rule;
+import org.junit.Test;
 
+import java.io.IOException;
 import java.util.Arrays;
-import java.util.List;
 
 public class GetTogglesIT {
 
     @ClassRule
     public static CQAuthorPublishClassRule cqBaseClassRule = new CQAuthorPublishClassRule();
-
-    @Rule
-    public CQRule cqBaseRule = new CQRule(cqBaseClassRule.authorRule, cqBaseClassRule.publishRule);
-
-    @Rule
-    public Page root = new Page(cqBaseClassRule.authorRule);
-
     static CQClient adminAuthor;
     static CQClient adminPublish;
+    @Rule
+    public CQRule cqBaseRule = new CQRule(cqBaseClassRule.authorRule, cqBaseClassRule.publishRule);
+    @Rule
+    public Page root = new Page(cqBaseClassRule.authorRule);
 
     @BeforeClass
     public static void beforeClass() {
@@ -50,15 +50,11 @@ public class GetTogglesIT {
         adminPublish = cqBaseClassRule.publishRule.getAdminClient(CQClient.class);
     }
 
-    public final class ToggleResponse {
-        public String[] enabled;
-    }
-
     /**
      * Verifies if the "ENABLED" flag is always enabled on Author Instance
      */
     @Test
-    public void testTogglesEndpointReturnsStaticEnabledFlagInJsonResponseOnAuthor() throws ClientException {
+    public void testTogglesEndpointReturnsStaticEnabledFlagInJsonResponseOnAuthor() throws ClientException, IOException {
         sharedTestResponseAlwaysContainsEnabledFlag(adminAuthor);
     }
 
@@ -66,13 +62,19 @@ public class GetTogglesIT {
      * Verifies if the "ENABLED" flag is always enabled on Publish Instance
      */
     @Test
-    public void testTogglesEndpointReturnsStaticEnabledFlagInJsonResponseOnPublish() throws ClientException {
+    public void testTogglesEndpointReturnsStaticEnabledFlagInJsonResponseOnPublish() throws ClientException, IOException {
         sharedTestResponseAlwaysContainsEnabledFlag(adminPublish);
     }
 
-    private void sharedTestResponseAlwaysContainsEnabledFlag(CQClient cqClient) throws ClientException {
+    private void sharedTestResponseAlwaysContainsEnabledFlag(CQClient cqClient) throws ClientException, IOException {
+        ObjectMapper mapper = new ObjectMapper();
         SlingHttpResponse response = cqClient.doGet("etc.clientlibs/toggles.json", 200);
-        ToggleResponse tr = new Gson().fromJson(response.getContent(), ToggleResponse.class);
+        ToggleResponse tr = mapper.readValue(response.getContent(), ToggleResponse.class);
         Assert.assertTrue(Arrays.asList(tr.enabled).contains("ENABLED"));
+    }
+
+    public final class ToggleResponse {
+
+        public String[] enabled;
     }
 }
