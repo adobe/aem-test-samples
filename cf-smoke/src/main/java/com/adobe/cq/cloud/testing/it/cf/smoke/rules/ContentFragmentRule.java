@@ -17,13 +17,19 @@
 package com.adobe.cq.cloud.testing.it.cf.smoke.rules;
 
 import com.adobe.cq.testing.client.CQClient;
+import org.apache.commons.lang3.RandomStringUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.sling.testing.clients.ClientException;
+import org.apache.sling.testing.clients.SlingHttpResponse;
 import org.apache.sling.testing.clients.util.FormEntityBuilder;
 import org.apache.sling.testing.junit.rules.instance.Instance;
 import org.junit.rules.ExternalResource;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class ContentFragmentRule extends ExternalResource {
+
+    private static final Logger LOG = LoggerFactory.getLogger(ContentFragmentRule.class);
 
     private Instance instance;
     private CQClient client;
@@ -145,12 +151,62 @@ public class ContentFragmentRule extends ExternalResource {
         client.doPost(path + ".cfm.edit.json", applyEdit.build(), null, 200);
     }
 
-    public String createContentFragment() {
+    public String createContentFragment(String parentPath, String templatePath, String title, String name, String description) throws ClientException {
+
+        if(parentPath == null || parentPath.equals("")) {
+            LOG.error("Could not create Content Fragment due to invalid parent path.");
+            throw new ClientException("Invalid parent path for Content Fragment creation.");
+        }
+
+        if(templatePath == null || templatePath.equals("")) {
+            LOG.error("Could not create Content Fragment due to invalid template path");
+            throw new ClientException("Invalid template path for Content Fragment creation.");
+        }
+
+        if(name == null || name.equals("")) {
+            name = "content-fragment-" + RandomStringUtils.random(15);
+        }
+
+        if(title == null || title.equals("")) {
+            title = name;
+        }
+
+        if(description == null) {
+            description = "";
+        }
+
         FormEntityBuilder createParams = FormEntityBuilder.create();
+        createParams.addParameter("_charset_", "UTF-8");
+        createParams.addParameter("parentPath", parentPath);
+        createParams.addParameter("template", templatePath);
+        createParams.addParameter("template@Delete", "");
+        createParams.addParameter("./jcr:title", title);
+        createParams.addParameter("description", description);
+        createParams.addParameter("tags@TypeHint", "String[]");
+        createParams.addParameter("tags@Delete", "");
+        createParams.addParameter("name", name);
 
+        SlingHttpResponse response = client.doPost("/libs/dam/cfm/admin/content/v2/createfragment/submit/_jcr_content.html", createParams.build(), null, 201);
 
+        return extractContentFragmentPathFromResponse(response.getContent());
+    }
 
-        return "";
+    /**
+     *  Extracts a content fragment path from a Granite UI HTML path.
+     *
+     * @param response - the HTML response we got from creating a content fragment
+     * @return - the path of the content fragment.
+     */
+    private String extractContentFragmentPathFromResponse(String response) {
+        // find the index of "Content fragment created successfully at"
+        String stringToFind = "Content fragment created successfully at";
+        int startIndex = response.indexOf("Content fragment created successfully at ");
+
+        startIndex = startIndex + stringToFind.length();
+        String substring = response.substring(startIndex);
+
+        int lastIndex = substring.indexOf("</dd>");
+        return substring.substring(0, lastIndex);
     }
 
 }
