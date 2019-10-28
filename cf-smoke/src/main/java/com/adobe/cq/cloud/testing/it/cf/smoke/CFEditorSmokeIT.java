@@ -84,17 +84,31 @@ public class CFEditorSmokeIT {
     }
 
     @Test
-    public void testOpenModelEditor() throws ClientException {
+    public void testOpenModelEditor() throws ClientException, TimeoutException, InterruptedException {
         LOGGER.info("Testing Content Fragment Model Editor..");
         CQClient client = cqBaseClassRule.authorRule.getAdminClient(CQClient.class);
+
+        new Polling(new Callable<Boolean>() {
+            @Override
+            public Boolean call() throws Exception {
+                return client.exists(TEST_CONTENT_FRAGMENT_MODEL_PATH);
+            }
+        }).poll(TIMEOUT, RETRY_DELAY);
 
         client.doGet("/mnt/overlay/dam/cfm/models/editor/content/editor.html/" + TEST_CONTENT_FRAGMENT_MODEL_PATH, 200);
     }
 
     @Test
-    public void testOpenMetadataEditor() throws ClientException {
+    public void testOpenMetadataEditor() throws ClientException, TimeoutException, InterruptedException {
         LOGGER.info("Testing Open Content Fragment Editor Metadata..");
         CQClient client = cqBaseClassRule.authorRule.getAdminClient(CQClient.class);
+
+        new Polling(new Callable<Boolean>() {
+            @Override
+            public Boolean call() throws Exception {
+                return client.exists(TEST_CONTENT_FRAGMENT_PATH);
+            }
+        }).poll(TIMEOUT, RETRY_DELAY);
 
         client.doGet("/mnt/overlay/dam/cfm/admin/content/v2/metadata-editor.html" + TEST_CONTENT_FRAGMENT_PATH, 200);
     }
