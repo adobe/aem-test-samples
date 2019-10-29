@@ -22,7 +22,6 @@ import com.adobe.cq.cloud.testing.it.cf.smoke.rules.InstallPackageRule;
 import com.adobe.cq.testing.client.CQClient;
 import com.adobe.cq.testing.junit.rules.CQAuthorClassRule;
 import com.adobe.cq.testing.junit.rules.CQRule;
-import org.apache.commons.lang3.RandomStringUtils;
 import org.apache.sling.testing.clients.ClientException;
 import org.junit.ClassRule;
 import org.junit.Rule;
@@ -48,10 +47,12 @@ public class CFSmokeIT {
 
     private static final String TEST_CONTENT_FRAGMENT_PATH = "/content/dam/cfm-sanity-test/en/sample-structured";
     private static final String TEST_CONTENT_FRAGMENT_PARENT_PATH = "/content/dam/cfm-sanity-test/en/";
+    private static final String TEST_CONTENT_FRAGMENT_MODEL_PARENT_PATH = "/conf/cfm-sanity-test/settings/dam/cfm/models/";
     private static final String TEST_CONTENT_FRAGMENT_SIMPLE_TEMPLATE = "/conf/cfm-sanity-test/settings/dam/cfm/templates/cfm-sanity-test/jcr:content";
     private static final String TEST_CONTENT_FRAGMENT_COMPLEX_TEMPLATE_PATH = "/conf/cfm-sanity-test/settings/dam/cfm/models/simple-structure";
 
     private static final String TEST_CONTENT_FRAGMENT_DESCRIPTION = "Test Content Fragment used to test the creation of a Content Fragment.";
+    private static final String TEST_VARIATION_DESCRIPTION = "Content Fragment Test Variation.";
 
     // Class rules that install packages
     public static CQAuthorClassRule cqBaseClassRule = new CQAuthorClassRule();
@@ -83,17 +84,38 @@ public class CFSmokeIT {
     }
 
     @Test
-    public void testCreateContentFragmentModel() {
+    public void testCreateContentFragmentModel() throws ClientException, TimeoutException, InterruptedException {
+        LOGGER.info("Test Create Content Fragment Model.");
+        CQClient client = cqBaseClassRule.authorRule.getAdminClient(CQClient.class);
 
+        String contentFragmentModelName = "content-fragment-test-model-" + UUID.randomUUID();
+        String contentFragmentModelDescription = "This is a test content fragment model.";
+
+        String path = contentFragmentRule.createContentFragmentModel(
+                TEST_CONTENT_FRAGMENT_MODEL_PARENT_PATH,
+                contentFragmentModelName,
+                contentFragmentModelDescription
+        );
+        cleanUpRule.addPath(path);
+
+        client.waitExists(path, TIMEOUT, RETRY_DELAY);
+        LOGGER.info("Content Fragment Model was created successfully.");
     }
 
     @Test
-    public void testCreateContentFragmentVariation() {
+    public void testCreateContentFragmentVariation() throws ClientException {
+        LOGGER.info("Test Create Content Fragment Variation.");
 
+        String variationName = "content-fragment-variation-" + UUID.randomUUID();
+
+        // create a content fragment variation inside our test content fragment
+        contentFragmentRule.createVariation(TEST_CONTENT_FRAGMENT_PATH, variationName, TEST_VARIATION_DESCRIPTION);
+
+        LOGGER.info("Content Fragment variation was created successfully.");
     }
 
     private void testCreateContentFragment(String templatePath) throws ClientException, TimeoutException, InterruptedException {
-        CQClient client = cqBaseClassRule.authorRule.getAdminClient(CQClient.class);
+        final CQClient client = cqBaseClassRule.authorRule.getAdminClient(CQClient.class);
 
         String testContentFragmentTitle = "test-content-fragment-title-" + UUID.randomUUID();
         String testContentFragmentName = "test-content-fragment-name-" + UUID.randomUUID();
@@ -106,6 +128,8 @@ public class CFSmokeIT {
                 TEST_CONTENT_FRAGMENT_DESCRIPTION
         );
         cleanUpRule.addPath(path);
+
+        client.waitExists(path, TIMEOUT, RETRY_DELAY);
     }
 
 }
