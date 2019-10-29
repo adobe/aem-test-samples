@@ -17,7 +17,6 @@
 package com.adobe.cq.cloud.testing.it.cf.smoke.rules;
 
 import com.adobe.cq.testing.client.CQClient;
-import org.apache.commons.lang3.RandomStringUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.sling.testing.clients.ClientException;
 import org.apache.sling.testing.clients.SlingHttpResponse;
@@ -26,6 +25,8 @@ import org.apache.sling.testing.junit.rules.instance.Instance;
 import org.junit.rules.ExternalResource;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import java.util.UUID;
 
 public class ContentFragmentRule extends ExternalResource {
 
@@ -164,7 +165,7 @@ public class ContentFragmentRule extends ExternalResource {
         }
 
         if(name == null || name.equals("")) {
-            name = "content-fragment-" + RandomStringUtils.random(15);
+            name = "content-fragment-" + UUID.randomUUID();
         }
 
         if(title == null || title.equals("")) {
@@ -191,22 +192,80 @@ public class ContentFragmentRule extends ExternalResource {
         return extractContentFragmentPathFromResponse(response.getContent());
     }
 
+    public String createContentFragmentModel(String parentPath, String title, String description) throws ClientException {
+
+        if(parentPath == null || parentPath.equals("")) {
+            LOG.error("Could not create Content Fragment Model due to invalid parent path.");
+            throw new ClientException("Invalid parent path for Content Fragment Model creation.");
+        }
+
+        if(title == null || title.equals("")) {
+            title = "content-fragment-model-title-" + UUID.randomUUID();
+        }
+
+        if(description == null) {
+            description = "";
+        }
+
+        FormEntityBuilder createParams = FormEntityBuilder.create();
+        createParams.addParameter("_charset_", "UTF-8");
+        createParams.addParameter(":operation", "cfm:createModel");
+        createParams.addParameter("_parentPath_", parentPath);
+        createParams.addParameter("modelType", "/libs/settings/dam/cfm/model-types/fragment");
+        createParams.addParameter("./jcr:title", title);
+        createParams.addParameter("./jcr:description", description);
+
+        SlingHttpResponse response = client.doPost("/mnt/overlay/dam/cfm/models/console/content/createmodelwizard.html/conf/dam/cfm/models/console/content/createmodelwizard/_jcr_content", createParams.build(), null, 201);
+
+        return extractContentFragmentModelPathFromResponse(response.getContent());
+    }
+
     /**
-     *  Extracts a content fragment path from a Granite UI HTML path.
+     *  Extracts a content fragment path from a Granite UI HTML response.
+     *
+     *  As the response returned from a call to create content fragment is a HTML response, we would have to
+     *  extract the path from that using String manipulations.
      *
      * @param response - the HTML response we got from creating a content fragment
      * @return - the path of the content fragment.
      */
     private String extractContentFragmentPathFromResponse(String response) {
         // find the index of "Content fragment created successfully at"
-        String stringToFind = "Content fragment created successfully at";
-        int startIndex = response.indexOf("Content fragment created successfully at ");
+        String stringToFind = "<dt class='foundation-form-response-path'>";
+        int startIndex = response.indexOf(stringToFind);
 
         startIndex = startIndex + stringToFind.length();
         String substring = response.substring(startIndex);
 
+        int closingTagIndex = substring.indexOf("</dt>");
+        closingTagIndex = closingTagIndex + "</dt>".length() + "<dd>".length() + 1;
+        substring = substring.substring(closingTagIndex);
+
         int lastIndex = substring.indexOf("</dd>");
-        return substring.substring(0, lastIndex);
+        return substring.substring(0, lastIndex).trim();
     }
+
+    /**
+     *  Extracts a content fragment model path from a Granite UI HTML response.
+     *
+     *  As the response returned from a call to create content fragment model is a HTML response, we would have to
+     *  extract the path from that using String manipulations.
+     *
+     * @param response - the HTML response we got from creating a content fragment
+     * @return - the path of the content fragment.
+     */
+    private String extractContentFragmentModelPathFromResponse(String response) {
+
+        String marker = "<td><div id=\"Path\">";
+
+        int startIndex = response.indexOf(marker);
+        startIndex = startIndex + marker.length();
+
+        String substring = response.substring(startIndex);
+
+        int lastIndex = substring.indexOf("</div>");
+        return substring.substring(0, lastIndex).trim();
+    }
+
 
 }
