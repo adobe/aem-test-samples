@@ -23,15 +23,12 @@ import com.adobe.cq.testing.junit.rules.Page;
 import org.apache.sling.testing.clients.ClientException;
 import org.apache.sling.testing.clients.SlingHttpResponse;
 import org.codehaus.jackson.map.ObjectMapper;
-import org.junit.Assert;
-import org.junit.BeforeClass;
-import org.junit.ClassRule;
-import org.junit.Rule;
-import org.junit.Test;
+import org.junit.*;
 
 import java.io.IOException;
 import java.util.Arrays;
 
+@Ignore
 public class GetTogglesIT {
 
     @ClassRule
