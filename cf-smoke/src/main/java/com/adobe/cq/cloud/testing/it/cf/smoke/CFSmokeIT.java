@@ -45,11 +45,11 @@ public class CFSmokeIT {
     private static final String PACKAGE_VERSION = "1.0";
     private static final String PACKAGE_GROUP = "day/cq60/product";
 
-    private static final String TEST_CONTENT_FRAGMENT_PATH = "/content/dam/cfm-sanity-test/en/sample-structured";
-    private static final String TEST_CONTENT_FRAGMENT_PARENT_PATH = "/content/dam/cfm-sanity-test/en/";
-    private static final String TEST_CONTENT_FRAGMENT_MODEL_PARENT_PATH = "/conf/cfm-sanity-test/settings/dam/cfm/models/";
-    private static final String TEST_CONTENT_FRAGMENT_SIMPLE_TEMPLATE = "/conf/cfm-sanity-test/settings/dam/cfm/templates/cfm-sanity-test/jcr:content";
-    private static final String TEST_CONTENT_FRAGMENT_COMPLEX_TEMPLATE_PATH = "/conf/cfm-sanity-test/settings/dam/cfm/models/simple-structure";
+    private static final String TEST_CONTENT_FRAGMENT_PATH = "/content/dam/cf-sanity-test-20191029/en/sample-content-fragment-20191029";
+    private static final String TEST_CONTENT_FRAGMENT_PARENT_PATH = "/content/dam/cf-sanity-test-20191029/en/";
+    private static final String TEST_CONTENT_FRAGMENT_MODEL_PARENT_PATH = "/conf/cf-sanity-test-20191029/settings/dam/cf/models/";
+    private static final String TEST_CONTENT_FRAGMENT_SIMPLE_TEMPLATE = "/conf/cf-sanity-test-20191029/settings/dam/cf/templates/cf-sanity-test-20191029/jcr:content";
+    private static final String TEST_CONTENT_FRAGMENT_COMPLEX_TEMPLATE_PATH = "/conf/cf-sanity-test-20191029/settings/dam/cf/models/simple-structure-20191029";
 
     private static final String TEST_CONTENT_FRAGMENT_DESCRIPTION = "Test Content Fragment used to test the creation of a Content Fragment.";
     private static final String TEST_VARIATION_DESCRIPTION = "Content Fragment Test Variation.";
