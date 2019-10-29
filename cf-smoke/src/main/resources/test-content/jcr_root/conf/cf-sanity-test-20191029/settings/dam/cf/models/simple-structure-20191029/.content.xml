@@ -6,7 +6,7 @@
     <jcr:content
         cq:lastModified="{Date}2017-10-05T18:57:04.469Z"
         cq:lastModifiedBy="admin"
-        cq:scaffolding="/conf/cfm-sanity-test/settings/dam/cfm/models/simple-structure/jcr:content/model"
+        cq:scaffolding="/conf/cf-sanity-test-20191029/settings/dam/cf/models/simple-structure-20191029/jcr:content/model"
         cq:templateType="/libs/settings/dam/cfm/model-types/fragment"
         jcr:description="model for simple structure"
         jcr:primaryType="cq:PageContent"

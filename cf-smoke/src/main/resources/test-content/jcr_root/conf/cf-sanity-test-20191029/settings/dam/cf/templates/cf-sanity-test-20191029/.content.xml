@@ -3,7 +3,7 @@
     jcr:primaryType="cq:Page">
     <jcr:content
         jcr:primaryType="nt:unstructured"
-        jcr:title="Sanity Template Based CFM Test"
+        jcr:title="Sanity Template Based CF Test"
         precreateElements="{Boolean}true"
         version="{Long}1">
         <elements jcr:primaryType="nt:unstructured">
@@ -23,13 +23,6 @@
                 defaultContent="&lt;p>Please enter additional info, like required time, etc.&lt;/p>"
                 name="add-info"/>
         </elements>
-        <metadata jcr:primaryType="nt:unstructured">
-            <tags
-                jcr:primaryType="nt:unstructured"
-                jcr:title="Tags"
-                property="cq:tags"
-                root="/content/cq:tags/cfm-sanity-test"
-                type="tags"/>
-        </metadata>
+        <metadata jcr:primaryType="nt:unstructured" />
     </jcr:content>
 </jcr:root>

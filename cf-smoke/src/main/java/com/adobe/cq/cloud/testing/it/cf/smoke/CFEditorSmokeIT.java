@@ -23,6 +23,7 @@ import com.adobe.cq.testing.junit.rules.CQAuthorClassRule;
 import com.adobe.cq.testing.junit.rules.CQRule;
 import org.apache.sling.testing.clients.ClientException;
 import org.apache.sling.testing.clients.util.poller.Polling;
+import org.junit.AfterClass;
 import org.junit.ClassRule;
 import org.junit.Rule;
 import org.junit.Test;
@@ -45,8 +46,8 @@ public class CFEditorSmokeIT {
     private static final String PACKAGE_VERSION = "1.0";
     private static final String PACKAGE_GROUP = "day/cq60/product";
 
-    private static final String TEST_CONTENT_FRAGMENT_PATH = "/content/dam/cfm-sanity-test/en/sample-structured";
-    private static final String TEST_CONTENT_FRAGMENT_MODEL_PATH = "/conf/cfm-sanity-test/settings/dam/cfm/models/simple-structure";
+    private static final String TEST_CONTENT_FRAGMENT_PATH = "/content/dam/cf-sanity-test-20191029/en/sample-content-fragment-20191029";
+    private static final String TEST_CONTENT_FRAGMENT_MODEL_PATH = "/conf/cf-sanity-test-20191029/settings/dam/cf/models/simple-structure-20191029";
 
     @ClassRule
     public static CQAuthorClassRule cqBaseClassRule = new CQAuthorClassRule();

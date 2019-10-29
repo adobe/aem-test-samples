@@ -4,8 +4,8 @@
     jcr:mixinTypes="[mix:referenceable,mix:versionable]"
     jcr:primaryType="dam:Asset">
     <jcr:content
-        cq:name="sample-structured"
-        cq:parentPath="/content/dam/cfm-sanity-test/en"
+        cq:name="sample-content-fragment-20191029"
+        cq:parentPath="/content/dam/cf-sanity-test-20191029/en"
         jcr:description="A Sample for structured content UI test"
         jcr:lastModified="{Date}2017-10-13T12:43:07.727Z"
         jcr:lastModifiedBy="admin"
@@ -19,7 +19,7 @@
             <sling:members jcr:primaryType="nt:unstructured"/>
         </associated>
         <data
-            cq:model="/conf/cfm-sanity-test/settings/dam/cfm/models/simple-structure"
+            cq:model="/conf/cf-sanity-test-20191029/settings/dam/cf/models/simple-structure-20191029"
             jcr:primaryType="nt:unstructured">
             <master
                 jcr:primaryType="nt:unstructured"
