@@ -28,7 +28,6 @@ import org.junit.*;
 import java.io.IOException;
 import java.util.Arrays;
 
-@Ignore
 public class GetTogglesIT {
 
     @ClassRule
@@ -70,7 +69,7 @@ public class GetTogglesIT {
         Assert.assertTrue(Arrays.asList(tr.enabled).contains("ENABLED"));
     }
 
-    public final class ToggleResponse {
+    public final static class ToggleResponse {
 
         public String[] enabled;
     }
