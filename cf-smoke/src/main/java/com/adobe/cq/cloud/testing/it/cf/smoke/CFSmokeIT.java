@@ -23,6 +23,7 @@ import com.adobe.cq.testing.client.CQClient;
 import com.adobe.cq.testing.junit.rules.CQAuthorClassRule;
 import com.adobe.cq.testing.junit.rules.CQRule;
 import org.apache.sling.testing.clients.ClientException;
+import org.junit.AfterClass;
 import org.junit.ClassRule;
 import org.junit.Rule;
 import org.junit.Test;
@@ -34,6 +35,9 @@ import org.slf4j.LoggerFactory;
 import java.util.UUID;
 import java.util.concurrent.TimeoutException;
 
+/**
+ * A series of tests regarding the  creating of Content Fragment, Content Fragment Models and Content Fragments Variations.
+ */
 public class CFSmokeIT {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(CFSmokeIT.class);
@@ -45,11 +49,13 @@ public class CFSmokeIT {
     private static final String PACKAGE_VERSION = "1.0";
     private static final String PACKAGE_GROUP = "day/cq60/product";
 
+    private static final String TEST_CONTENT_FRAGMENT_FOLDER = "/content/dam/cf-sanity-test-20191029";
+    private static final String TEST_CONTENT_FRAGMENT_CONF_FOLDER = "/conf/cf-sanity-test-20191029";
     private static final String TEST_CONTENT_FRAGMENT_PATH = "/content/dam/cf-sanity-test-20191029/en/sample-content-fragment-20191029";
     private static final String TEST_CONTENT_FRAGMENT_PARENT_PATH = "/content/dam/cf-sanity-test-20191029/en/";
     private static final String TEST_CONTENT_FRAGMENT_MODEL_PARENT_PATH = "/conf/cf-sanity-test-20191029/settings/dam/cf/models/";
-    private static final String TEST_CONTENT_FRAGMENT_SIMPLE_TEMPLATE = "/conf/cf-sanity-test-20191029/settings/dam/cf/templates/cf-sanity-test-20191029/jcr:content";
-    private static final String TEST_CONTENT_FRAGMENT_COMPLEX_TEMPLATE_PATH = "/conf/cf-sanity-test-20191029/settings/dam/cf/models/simple-structure-20191029";
+    private static final String TEST_CONTENT_FRAGMENT_TEMPLATE = "/conf/cf-sanity-test-20191029/settings/dam/cf/templates/cf-sanity-test-20191029/jcr:content";
+    private static final String TEST_CONTENT_FRAGMENT_CUSTOM_MODEL_PATH = "/conf/cf-sanity-test-20191029/settings/dam/cf/models/simple-structure-20191029";
 
     private static final String TEST_CONTENT_FRAGMENT_DESCRIPTION = "Test Content Fragment used to test the creation of a Content Fragment.";
     private static final String TEST_VARIATION_DESCRIPTION = "Content Fragment Test Variation.";
@@ -69,20 +75,61 @@ public class CFSmokeIT {
     @Rule
     public TestRule rules = RuleChain.outerRule(cqRule).around(cleanUpRule).around(contentFragmentRule);
 
+    /**
+     * As we creating content fragments in certain folders, the InstallPackageRule sometimes does not
+     * remove the parent content fragment folder.
+     *
+     * Through this after method, we make sure that the clean up is done properly.
+     */
+    @AfterClass
+    public static void after() {
+        try {
+            CleanUpRule.cleanUp(cqBaseClassRule.authorRule, TEST_CONTENT_FRAGMENT_FOLDER, TIMEOUT, RETRY_DELAY);
+        } catch (Throwable t) {
+        }
+
+        try {
+            CleanUpRule.cleanUp(cqBaseClassRule.authorRule, TEST_CONTENT_FRAGMENT_CONF_FOLDER, TIMEOUT, RETRY_DELAY);
+        } catch (Throwable t) {
+
+        }
+    }
+
+    /**
+     *  Testing to check if the creation of a content fragment with the default template works as intended.
+     *
+     * @throws ClientException - if there is an error while using CQClient
+     * @throws TimeoutException - if a timeout occurs while checking the existence of a content fragment
+     * @throws InterruptedException - if an error occurs while checking the existence of a content fragment
+     */
     @Test
-    public void testCreateContentFragmentWithSimpleModel() throws ClientException, TimeoutException, InterruptedException {
+    public void testCreateContentFragmentWithTemplate() throws ClientException, TimeoutException, InterruptedException {
         LOGGER.info("Test Create Content Fragment with a simple model.");
-        testCreateContentFragment(TEST_CONTENT_FRAGMENT_SIMPLE_TEMPLATE);
+        testCreateContentFragment(TEST_CONTENT_FRAGMENT_TEMPLATE);
         LOGGER.info("Content Fragment was created successfully.");
     }
 
+    /**
+     *  Testing to check if the creation of a content fragment with a custom model works as intended.
+     *
+     * @throws ClientException - if there is an error while using CQClient
+     * @throws TimeoutException - if a timeout occurs while checking the existence of a content fragment
+     * @throws InterruptedException - if an error occurs while checking the existence of a content fragment
+     */
     @Test
-    public void testCreateContentFragmentWithComplexModel() throws ClientException, TimeoutException, InterruptedException {
+    public void testCreateContentFragmentWithCustomModel() throws ClientException, TimeoutException, InterruptedException {
         LOGGER.info("Test Create Content Fragment with a complex model.");
-        testCreateContentFragment(TEST_CONTENT_FRAGMENT_COMPLEX_TEMPLATE_PATH);
+        testCreateContentFragment(TEST_CONTENT_FRAGMENT_CUSTOM_MODEL_PATH);
         LOGGER.info("Content Fragment was created successfully.");
     }
 
+    /**
+     *  Testing to check if the creation of a content fragment model works as intended.
+     *
+     * @throws ClientException - if there is an error while using CQClient
+     * @throws TimeoutException - if a timeout occurs while checking the existence of a content fragment model
+     * @throws InterruptedException - if an error occurs while checking the existence of a content fragment model
+     */
     @Test
     public void testCreateContentFragmentModel() throws ClientException, TimeoutException, InterruptedException {
         LOGGER.info("Test Create Content Fragment Model.");
@@ -102,6 +149,11 @@ public class CFSmokeIT {
         LOGGER.info("Content Fragment Model was created successfully.");
     }
 
+    /**
+     *  Given a Content Fragment, create a variation with a random name.
+     *
+     * @throws ClientException - if there is an error while using CQClient
+     */
     @Test
     public void testCreateContentFragmentVariation() throws ClientException {
         LOGGER.info("Test Create Content Fragment Variation.");
@@ -114,6 +166,16 @@ public class CFSmokeIT {
         LOGGER.info("Content Fragment variation was created successfully.");
     }
 
+    /**
+     *  Helper method for creating a content fragment with either a template or a custom model.
+     *  It creates a Content Fragment with a random title and name, under the path defined
+     *  by TEST_CONTENT_FRAGMENT_PARENT_PATH.
+     *
+     * @param templatePath - the path to the default template or the custom Content Fragment Model
+     * @throws ClientException - if there is an error with the CQClient
+     * @throws TimeoutException - if a timeout is reached while checking the existence of a Content Fragment
+     * @throws InterruptedException - if an interruption occurs while checking the existence of a Content Fragment
+     */
     private void testCreateContentFragment(String templatePath) throws ClientException, TimeoutException, InterruptedException {
         final CQClient client = cqBaseClassRule.authorRule.getAdminClient(CQClient.class);
 

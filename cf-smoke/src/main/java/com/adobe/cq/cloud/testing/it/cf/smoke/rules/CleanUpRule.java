@@ -16,14 +16,22 @@
 
 package com.adobe.cq.cloud.testing.it.cf.smoke.rules;
 
+import com.adobe.cq.testing.client.CQClient;
 import org.apache.sling.testing.clients.util.poller.Polling;
 import org.apache.sling.testing.junit.rules.instance.Instance;
 import org.junit.rules.ExternalResource;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.Callable;
+import java.util.concurrent.TimeoutException;
 
 public class CleanUpRule extends ExternalResource {
+
+    private static final Logger LOG = LoggerFactory.getLogger(CleanUpRule.class);
+
     public ThreadLocal<List<String>> toDelete = ThreadLocal.withInitial(() -> new ArrayList<>(15));
     private final Instance rule;
     private final long timeout;
@@ -60,6 +68,25 @@ public class CleanUpRule extends ExternalResource {
             } catch (Throwable t) {
             }
         });
+    }
+
+    /**
+     * Generic helper method to clean up remaining folders.
+     *
+     * @param rule - the instance rules to be used for CQClients
+     * @param path - the path desired to be discarded
+     * @param timeout - the timeout for the delete path request
+     * @param delay - the delay at which to call the delete path request
+     */
+    public static void cleanUp(Instance rule, String path, long timeout, long delay) throws TimeoutException, InterruptedException {
+        new Polling(new Callable<Boolean>() {
+            @Override
+            public Boolean call() throws Exception {
+                LOG.debug("Specifically cleaning up the path: " + path);
+                rule.getAdminClient(CQClient.class).deletePath(path);
+                return rule.getAdminClient(CQClient.class).exists(path);
+            }
+        }).poll(timeout, delay);
     }
 }
 

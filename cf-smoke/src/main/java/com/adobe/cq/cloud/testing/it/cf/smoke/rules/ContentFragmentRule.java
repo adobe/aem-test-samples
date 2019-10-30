@@ -17,7 +17,6 @@
 package com.adobe.cq.cloud.testing.it.cf.smoke.rules;
 
 import com.adobe.cq.testing.client.CQClient;
-import org.apache.commons.lang3.StringUtils;
 import org.apache.sling.testing.clients.ClientException;
 import org.apache.sling.testing.clients.SlingHttpResponse;
 import org.apache.sling.testing.clients.util.FormEntityBuilder;
@@ -28,6 +27,9 @@ import org.slf4j.LoggerFactory;
 
 import java.util.UUID;
 
+/**
+ * A series of Content Fragment helper methods encapsulated in an External Resource Rule.
+ */
 public class ContentFragmentRule extends ExternalResource {
 
     private static final Logger LOG = LoggerFactory.getLogger(ContentFragmentRule.class);
@@ -44,59 +46,14 @@ public class ContentFragmentRule extends ExternalResource {
         client = instance.getAdminClient(CQClient.class);
     }
 
-    @Override
-    protected void after() {
-
-    }
-
-
-    public void updateContentFragmentContent(String path,
-                                             String value, String element,
-                                             String variation,
-                                             boolean newVersion)
-            throws ClientException {
-
-        // prepare new parameters for the update post
-        FormEntityBuilder requestUpdate = FormEntityBuilder
-                .create()
-                .addParameter("_charset_", "utf-8")
-                .addParameter("contentType", "text/html")
-                .addParameter("newVersion", Boolean.toString(newVersion))
-                .addParameter("element", element)
-                .addParameter("content", value);
-
-        if (StringUtils.isNotBlank(variation)) {
-            requestUpdate.addParameter("variation", variation);
-        }
-
-        // post to add content fragment asset to the content fragment paragraph
-        client.doPost(path + ".cfm.content.json", requestUpdate.build(), null, 200);
-    }
-
-    public void updateStructuredContentFragmentContent(String path,
-                                                       String value, String element,
-                                                       String variation,
-                                                       boolean newVersion,
-                                                       String contentType)
-            throws ClientException {
-
-        // prepare new parameters for the update post
-        FormEntityBuilder requestUpdate = FormEntityBuilder
-                .create()
-                .addParameter(":type", "multiple")
-                .addParameter("_charset_", "utf-8")
-                .addParameter(":newVersion", Boolean.toString(newVersion))
-                .addParameter(element, value)
-                .addParameter(element + "@ContentType", contentType);
-
-        if (StringUtils.isNotBlank(variation)) {
-            requestUpdate.addParameter(":variation", variation);
-        }
-
-        // post to add content fragment asset to the content fragment paragraph
-        client.doPost(path + ".cfm.content.json", requestUpdate.build(), null, 200);
-    }
-
+    /**
+     * Given a Content Fragment Path, create a variation on that Content Fragment.
+     *
+     * @param path - the content fragment path to create the variation to
+     * @param variation - the name of the variation to be created
+     * @param description - the description attached to the variation
+     * @throws ClientException - if the operation to create a variation fails
+     */
     public void createVariation(String path, String variation, String description) throws ClientException {
         // prepare new parameters for the apply edit post
         FormEntityBuilder applyEdit = FormEntityBuilder
@@ -111,17 +68,13 @@ public class ContentFragmentRule extends ExternalResource {
         client.doPost(path + ".cfm.content.json", applyEdit.build(), null, 200);
     }
 
-    public void removeVariation(String path, String variation) throws ClientException {
-        // prepare new parameters for the apply edit post
-        FormEntityBuilder applyEdit = FormEntityBuilder
-                .create()
-                .addParameter(":operation", "remove")
-                .addParameter("variation", variation);
-
-        // post to apply edit
-        client.doPost(path + ".cfm.content.json", applyEdit.build(), null, 200);
-    }
-
+    /**
+     * Given a Content Fragment Path, start the editing session by doing
+     * a HTTP POST request to a Content Fragment Servlet.
+     *
+     * @param path - the path of the Content Fragment that starts the edit
+     * @throws ClientException - if the HTTP POST fails
+     */
     public void startEdit(String path) throws ClientException {
         // prepare new parameters for the apply edit post
         FormEntityBuilder applyEdit = FormEntityBuilder
@@ -132,16 +85,17 @@ public class ContentFragmentRule extends ExternalResource {
         client.doPost(path + ".cfm.edit.json", applyEdit.build(), null, 200);
     }
 
-    public void applyEdit(String path) throws ClientException {
-        // prepare new parameters for the apply edit post
-        FormEntityBuilder applyEdit = FormEntityBuilder
-                .create()
-                .addParameter(":operation", "apply");
-
-        // post to apply edit
-        client.doPost(path + ".cfm.edit.json", applyEdit.build(), null, 200);
-    }
-
+    /**
+     *
+     *  Given the path of a Content Fragment, cancel the ongoing edit session
+     *  that has been started, by sending a HTTP POST request to a Content
+     *  Fragment Servlet.
+     *  It does nothing if there is no active edit session started on the
+     *  Content Fragment.
+     *
+     * @param path - the path of the Content Fragment that should cancel the Edit
+     * @throws ClientException - if the HTTP POST operation fails
+     */
     public void cancelEdit(String path) throws ClientException {
         // prepare new parameters for the apply edit post
         FormEntityBuilder applyEdit = FormEntityBuilder
@@ -152,6 +106,23 @@ public class ContentFragmentRule extends ExternalResource {
         client.doPost(path + ".cfm.edit.json", applyEdit.build(), null, 200);
     }
 
+    /**
+     *  Creates a Content Fragment with the specified parameters. It will
+     *  always require a parent path ( location where to create the Content
+     *  Fragment ) and a model/template path for the Content Fragment ( the
+     *  path of a Content Fragment Model ).
+     *
+     *  It will return the path of the newly created Content Fragment, if
+     *  successful, or throw a Client Exception if it was not.
+     *
+     * @param parentPath - the location where the Content Fragment should be created (required)
+     * @param templatePath - the path of the Content Fragment Model for which this CF is based on (required)
+     * @param title - the title for this Content Fragment. If left null, it will be the same as the "name" property.
+     * @param name - the name for this Content Fragment. If left null, it will be a randomly generated string prefixed with "content-fragment-"
+     * @param description - the description of the Content Fragment. If left null, it will be a blank string.
+     * @return - the path of the newly Created Content Fragment
+     * @throws ClientException - when either parentPath or templatePath are null or invalid or when there was an error with the create request
+     */
     public String createContentFragment(String parentPath, String templatePath, String title, String name, String description) throws ClientException {
 
         if(parentPath == null || parentPath.equals("")) {
@@ -187,11 +158,22 @@ public class ContentFragmentRule extends ExternalResource {
         createParams.addParameter("tags@Delete", "");
         createParams.addParameter("name", name);
 
-        SlingHttpResponse response = client.doPost("/libs/dam/cfm/admin/content/v2/createfragment/submit/_jcr_content.html", createParams.build(), null, 201);
+        SlingHttpResponse response = client.doPost("/libs/dam/cfm/admin/content/v2/createfragment/submit/_jcr_content.html",
+                createParams.build(), null, 201);
 
         return extractContentFragmentPathFromResponse(response.getContent());
     }
 
+    /**
+     * Given a parent location, creates a Content Fragment Model in
+     * that location, with the title and description provided.
+     *
+     * @param parentPath - the location to where to create the Content Fragment Model ( required )
+     * @param title - the title of the Content Fragment Model, if left null or empty string, a random title will be generated.
+     * @param description - the description of the Content Fragment Model, if left null, it will be a blank string
+     * @return - the path to the Content Fragment Model
+     * @throws ClientException - if the parent path is invalid or if there was an issue with the client operation
+     */
     public String createContentFragmentModel(String parentPath, String title, String description) throws ClientException {
 
         if(parentPath == null || parentPath.equals("")) {
