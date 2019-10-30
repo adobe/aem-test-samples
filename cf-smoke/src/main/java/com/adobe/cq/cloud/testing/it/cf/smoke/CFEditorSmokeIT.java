@@ -55,8 +55,7 @@ public class CFEditorSmokeIT {
     private static final String TEST_CONTENT_FRAGMENT_CONF_FOLDER = "/conf/cf-sanity-test-20191029";
     private static final String TEST_CONTENT_FRAGMENT_PATH = "/content/dam/cf-sanity-test-20191029/en/sample-content-fragment-20191029";
     private static final String TEST_CONTENT_FRAGMENT_MODEL_PATH = "/conf/cf-sanity-test-20191029/settings/dam/cf/models/simple-structure-20191029";
-
-    @ClassRule
+    
     public static CQAuthorClassRule cqBaseClassRule = new CQAuthorClassRule();
 
     @Rule
