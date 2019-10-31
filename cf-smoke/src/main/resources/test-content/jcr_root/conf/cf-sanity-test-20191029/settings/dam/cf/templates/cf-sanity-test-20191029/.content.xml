@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<jcr:root xmlns:cq="http://www.day.com/jcr/cq/1.0" xmlns:jcr="http://www.jcp.org/jcr/1.0" xmlns:nt="http://www.jcp.org/jcr/nt/1.0"
+    jcr:primaryType="cq:Page">
+    <jcr:content
+        jcr:primaryType="nt:unstructured"
+        jcr:title="Sanity Template Based CF Test"
+        precreateElements="{Boolean}true"
+        version="{Long}1">
+        <elements jcr:primaryType="nt:unstructured">
+            <main
+                jcr:primaryType="nt:unstructured"
+                jcr:title="Instructions"
+                defaultContent="&lt;p>Please enter step-by-step instructions for this recipe.&lt;/p>"
+                name="main"/>
+            <ingredients
+                jcr:primaryType="nt:unstructured"
+                jcr:title="Ingredients"
+                defaultContent="&lt;p>Please enter the required ingredients.&lt;/p>"
+                name="ingredients"/>
+            <additional-info
+                jcr:primaryType="nt:unstructured"
+                jcr:title="Additional Information"
+                defaultContent="&lt;p>Please enter additional info, like required time, etc.&lt;/p>"
+                name="add-info"/>
+        </elements>
+        <metadata jcr:primaryType="nt:unstructured" />
+    </jcr:content>
+</jcr:root>

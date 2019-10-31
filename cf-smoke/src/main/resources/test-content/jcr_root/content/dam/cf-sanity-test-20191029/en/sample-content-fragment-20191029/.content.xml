@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<jcr:root xmlns:sling="http://sling.apache.org/jcr/sling/1.0" xmlns:dam="http://www.day.com/dam/1.0" xmlns:cq="http://www.day.com/jcr/cq/1.0" xmlns:jcr="http://www.jcp.org/jcr/1.0" xmlns:mix="http://www.jcp.org/jcr/mix/1.0" xmlns:nt="http://www.jcp.org/jcr/nt/1.0"
+    jcr:isCheckedOut="{Boolean}true"
+    jcr:mixinTypes="[mix:referenceable,mix:versionable]"
+    jcr:primaryType="dam:Asset">
+    <jcr:content
+        cq:name="sample-content-fragment-20191029"
+        cq:parentPath="/content/dam/cf-sanity-test-20191029/en"
+        jcr:description="A Sample for structured content UI test"
+        jcr:lastModified="{Date}2017-10-13T12:43:07.727Z"
+        jcr:lastModifiedBy="admin"
+        jcr:primaryType="dam:AssetContent"
+        jcr:title="Sample Structured"
+        contentFragment="{Boolean}true"
+        lastFragmentSave="{Date}2017-10-13T12:43:07.727Z">
+        <associated
+            jcr:primaryType="nt:unstructured"
+            sling:resourceType="sling/collection">
+            <sling:members jcr:primaryType="nt:unstructured"/>
+        </associated>
+        <data
+            cq:model="/conf/cf-sanity-test-20191029/settings/dam/cf/models/simple-structure-20191029"
+            jcr:primaryType="nt:unstructured">
+            <master
+                jcr:primaryType="nt:unstructured"
+                description="&lt;p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Aliquam commodo mauris at porta finibus. In lobortis urna pharetra ante tincidunt mattis. Quisque velit dolor, lobortis nec imperdiet non, pretium quis arcu. Aliquam malesuada, urna a placerat dignissim, est lacus dapibus nunc, non efficitur erat enim et libero. Aliquam eleifend molestie magna, at efficitur mauris blandit ac. Sed rutrum felis quis augue efficitur scelerisque vel vitae est. Vivamus et lectus laoreet, ornare ex ornare, tristique erat. Sed diam odio, facilisis eget dictum id, finibus non erat. Nullam posuere condimentum massa, a accumsan diam luctus ac. Fusce diam elit, porttitor quis euismod nec, lacinia id diam. Phasellus ac dolor orci. Aenean magna nisl, pretium vitae purus eu, rhoncus lobortis nunc. Etiam gravida erat nec turpis pharetra imperdiet. In id pretium orci. Aliquam libero velit, semper at semper eu, vehicula eget arcu.&lt;/p>&#xa;&lt;p>Fusce facilisis mattis laoreet. In consequat nunc vitae pharetra cursus. Nam feugiat luctus nulla eu pulvinar. Morbi varius enim at libero auctor varius et vitae risus. Morbi convallis leo sit amet sapien mattis fermentum. Vivamus hendrerit mauris ac mi venenatis, eu posuere lectus suscipit. Pellentesque habitant morbi tristique senectus et netus et malesuada fames ac turpis egestas. Nam nec ante nec dolor eleifend egestas et eget nibh. Cras hendrerit justo at quam lobortis finibus. Morbi vestibulum consequat lacinia.&lt;/p>&#xa;&lt;p>Etiam euismod id dolor ac tincidunt. Sed non lacus facilisis, elementum sapien nec, vehicula lectus. Cras congue urna et lacus feugiat feugiat. Nulla ultrices pellentesque elit auctor placerat. Cras ac sapien et sem dictum mattis. Vestibulum sit amet lobortis libero, eu finibus sem. Mauris mauris turpis, sagittis a eros non, dignissim ornare dolor.&lt;/p>&#xa;"
+                description_x0040_ContentType="text/html"
+                eventDate="{Date}2017-10-01T14:43:00.000+02:00"
+                title="Sample"/>
+        </data>
+        <metadata
+            jcr:mixinTypes="[cq:Taggable]"
+            jcr:primaryType="nt:unstructured"/>
+        <related jcr:primaryType="nt:unstructured"/>
+    </jcr:content>
+</jcr:root>

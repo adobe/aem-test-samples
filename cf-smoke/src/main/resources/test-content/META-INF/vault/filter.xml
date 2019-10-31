@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<workspaceFilter version="1.0">
+    <filter root="/content/dam/cf-sanity-test-20191029/en"/>
+    <filter root="/conf/cf-sanity-test-20191029/settings/dam/cf"/>
+</workspaceFilter>
