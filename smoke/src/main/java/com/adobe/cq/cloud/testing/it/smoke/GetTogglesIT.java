@@ -24,9 +24,16 @@ import org.apache.sling.testing.clients.ClientException;
 import org.apache.sling.testing.clients.SlingHttpResponse;
 import org.codehaus.jackson.map.ObjectMapper;
 import org.junit.*;
+import org.w3c.dom.Document;
+import org.xml.sax.InputSource;
+import org.xml.sax.SAXException;
 
 import java.io.IOException;
+import java.io.StringReader;
 import java.util.Arrays;
+
+import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.parsers.ParserConfigurationException;
 
 public class GetTogglesIT {
 
@@ -60,6 +67,22 @@ public class GetTogglesIT {
     @Test
     public void testTogglesEndpointReturnsStaticEnabledFlagInJsonResponseOnPublish() throws ClientException, IOException {
         sharedTestResponseAlwaysContainsEnabledFlag(adminPublish);
+    }
+
+    /**
+     * Validate format of AEM version containing state qualifier using six digits
+     */
+    @Test
+    public void testAboutPageVersionFormatWithToggleQualifier() throws ClientException, IOException, SAXException, ParserConfigurationException {
+        SlingHttpResponse response = adminAuthor.doGet("mnt/overlay/granite/ui/content/shell/about.html", 200);
+        final String regex = "^Adobe Experience Manager [\\d]{4}.[\\d]{2}.[\\d]+.[\\d]{8}T[\\d]{6}Z-[\\d]{6}$";
+
+        Document doc = DocumentBuilderFactory.newInstance()
+            .newDocumentBuilder()
+            .parse(new InputSource(new StringReader(response.getContent())));
+
+        String aemVersionLine = doc.getElementsByTagName("p").item(0).getTextContent().trim();
+        Assert.assertTrue(aemVersionLine.matches(regex));
     }
 
     private void sharedTestResponseAlwaysContainsEnabledFlag(CQClient cqClient) throws ClientException, IOException {
