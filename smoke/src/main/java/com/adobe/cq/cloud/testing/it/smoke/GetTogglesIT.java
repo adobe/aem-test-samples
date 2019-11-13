@@ -25,6 +25,7 @@ import org.apache.sling.testing.clients.SlingHttpResponse;
 import org.codehaus.jackson.map.ObjectMapper;
 import org.junit.*;
 import org.w3c.dom.Document;
+import org.w3c.dom.NodeList;
 import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
 
@@ -77,12 +78,22 @@ public class GetTogglesIT {
         SlingHttpResponse response = adminAuthor.doGet("mnt/overlay/granite/ui/content/shell/about.html", 200);
         final String regex = "^Adobe Experience Manager [\\d]{4}.[\\d]{2}.[\\d]+.[\\d]{8}T[\\d]{6}Z-[\\d]{6}$";
 
-        Document doc = DocumentBuilderFactory.newInstance()
+      String content = response.getContent();
+      Document doc = DocumentBuilderFactory.newInstance()
             .newDocumentBuilder()
-            .parse(new InputSource(new StringReader(response.getContent())));
+            .parse(new InputSource(new StringReader(content)));
 
-        String aemVersionLine = doc.getElementsByTagName("p").item(0).getTextContent().trim();
-        Assert.assertTrue(aemVersionLine.matches(regex));
+      NodeList nodeList = doc.getElementsByTagName("p");
+      boolean match = false;
+
+      for (int i = 0; i < nodeList.getLength(); i++) {
+        String paragraphText = nodeList.item(i).getTextContent().trim();
+        if (paragraphText.matches(regex)) {
+          match = true;
+          break;
+        }
+      }
+      Assert.assertTrue("version regex not matching content in about page \n" + content, match);
     }
 
     private void sharedTestResponseAlwaysContainsEnabledFlag(CQClient cqClient) throws ClientException, IOException {
