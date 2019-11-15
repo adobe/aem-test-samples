@@ -24,9 +24,19 @@ import org.apache.sling.testing.clients.ClientException;
 import org.apache.sling.testing.clients.SlingHttpResponse;
 import org.codehaus.jackson.map.ObjectMapper;
 import org.junit.*;
+import org.w3c.dom.Document;
+import org.w3c.dom.Element;
+import org.w3c.dom.Node;
+import org.w3c.dom.NodeList;
+import org.xml.sax.InputSource;
+import org.xml.sax.SAXException;
 
 import java.io.IOException;
+import java.io.StringReader;
 import java.util.Arrays;
+
+import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.parsers.ParserConfigurationException;
 
 public class GetTogglesIT {
 
@@ -60,6 +70,46 @@ public class GetTogglesIT {
     @Test
     public void testTogglesEndpointReturnsStaticEnabledFlagInJsonResponseOnPublish() throws ClientException, IOException {
         sharedTestResponseAlwaysContainsEnabledFlag(adminPublish);
+    }
+
+    /**
+     * Validate format of AEM version containing state qualifier using six digits
+     */
+    @Test
+    public void testAboutPageVersionFormatWithToggleQualifier() throws ClientException, IOException, SAXException, ParserConfigurationException {
+        SlingHttpResponse response = adminAuthor.doGet("mnt/overlay/granite/ui/content/shell/about.html", 200);
+        final String regex = "^Adobe Experience Manager [\\d]{4}.[\\d]{2}.[\\d]+.[\\d]{8}T[\\d]{6}Z-[\\d]{6}$";
+
+        String content = response.getContent();
+        Document doc = DocumentBuilderFactory.newInstance()
+            .newDocumentBuilder()
+            .parse(new InputSource(new StringReader(content)));
+
+        Element parentElement = doc.getDocumentElement();
+        boolean matchFound = checkElementMatchesRegex(regex, parentElement);
+
+        Assert.assertTrue("version regex " + regex + " not matching content in about page \n" + content, matchFound);
+    }
+
+    private boolean checkElementMatchesRegex(String regex, Node parentElement) {
+        boolean match = false;
+        if (parentElement.hasChildNodes()) {
+            NodeList childNodes = parentElement.getChildNodes();
+            for (int i = 0; i < childNodes.getLength(); i++) {
+                Node item = childNodes.item(i);
+                String elementText = item.getTextContent().trim();
+                if (elementText.matches(regex)) {
+                    match = true;
+                    break;
+                } else {
+                    match = match || checkElementMatchesRegex(regex, item);
+                    if (match) {
+                        break;
+                    }
+                }
+            }
+        }
+        return match;
     }
 
     private void sharedTestResponseAlwaysContainsEnabledFlag(CQClient cqClient) throws ClientException, IOException {
