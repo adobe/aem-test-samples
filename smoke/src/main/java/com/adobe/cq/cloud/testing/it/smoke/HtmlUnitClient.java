@@ -23,12 +23,14 @@ import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.sling.testing.clients.ClientException;
 import org.apache.sling.testing.clients.SlingClientConfig;
 
+import javax.annotation.Nonnull;
 import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -41,7 +43,10 @@ import com.gargoylesoftware.htmlunit.WebRequest;
 import com.gargoylesoftware.htmlunit.WebResponse;
 import com.gargoylesoftware.htmlunit.html.DomNode;
 import com.gargoylesoftware.htmlunit.html.HtmlPage;
+import org.junit.Assert;
 import org.w3c.dom.Node;
+
+import static org.junit.Assert.fail;
 
 /**
  * AEM client that maintains a WebClient instance from HttpUnit framework
@@ -119,10 +124,9 @@ public class HtmlUnitClient extends CQClient {
         URI baseUri = new URI(page.getBaseURI());
         List<URI> result = new ArrayList<>();
         for (DomNode child : page.getElementsByTagName(tag)) {
-            Node src = child.getAttributes().getNamedItem(refAttr);
-            if (src != null) {
-                String href = src.getNodeValue();
-                URI uri = baseUri.resolve(href);
+            URI uriRef = extractRef(child, refAttr);
+            if (uriRef != null) {
+                URI uri = baseUri.resolve(uriRef);
                 result.add(uri);
             }
         }
@@ -162,6 +166,24 @@ public class HtmlUnitClient extends CQClient {
             }
         } catch (IOException e) {
             throw new ClientException("Unable to login to server: [" + loginUrl + "]", e);
+        }
+    }
+
+    private static URI extractRef(DomNode node, String refAttr) {
+        Node src = node.getAttributes().getNamedItem(refAttr);
+        if (src == null) {
+            return null;
+        } else {
+            try {
+                String href = src.getNodeValue();
+                return new URI(href);
+            } catch (URISyntaxException e) {
+                fail("Invalid URI value in [" + refAttr + "] attribute in: [" + node + "].\n" +
+                        "   Page URL:  [" + node.getPage().getUrl() + "]\n" +
+                        "   XPath:     [" + node.getCanonicalXPath() + "]\n" +
+                        "   Caused by: [" + e.getMessage() + "]");
+                throw new AssertionError(); // must never happen
+            }
         }
     }
 
