@@ -23,14 +23,12 @@ import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.sling.testing.clients.ClientException;
 import org.apache.sling.testing.clients.SlingClientConfig;
 
-import javax.annotation.Nonnull;
 import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -43,7 +41,6 @@ import com.gargoylesoftware.htmlunit.WebRequest;
 import com.gargoylesoftware.htmlunit.WebResponse;
 import com.gargoylesoftware.htmlunit.html.DomNode;
 import com.gargoylesoftware.htmlunit.html.HtmlPage;
-import org.junit.Assert;
 import org.w3c.dom.Node;
 
 import static org.junit.Assert.fail;
@@ -124,7 +121,7 @@ public class HtmlUnitClient extends CQClient {
         URI baseUri = new URI(page.getBaseURI());
         List<URI> result = new ArrayList<>();
         for (DomNode child : page.getElementsByTagName(tag)) {
-            URI uriRef = extractRef(child, refAttr);
+            URI uriRef = getNamedItemAsUri(child, refAttr);
             if (uriRef != null) {
                 URI uri = baseUri.resolve(uriRef);
                 result.add(uri);
@@ -169,7 +166,15 @@ public class HtmlUnitClient extends CQClient {
         }
     }
 
-    private static URI extractRef(DomNode node, String refAttr) {
+    /**
+     * Extracts URI reference from specified element and converts it to URI
+     * This method will trigger junit assertion if refAttr value cannot be parsed as URI
+     * providing comprehensive error message.
+     * @param node - html element from which to extract reference
+     * @param refAttr - name of the attribute containing corresponding value
+     * @return refAttr value as URI or <code>null</code> if attribute does not exist
+     */
+    private static URI getNamedItemAsUri(DomNode node, String refAttr) {
         Node src = node.getAttributes().getNamedItem(refAttr);
         if (src == null) {
             return null;
