@@ -121,7 +121,7 @@ public class DeepGetPageIT {
         URI baseURI = client.getUrl();
         for (URI ref : client.getResourceRefs(path)) {
             if (isSameOrigin(baseURI, ref)) {
-                SlingHttpResponse response = client.doGet(ref.getPath());
+                SlingHttpResponse response = client.doGet(ref.getRawPath());
                 int statusCode = response.getStatusLine().getStatusCode();
                 assertEquals("Unexpected status returned from [" + ref + "]", 200, statusCode);
             }
