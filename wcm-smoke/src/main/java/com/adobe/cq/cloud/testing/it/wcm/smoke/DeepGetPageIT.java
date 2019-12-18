@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.adobe.cq.cloud.testing.it.smoke;
+package com.adobe.cq.cloud.testing.it.wcm.smoke;
 
 import org.apache.sling.testing.clients.ClientException;
 import org.apache.sling.testing.clients.SlingHttpResponse;
@@ -60,7 +60,7 @@ public class DeepGetPageIT {
         closeQuietly(adminAuthor);
         closeQuietly(adminPublish);
     }
-    
+
     /**
      * Verifies that the homepage exists on author
      */
