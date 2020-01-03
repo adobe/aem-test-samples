@@ -78,7 +78,7 @@ public class GetTogglesIT {
     @Test
     public void testAboutPageVersionFormatWithToggleQualifier() throws ClientException, IOException, SAXException, ParserConfigurationException {
         SlingHttpResponse response = adminAuthor.doGet("mnt/overlay/granite/ui/content/shell/about.html", 200);
-        final String regex = "^Adobe Experience Manager [\\d]{4}.[\\d]{2}.[\\d]+.[\\d]{8}T[\\d]{6}Z-[\\d]{6}$";
+        final String regex = "^Adobe Experience Manager [\\d]{4}.[\\d]{1,2}.[\\d]+.[\\d]{8}T[\\d]{6}Z-[\\d]{6}$";
 
         String content = response.getContent();
         Document doc = DocumentBuilderFactory.newInstance()
