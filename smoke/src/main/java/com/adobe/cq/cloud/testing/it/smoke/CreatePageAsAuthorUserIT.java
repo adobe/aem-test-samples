@@ -53,7 +53,7 @@ public class CreatePageAsAuthorUserIT {
     @Test
     public void testCreatePageAsAuthor() throws ClientException, InterruptedException {
         // Assert page exists for admin
-            Assert.assertTrue(cqBaseClassRule.authorRule.getAdminClient().adaptTo(CQClient.class)
+        Assert.assertTrue(cqBaseClassRule.authorRule.getAdminClient().adaptTo(CQClient.class)
                 .pageExistsWithRetry(pageRule.getPath(), 10000));
         // This shows that it exists for the author user in a different way
         userRule.getClient().getAuthorSitesPage(pageRule.getPath(), 200);
