@@ -20,7 +20,6 @@ import com.adobe.cq.testing.junit.assertion.CQAssert;
 import com.adobe.cq.testing.junit.rules.CQAuthorClassRule;
 import com.adobe.cq.testing.junit.rules.CQRule;
 import com.adobe.cq.testing.junit.rules.Page;
-import org.apache.sling.testing.clients.ClientException;
 import org.junit.BeforeClass;
 import org.junit.ClassRule;
 import org.junit.Rule;
@@ -44,7 +43,7 @@ public class CreatePageAdminIT {
     static CQClient adminAuthor;
 
     @BeforeClass
-    public static void beforeClass() throws ClientException {
+    public static void beforeClass() {
         adminAuthor = cqBaseClassRule.authorRule.getAdminClient(CQClient.class);
     }
 
@@ -52,8 +51,8 @@ public class CreatePageAdminIT {
      * Verifies that the page created by the {{Page}} rule is present
      */
     @Test
-    public void testCreatePage() throws ClientException, InterruptedException {
+    public void testCreatePage() throws InterruptedException {
         // verify that page is present on author
-                CQAssert.assertCQPageExistsWithTimeout(adminAuthor, root.getPath(), TIMEOUT, 500);
+        CQAssert.assertCQPageExistsWithTimeout(adminAuthor, root.getPath(), TIMEOUT, 500);
     }
 }

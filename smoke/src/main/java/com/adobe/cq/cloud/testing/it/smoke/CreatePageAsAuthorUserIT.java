@@ -15,6 +15,7 @@
  */
 package com.adobe.cq.cloud.testing.it.smoke;
 
+import com.adobe.cq.testing.client.CQClient;
 import com.adobe.cq.testing.client.security.CreateUserRule;
 import com.adobe.cq.testing.junit.rules.CQAuthorClassRule;
 import com.adobe.cq.testing.junit.rules.CQRule;
@@ -40,7 +41,7 @@ public class CreatePageAsAuthorUserIT {
 
     public CQRule cqBaseRule = new CQRule(cqBaseClassRule.authorRule);
     public CreateUserRule userRule = new CreateUserRule(cqBaseClassRule.authorRule, CONTENT_AUTHORS_GROUP);
-    public Page pageRule = new Page(userRule);
+    public Page pageRule = new Page(userRule.getClientSupplier());
 
     @Rule
     public TestRule cqRuleChain = RuleChain.outerRule(cqBaseRule).around(userRule).around(pageRule);
@@ -52,10 +53,10 @@ public class CreatePageAsAuthorUserIT {
     @Test
     public void testCreatePageAsAuthor() throws ClientException, InterruptedException {
         // Assert page exists for admin
-        Assert.assertTrue(cqBaseClassRule.authorRule.getAdminClient().exists(pageRule.getPath()));
-        // This shows that it exists for the author user
+            Assert.assertTrue(cqBaseClassRule.authorRule.getAdminClient().adaptTo(CQClient.class)
+                .pageExistsWithRetry(pageRule.getPath(), 10000));
+        // This shows that it exists for the author user in a different way
         userRule.getClient().getAuthorSitesPage(pageRule.getPath(), 200);
     }
-
 
 }
