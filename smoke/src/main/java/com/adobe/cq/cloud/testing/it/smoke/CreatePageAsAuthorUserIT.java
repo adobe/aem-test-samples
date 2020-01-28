@@ -19,6 +19,7 @@ import com.adobe.cq.testing.client.CQClient;
 import com.adobe.cq.testing.client.security.CreateUserRule;
 import com.adobe.cq.testing.junit.rules.CQAuthorClassRule;
 import com.adobe.cq.testing.junit.rules.CQRule;
+import com.adobe.cq.testing.junit.rules.EmptyPage;
 import com.adobe.cq.testing.junit.rules.Page;
 import org.apache.sling.testing.clients.ClientException;
 import org.junit.Assert;
@@ -41,7 +42,7 @@ public class CreatePageAsAuthorUserIT {
 
     public CQRule cqBaseRule = new CQRule(cqBaseClassRule.authorRule);
     public CreateUserRule userRule = new CreateUserRule(cqBaseClassRule.authorRule, CONTENT_AUTHORS_GROUP);
-    public Page pageRule = new Page(userRule.getClientSupplier());
+    public EmptyPage pageRule = new EmptyPage(userRule.getClientSupplier());
 
     @Rule
     public TestRule cqRuleChain = RuleChain.outerRule(cqBaseRule).around(userRule).around(pageRule);
