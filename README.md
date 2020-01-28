@@ -39,3 +39,9 @@ mvn -Peaas-local clean verify \
     ```
     mvn deploy:deploy-file -DgroupId=com.adobe.cq.cloud -DartifactId=com.adobe.cq.cloud.testing.it.smoke -Dversion=0.1.0-<git short version hash> -Dpackaging=jar -Dfile=target/com.adobe.cq.cloud.testing.it.smoke-0.1.0-SNAPSHOT.jar -DrepositoryId=maven-eaas-release -Durl=https://artifactory-uw2.adobeitc.com/artifactory/maven-eaas-release
     ```
+   
+## Notable Examples
+
+* [Creating a page with the admin user](./smoke/src/main/java/com/adobe/cq/cloud/testing/it/smoke/CreatePageAdminIT.java)
+
+* [Creating a page with a transient author user](./smoke/src/main/java/com/adobe/cq/cloud/testing/it/smoke/CreatePageAsAuthorUserIT.java)
