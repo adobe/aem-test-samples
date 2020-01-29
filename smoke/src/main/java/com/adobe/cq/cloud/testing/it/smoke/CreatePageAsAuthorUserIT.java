@@ -15,14 +15,10 @@
  */
 package com.adobe.cq.cloud.testing.it.smoke;
 
-import com.adobe.cq.testing.client.CQClient;
 import com.adobe.cq.testing.client.security.CreateUserRule;
 import com.adobe.cq.testing.junit.rules.CQAuthorClassRule;
 import com.adobe.cq.testing.junit.rules.CQRule;
 import com.adobe.cq.testing.junit.rules.EmptyPage;
-import com.adobe.cq.testing.junit.rules.Page;
-import org.apache.sling.testing.clients.ClientException;
-import org.junit.Assert;
 import org.junit.ClassRule;
 import org.junit.Rule;
 import org.junit.Test;
@@ -34,7 +30,7 @@ import static java.util.concurrent.TimeUnit.MINUTES;
 
 public class CreatePageAsAuthorUserIT {
 
-    private static final long TIMEOUT = MINUTES.toMillis(3);
+    private static final int TIMEOUT = (int) MINUTES.toMillis(2);
     public static final String CONTENT_AUTHORS_GROUP = "content-authors";
 
     @ClassRule
@@ -52,12 +48,9 @@ public class CreatePageAsAuthorUserIT {
      * Verifies that a user belonging to the "Authors" group can create a page
      */
     @Test
-    public void testCreatePageAsAuthor() throws ClientException, InterruptedException {
-        // Assert page exists for admin
-        Assert.assertTrue(cqBaseClassRule.authorRule.getAdminClient().adaptTo(CQClient.class)
-                .pageExistsWithRetry(pageRule.getPath(), 10000));
-        // This shows that it exists for the author user in a different way
-        userRule.getClient().getAuthorSitesPage(pageRule.getPath(), 200);
+    public void testCreatePageAsAuthor() throws InterruptedException {
+        // This shows that it exists for the author user
+        userRule.getClient().pageExistsWithRetry(pageRule.getPath(), TIMEOUT);
     }
 
 }
