@@ -209,11 +209,12 @@
             <artifactId>htmlunit</artifactId>
             <version>2.36.0</version>
         </dependency>
+
         <!-- integration testing -->
         <dependency>
             <groupId>com.adobe.cq</groupId>
-            <artifactId>cq-testing-clients-64</artifactId>
-            <version>0.1.2</version>
+            <artifactId>aem-cloud-testing-clients</artifactId>
+            <version>0.2.1</version>
         </dependency>
 
         <!-- logging -->

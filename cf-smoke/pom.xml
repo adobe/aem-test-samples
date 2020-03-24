@@ -207,8 +207,8 @@
         <!-- integration testing -->
         <dependency>
             <groupId>com.adobe.cq</groupId>
-            <artifactId>cq-testing-clients-65</artifactId>
-            <version>1.0.2</version>
+            <artifactId>aem-cloud-testing-clients</artifactId>
+            <version>0.2.1</version>
         </dependency>
 
         <!-- logging -->
