@@ -19,7 +19,7 @@
 
     <groupId>com.adobe.cq.cloud</groupId>
     <artifactId>com.adobe.cq.cloud.testing.it.smoke</artifactId>
-    <version>0.2.6-SNAPSHOT</version>
+    <version>0.2.6</version>
     <name>CQ Cloud Smoke HTTP Tests</name>
 
     <!-- SVN Settings -->
@@ -27,7 +27,7 @@
         <connection>scm:git:https://github.com/adobe/aem-test-samples.git</connection>
         <developerConnection>scm:git:https://github.com/adobe/aem-test-samples.git</developerConnection>
         <url>https://github.com/adobe/aem-test-samples</url>
-        <tag>HEAD</tag>
+        <tag>com.adobe.cq.cloud.testing.it.smoke-0.2.6</tag>
     </scm>
 
     <properties>
