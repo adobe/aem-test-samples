@@ -46,6 +46,8 @@ public class CreatePageAsAuthorUserIT {
 
     /**
      * Verifies that a user belonging to the "Authors" group can create a page
+     *
+     * @throws InterruptedException if the wait was interrupted
      */
     @Test
     public void testCreatePageAsAuthor() throws InterruptedException {

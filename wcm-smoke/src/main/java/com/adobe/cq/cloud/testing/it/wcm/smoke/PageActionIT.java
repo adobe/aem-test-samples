@@ -35,7 +35,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotEquals;
 
 /**
- *  Tests basic CQ Page modifications on author instance:</br>
+ *  Tests basic CQ Page modifications on author instance:<br>
  * <ul>
  *     <li>Delete</li>
  *     <li>Copy</li>
@@ -67,10 +67,10 @@ public class PageActionIT {
      *     <li>Verifies that the page got deleted using {@link CQClient#exists(String)}</li>
      * </ul>
      *
-     * @throws ClientException
+     * @throws Exception if an error occurred
      */
     @Test
-    public void testDeletePageAsAdmin() throws ClientException, InterruptedException, TimeoutException {
+    public void testDeletePageAsAdmin() throws Exception {
         LOGGER.info("Test to check that a page gets deleted properly.");
         final CQClient client = cqBaseClassRule.authorRule.getAdminClient(CQClient.class);
 
@@ -104,10 +104,10 @@ public class PageActionIT {
      *     <li>Checks if the original page is still intact with {@link CQClient#waitExists(String, long, long)}</li>
      * </ul>
      *
-     * @throws ClientException
+     * @throws Exception if an error occurred
      */
     @Test
-    public void testCopyPageToSameFolderAsAdmin() throws ClientException, TimeoutException, InterruptedException {
+    public void testCopyPageToSameFolderAsAdmin() throws Exception {
         LOGGER.info("Test to check that a page gets copied properly.");
         CQClient client = cqBaseClassRule.authorRule.getAdminClient(CQClient.class);
 
@@ -153,10 +153,10 @@ public class PageActionIT {
      *     <li>Checks if the original page is no longer available with {@link CQAssert#assertCQPageExistsWithTimeout}</li>
      * </ul>
      *
-     * @throws ClientException
+     * @throws Exception if an error occurred
      */
     @Test
-    public void testMovePageToSameFolderAsAdmin() throws ClientException, InterruptedException, TimeoutException {
+    public void testMovePageToSameFolderAsAdmin() throws Exception {
         LOGGER.info("Test to check that a page was moved successfully.");
         CQClient client = cqBaseClassRule.authorRule.getAdminClient(CQClient.class);
 

@@ -66,9 +66,11 @@ public class ReplicationIT {
 
     /**
      * Activates a page as admin, then deactivates it. Verifies that the page gets removed from publish.
+     *
+     * @throws Exception if an error occurred
      */
     @Test
-    public void testActivateAndDeactivate() throws ClientException, InterruptedException, TimeoutException {
+    public void testActivateAndDeactivate() throws Exception {
         rClient.activate(root.getPath());
         checkPage(SC_OK);
 
@@ -78,9 +80,11 @@ public class ReplicationIT {
 
     /**
      * Activates a page as admin, than deletes it. Verifies that deleted page gets removed from publish.
+     *
+     * @throws Exception if an error occurred
      */
     @Test
-    public void testActivateAndDelete() throws ClientException, InterruptedException, TimeoutException {
+    public void testActivateAndDelete() throws Exception {
         rClient.activate(root.getPath());
         checkPage(SC_OK);
 
@@ -90,8 +94,10 @@ public class ReplicationIT {
     
     /**
      * Checks that a GET on the page on publish has the {{expectedStatus}} in the response
+     *
+     * @throws Exception if an error occurred
      */
-    private void checkPage(final int expectedStatus) throws TimeoutException, InterruptedException {
+    private void checkPage(final int expectedStatus) throws Exception {
         final String path = root.getPath() + ".html";
         log.info("Checking page {} returns status {}", adminPublish.getUrl(path), expectedStatus);
         new Polling() {

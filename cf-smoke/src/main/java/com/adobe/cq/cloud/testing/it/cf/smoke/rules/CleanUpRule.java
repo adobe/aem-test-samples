@@ -51,7 +51,7 @@ public class CleanUpRule extends ExternalResource {
 
     /**
      * Mark a path for deletion at the end of the test enclosed statement
-     * @param path
+     * @param path path to be deleted at the end
      */
     public void addPath(String path) {
         toDelete.get().add(path);
@@ -77,6 +77,9 @@ public class CleanUpRule extends ExternalResource {
      * @param path - the path desired to be discarded
      * @param timeout - the timeout for the delete path request
      * @param delay - the delay at which to call the delete path request
+     *
+     * @throws TimeoutException if the cleanup is not successful before timeout
+     * @throws InterruptedException to mark this method as "waiting"
      */
     public static void cleanUp(Instance rule, String path, long timeout, long delay) throws TimeoutException, InterruptedException {
         new Polling(new Callable<Boolean>() {

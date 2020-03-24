@@ -58,6 +58,9 @@ public class GetTogglesIT {
 
     /**
      * Verifies if the "ENABLED" flag is always enabled on Author Instance
+     *
+     * @throws ClientException if an error occurred
+     * @throws IOException if the json response could not be read
      */
     @Test
     public void testTogglesEndpointReturnsStaticEnabledFlagInJsonResponseOnAuthor() throws ClientException, IOException {
@@ -66,6 +69,9 @@ public class GetTogglesIT {
 
     /**
      * Verifies if the "ENABLED" flag is always enabled on Publish Instance
+     *
+     * @throws ClientException if an error occurred
+     * @throws IOException if the json response could not be read
      */
     @Test
     public void testTogglesEndpointReturnsStaticEnabledFlagInJsonResponseOnPublish() throws ClientException, IOException {
@@ -74,9 +80,11 @@ public class GetTogglesIT {
 
     /**
      * Validate format of AEM version containing state qualifier using six digits
+     *
+     * @throws Exception if an error occurred
      */
     @Test
-    public void testAboutPageVersionFormatWithToggleQualifier() throws ClientException, IOException, SAXException, ParserConfigurationException {
+    public void testAboutPageVersionFormatWithToggleQualifier() throws Exception {
         SlingHttpResponse response = adminAuthor.doGet("mnt/overlay/granite/ui/content/shell/about.html", 200);
         final String regex = "^Adobe Experience Manager [\\d]{4}.[\\d]{1,2}.[\\d]+.[\\d]{8}T[\\d]{6}Z-[\\d]{6}$";
 

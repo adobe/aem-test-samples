@@ -44,46 +44,57 @@ public class GetPageIT {
 
     /**
      * Verifies that the homepage exists on author
+     *
+     * @throws Exception if an error occurred
      */
     @Test
-    public void testHomePageAuthor() throws ClientException {
+    public void testHomePageAuthor() throws Exception {
         // verify that page is present on author
         adminAuthor.doGet("/", 200);
     }
 
     /**
      * Verifies that the sites console exists on author
+     *
+     * @throws Exception if an error occurred
      */
     @Test
-    public void testSitesAuthor() throws ClientException {
+    public void testSitesAuthor() throws Exception {
         // verify that page is present on author
         adminAuthor.doGet("/sites.html", 200);
     }
 
     /**
      * Verifies that the assets console exists on author
+     *
+     * @throws Exception if an error occurred
      */
     @Test
-    public void testAssetsAuthor() throws ClientException {
+    public void testAssetsAuthor() throws Exception {
         // verify that page is present on author
         adminAuthor.doGet("/assets.html", 200);
     }
 
     /**
      * Verifies that the projects console exists on author
+     *
+     * @throws Exception if an error occurred
      */
     @Test
-    public void testProjectsAuthor() throws ClientException {
+    public void testProjectsAuthor() throws Exception {
         // verify that page is present on author
         adminAuthor.doGet("/projects.html", 200);
     }
 
     /**
      * Verifies that the homepage exists on publish
+     *
+     * @throws Exception if an error occurred
+     *
      * TODO remove @Ignore once CQ-4265255 and NPR-29209 are fixed
      */
     @Test @Ignore
-    public void testHomePagePublish() throws ClientException {
+    public void testHomePagePublish() throws Exception {
         // verify that page is present on author
         adminPublish.doGet("/", 200);
     }

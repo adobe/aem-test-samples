@@ -42,7 +42,7 @@ public class CleanupRule extends ExternalResource {
 
     /**
      * Mark a path for deletion at the end of the test enclosed statement
-     * @param path
+     * @param path path to be deleted
      */
     public void addPath(String path) {
         toDelete.get().add(path);

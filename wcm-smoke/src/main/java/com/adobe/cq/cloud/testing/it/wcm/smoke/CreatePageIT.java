@@ -50,9 +50,11 @@ public class CreatePageIT {
 
     /**
      * Verifies that the page created by the {{Page}} rule is present
+     *
+     * @throws Exception if an error occurred
      */
     @Test
-    public void testCreatePage() throws ClientException, InterruptedException {
+    public void testCreatePage() throws Exception {
         // verify that page is present on author
         CQAssert.assertCQPageExistsWithTimeout(adminAuthor, root.getPath(), TIMEOUT, 500);
     }

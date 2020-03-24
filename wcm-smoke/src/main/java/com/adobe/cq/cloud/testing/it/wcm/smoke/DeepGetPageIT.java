@@ -63,41 +63,51 @@ public class DeepGetPageIT {
 
     /**
      * Verifies that the homepage exists on author
+     *
+     * @throws Exception if an error occurred
      */
     @Test
-    public void testHomePageAuthor() throws ClientException, IOException, URISyntaxException {
+    public void testHomePageAuthor() throws Exception {
         verifyPageAndResources(adminAuthor, "/");
     }
 
     /**
      * Verifies that the sites console exists on author
+     *
+     * @throws Exception if an error occurred
      */
     @Test
-    public void testSitesAuthor() throws ClientException, IOException, URISyntaxException {
+    public void testSitesAuthor() throws Exception {
         verifyPageAndResources(adminAuthor, "/sites.html");
     }
 
     /**
      * Verifies that the assets console exists on author
+     *
+     * @throws Exception if an error occurred
      */
     @Test
-    public void testAssetsAuthor() throws ClientException, IOException, URISyntaxException {
+    public void testAssetsAuthor() throws Exception {
         verifyPageAndResources(adminAuthor, "/assets.html");
     }
 
     /**
      * Verifies that the projects console exists on author
+     *
+     * @throws Exception if an error occurred
      */
     @Test
-    public void testProjectsAuthor() throws ClientException, IOException, URISyntaxException {
+    public void testProjectsAuthor() throws Exception {
         verifyPageAndResources(adminAuthor, "/projects.html");
     }
 
     /**
      * Verifies that the homepage exists on publish
+     *
+     * @throws Exception if an error occurred
      */
     @Test @Ignore
-    public void testHomePagePublish() throws ClientException, IOException, URISyntaxException {
+    public void testHomePagePublish() throws Exception {
         verifyPageAndResources(adminPublish, "/");
     }
 
@@ -113,9 +123,9 @@ public class DeepGetPageIT {
      * of the page are thus ignored.
      * @param client CQClient instance to use for accessing AEM.
      * @param path path to the tested page.
-     * @throws ClientException
-     * @throws IOException
-     * @throws URISyntaxException
+     * @throws ClientException if the request fails
+     * @throws IOException if the resource references cannot be retrieved
+     * @throws URISyntaxException if the uri cannot be parsed
      */
     private static void verifyPageAndResources(HtmlUnitClient client, String path) throws ClientException, IOException, URISyntaxException {
         URI baseURI = client.getUrl();

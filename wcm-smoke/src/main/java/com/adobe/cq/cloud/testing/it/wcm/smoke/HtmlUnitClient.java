@@ -151,7 +151,7 @@ public class HtmlUnitClient extends CQClient {
     /**
      * Preemptively logins to the server
      * @param webClient web client to use for logging in.
-     * @throws ClientException
+     * @throws ClientException if the request failed
      */
     private void login(WebClient webClient) throws ClientException {
         URL loginUrl = null;

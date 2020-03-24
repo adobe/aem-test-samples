@@ -78,8 +78,10 @@ public class SearchIT {
     /**
      * Utility that uses omnisearch with a pooler to search using a {{searchText}} in a specific {{location}}
      * and checks that the expected {{expectedResult}} is in the response
+     *
+     * @throws Exception if an error occurred
      */
-    private void checkSearchResults(final String searchText, final String location, final String expectedResult) throws TimeoutException, InterruptedException {
+    private void checkSearchResults(final String searchText, final String location, final String expectedResult) throws Exception {
 
         new Polling() {
             @Override
@@ -96,6 +98,8 @@ public class SearchIT {
     /**
      * Verifies that searching for the text inside the page created by the Page rule
      * returns the page containing it
+     *
+     * @throws Exception if an error occurred
      */
     @Test
     public void searchInPages() throws Exception {
@@ -111,6 +115,8 @@ public class SearchIT {
 
     /**
      * Uses omnisearch to search for the page created by the Page rule
+     *
+     * @throws Exception if an error occurred
      */
     @Test
     public void searchSites() throws Exception {
@@ -120,6 +126,8 @@ public class SearchIT {
 
     /**
      * Uses omnisearch to search for a picture uploaded during test setup
+     *
+     * @throws Exception if an error occurred
      */
     @Test
     public void searchUploadedAssets() throws Exception {
@@ -129,6 +137,8 @@ public class SearchIT {
 
     /**
      * Uses omnisearch to search for text inside PDF uploaded during test setup
+     *
+     * @throws Exception if an error occurred
      */
     @Test
     @Ignore("CQ-4274795: Text extraction issue, re-enable when nui asset processing is enabled")

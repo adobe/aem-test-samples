@@ -49,6 +49,7 @@ public class CreatePageAdminIT {
 
     /**
      * Verifies that the page created by the {{Page}} rule is present
+     * @throws InterruptedException if the wait was interrupted
      */
     @Test
     public void testCreatePage() throws InterruptedException {
