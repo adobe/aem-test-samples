@@ -17,7 +17,7 @@ The build also produces a `jar-with-dependencies` that can be run as a self-cont
 mvn clean verify -Ptest-all
 ```
 
-### Run the test against Skyline author and publish service
+### Run the test against your AEM Cloud Service author and publish tiers
 The `eaas-local` profile allows to run the test locally but against Skyline author and publish service. The same test client configuration is used like when the test module is executed using EAAS:
 
 ```bash
