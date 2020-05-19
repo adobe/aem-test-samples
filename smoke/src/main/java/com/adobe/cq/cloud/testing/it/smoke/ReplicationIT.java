@@ -18,9 +18,14 @@ package com.adobe.cq.cloud.testing.it.smoke;
 import static org.apache.http.HttpStatus.SC_NOT_FOUND;
 import static org.apache.http.HttpStatus.SC_OK;
 
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.Collections;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 
+import org.apache.http.message.BasicHeader;
+import org.apache.http.message.BasicNameValuePair;
 import org.apache.sling.testing.clients.ClientException;
 import org.apache.sling.testing.clients.util.poller.Polling;
 import org.junit.BeforeClass;
@@ -39,7 +44,7 @@ import com.adobe.cq.testing.junit.rules.Page;
 public class ReplicationIT {
     private Logger log = LoggerFactory.getLogger(ReplicationIT.class);
 
-    private static final long TIMEOUT = TimeUnit.SECONDS.toMillis(120);
+    private static final long TIMEOUT = TimeUnit.SECONDS.toMillis(180);
 
     @ClassRule
     public static CQAuthorPublishClassRule cqBaseClassRule = new CQAuthorPublishClassRule();
@@ -73,7 +78,6 @@ public class ReplicationIT {
     public void testActivateAndDeactivate() throws Exception {
         rClient.activate(root.getPath());
         checkPage(SC_OK);
-
         rClient.deactivate(root.getPath(), SC_OK);
         checkPage(SC_NOT_FOUND);
     }
@@ -88,7 +92,7 @@ public class ReplicationIT {
         rClient.activate(root.getPath());
         checkPage(SC_OK);
 
-        adminAuthor.deletePage(new String[]{root.getPath()}, false, false);
+        adminAuthor.deletePage(new String[]{root.getPath()}, true, false);
         checkPage(SC_NOT_FOUND);
     }
     
@@ -97,16 +101,26 @@ public class ReplicationIT {
      *
      * @throws Exception if an error occurred
      */
-    private void checkPage(final int expectedStatus) throws Exception {
+    private void checkPage(final int expectedStatus, boolean skipDispatcher) throws Exception {
         final String path = root.getPath() + ".html";
         log.info("Checking page {} returns status {}", adminPublish.getUrl(path), expectedStatus);
         new Polling() {
             @Override
             public Boolean call() throws Exception {
-                adminPublish.doGet(path, expectedStatus);
+                adminPublish.doGet(path,
+                        skipDispatcher ? Collections.singletonList(
+                                new BasicNameValuePair("timestamp", String.valueOf(System.currentTimeMillis())))
+                                : Collections.emptyList(),
+                        Collections.emptyList(),
+                        expectedStatus);
+
                 return true;
             }
-        }.poll(TIMEOUT, 500);
+        }.poll(TIMEOUT, 1000);
+    }
+
+    private void checkPage(final int expectedStatus) throws Exception {
+        checkPage(expectedStatus, true);
     }
 
 }
