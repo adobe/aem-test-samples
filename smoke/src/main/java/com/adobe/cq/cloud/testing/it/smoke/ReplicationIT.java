@@ -101,14 +101,14 @@ public class ReplicationIT {
      *
      * @throws Exception if an error occurred
      */
-    private void checkPage(final int expectedStatus, boolean skipDispatcher) throws Exception {
+    private void checkPage(final int expectedStatus, boolean skipDispatcherCache) throws Exception {
         final String path = root.getPath() + ".html";
         log.info("Checking page {} returns status {}", adminPublish.getUrl(path), expectedStatus);
         new Polling() {
             @Override
             public Boolean call() throws Exception {
                 adminPublish.doGet(path,
-                        skipDispatcher ? Collections.singletonList(
+                        skipDispatcherCache ? Collections.singletonList(
                                 new BasicNameValuePair("timestamp", String.valueOf(System.currentTimeMillis())))
                                 : Collections.emptyList(),
                         Collections.emptyList(),
