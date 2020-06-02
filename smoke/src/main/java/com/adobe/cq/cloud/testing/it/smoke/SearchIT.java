@@ -76,7 +76,7 @@ public class SearchIT {
     }
 
     /**
-     * Utility that uses omnisearch with a pooler to search using a {{searchText}} in a specific {{location}}
+     * Utility that uses omnisearch with a poller to search using a {{searchText}} in a specific {{location}}
      * and checks that the expected {{expectedResult}} is in the response
      *
      * @throws Exception if an error occurred
@@ -111,17 +111,6 @@ public class SearchIT {
                         .toString().contains(root.getPath());
             }
         }.poll(TIMEOUT, 500);
-    }
-
-    /**
-     * Uses omnisearch to search for the page created by the Page rule
-     *
-     * @throws Exception if an error occurred
-     */
-    @Test
-    public void searchSites() throws Exception {
-
-        checkSearchResults(root.getName(), "site", root.getName());
     }
 
     /**
