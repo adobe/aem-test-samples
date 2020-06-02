@@ -18,13 +18,9 @@ package com.adobe.cq.cloud.testing.it.smoke;
 import static org.apache.http.HttpStatus.SC_NOT_FOUND;
 import static org.apache.http.HttpStatus.SC_OK;
 
-import java.util.Arrays;
-import java.util.Collection;
 import java.util.Collections;
 import java.util.concurrent.TimeUnit;
-import java.util.concurrent.TimeoutException;
 
-import org.apache.http.message.BasicHeader;
 import org.apache.http.message.BasicNameValuePair;
 import org.apache.sling.testing.clients.ClientException;
 import org.apache.sling.testing.clients.util.poller.Polling;
@@ -40,11 +36,10 @@ import com.adobe.cq.testing.client.ReplicationClient;
 import com.adobe.cq.testing.junit.rules.CQAuthorPublishClassRule;
 import com.adobe.cq.testing.junit.rules.CQRule;
 import com.adobe.cq.testing.junit.rules.Page;
-
 public class ReplicationIT {
     private Logger log = LoggerFactory.getLogger(ReplicationIT.class);
 
-    private static final long TIMEOUT = TimeUnit.SECONDS.toMillis(180);
+    private static final long TIMEOUT = TimeUnit.MINUTES.toMillis(5);
 
     @ClassRule
     public static CQAuthorPublishClassRule cqBaseClassRule = new CQAuthorPublishClassRule();
