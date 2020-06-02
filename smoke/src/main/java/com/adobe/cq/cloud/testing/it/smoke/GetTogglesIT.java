@@ -75,6 +75,7 @@ public class GetTogglesIT {
      * @throws IOException if the json response could not be read
      */
     @Test
+    @Ignore
     public void testTogglesEndpointReturnsStaticEnabledFlagInJsonResponseOnPublish() throws ClientException, IOException {
         sharedTestResponseAlwaysContainsEnabledFlag(adminPublish);
     }
