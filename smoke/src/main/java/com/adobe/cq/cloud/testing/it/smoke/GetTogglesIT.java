@@ -35,6 +35,7 @@ import java.io.IOException;
 import java.io.StringReader;
 import java.util.Arrays;
 
+import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
 
@@ -88,9 +89,13 @@ public class GetTogglesIT {
         SlingHttpResponse response = adminAuthor.doGet("mnt/overlay/granite/ui/content/shell/about.html", 200);
         final String regex = "^Adobe Experience Manager [\\d]{4}.[\\d]{1,2}.[\\d]+.[\\d]{8}T[\\d]{6}Z-[\\d]{6}$";
 
-        String content = response.getContent();
-        Document doc = DocumentBuilderFactory.newInstance()
-            .newDocumentBuilder()
+        String content = response.getContent()
+                .replaceAll("<!DOCTYPE((.|\n|\r)*?)>", "")
+                .replaceAll("<!ENTITY ((.|\n|\r)*?)\">", "");
+        DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
+        dbf.setValidating(false);
+        dbf.setIgnoringComments(true);
+        Document doc =  dbf.newDocumentBuilder()
             .parse(new InputSource(new StringReader(content)));
 
         Element parentElement = doc.getDocumentElement();
