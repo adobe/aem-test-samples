@@ -15,6 +15,7 @@
  */
 package com.adobe.cq.cloud.testing.it.smoke;
 
+import com.adobe.cq.testing.client.CQAssetsClient;
 import com.adobe.cq.testing.client.CQClient;
 import com.adobe.cq.testing.junit.rules.CQAuthorClassRule;
 import com.adobe.cq.testing.junit.rules.CQRule;
@@ -45,7 +46,7 @@ public class SearchIT {
     @Rule
     public Page root = new Page(cqBaseClassRule.authorRule);
 
-    static CQClient adminAuthor;
+    static CQAssetsClient adminAuthor;
 
 
     static String damParentPath = "/content/dam/test-" + System.currentTimeMillis();
@@ -61,7 +62,7 @@ public class SearchIT {
 
     @BeforeClass
     public static void beforeClass() throws ClientException {
-        adminAuthor = cqBaseClassRule.authorRule.getAdminClient(CQClient.class);
+        adminAuthor = cqBaseClassRule.authorRule.getAdminClient(CQAssetsClient.class);
 
         //upload one test picture
         adminAuthor.uploadAsset(imgName, imgResourcePath, imgMimeType, damParentPath, SC_CREATED, SC_OK);
