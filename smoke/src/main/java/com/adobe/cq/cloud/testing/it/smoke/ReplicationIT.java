@@ -15,9 +15,6 @@
  */
 package com.adobe.cq.cloud.testing.it.smoke;
 
-import static org.apache.http.HttpStatus.SC_NOT_FOUND;
-import static org.apache.http.HttpStatus.SC_OK;
-
 import java.util.Collections;
 import java.util.concurrent.TimeUnit;
 
@@ -36,6 +33,9 @@ import com.adobe.cq.testing.client.ReplicationClient;
 import com.adobe.cq.testing.junit.rules.CQAuthorPublishClassRule;
 import com.adobe.cq.testing.junit.rules.CQRule;
 import com.adobe.cq.testing.junit.rules.Page;
+
+import static org.apache.http.HttpStatus.*;
+
 public class ReplicationIT {
     private Logger log = LoggerFactory.getLogger(ReplicationIT.class);
 
@@ -72,7 +72,7 @@ public class ReplicationIT {
     @Test
     public void testActivateAndDeactivate() throws Exception {
         rClient.activate(root.getPath());
-        checkPage(SC_OK);
+        checkPage(SC_OK, SC_UNAUTHORIZED); // in case there is auth on the publish instance, expect either 200 or 401
         rClient.deactivate(root.getPath(), SC_OK);
         checkPage(SC_NOT_FOUND);
     }
@@ -85,7 +85,7 @@ public class ReplicationIT {
     @Test
     public void testActivateAndDelete() throws Exception {
         rClient.activate(root.getPath());
-        checkPage(SC_OK);
+        checkPage(SC_OK, SC_UNAUTHORIZED);
 
         adminAuthor.deletePage(new String[]{root.getPath()}, true, false);
         checkPage(SC_NOT_FOUND);
@@ -96,7 +96,7 @@ public class ReplicationIT {
      *
      * @throws Exception if an error occurred
      */
-    private void checkPage(final int expectedStatus, boolean skipDispatcherCache) throws Exception {
+    private void checkPage(boolean skipDispatcherCache, final int...  expectedStatus) throws Exception {
         final String path = root.getPath() + ".html";
         log.info("Checking page {} returns status {}", adminPublish.getUrl(path), expectedStatus);
         new Polling() {
@@ -114,8 +114,8 @@ public class ReplicationIT {
         }.poll(TIMEOUT, 1000);
     }
 
-    private void checkPage(final int expectedStatus) throws Exception {
-        checkPage(expectedStatus, true);
+    private void checkPage(final int... expectedStatus) throws Exception {
+        checkPage(true, expectedStatus);
     }
 
 }
