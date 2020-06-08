@@ -120,6 +120,7 @@ public class SearchIT {
      * @throws Exception if an error occurred
      */
     @Test
+    @Ignore
     public void searchUploadedAssets() throws Exception {
 
         checkSearchResults(imgName, "asset", imgName);
