@@ -15,27 +15,19 @@
  */
 package com.adobe.cq.cloud.testing.it.smoke;
 
-import com.adobe.cq.testing.client.CQAssetsClient;
 import com.adobe.cq.testing.client.CQClient;
 import com.adobe.cq.testing.junit.rules.CQAuthorClassRule;
 import com.adobe.cq.testing.junit.rules.CQRule;
 import com.adobe.cq.testing.junit.rules.Page;
-import org.apache.sling.testing.clients.ClientException;
-import org.apache.sling.testing.clients.util.URLParameterBuilder;
 import org.apache.sling.testing.clients.util.poller.Polling;
 import org.junit.*;
 
-import java.util.concurrent.TimeoutException;
 
 import static java.util.concurrent.TimeUnit.SECONDS;
-import static org.apache.http.HttpStatus.SC_CREATED;
-import static org.apache.http.HttpStatus.SC_OK;
 
 public class SearchIT {
 
     private static final long TIMEOUT = SECONDS.toMillis(30);
-    private static final String OMNISEARCH_PATH = "/mnt/overlay/granite/ui/content/shell/omnisearch/searchresults.html";
-    private static final String SEARCH_TEXT = "Lorem ipsum dolor sit amet, consectetur adipiscing elit";
 
     @ClassRule
     public static CQAuthorClassRule cqBaseClassRule = new CQAuthorClassRule();
@@ -46,54 +38,12 @@ public class SearchIT {
     @Rule
     public Page root = new Page(cqBaseClassRule.authorRule);
 
-    static CQAssetsClient adminAuthor;
-
-
-    static String damParentPath = "/content/dam/test-" + System.currentTimeMillis();
-    
-    static String imgName = "testPicture.png";
-    static String imgResourcePath = "/com/adobe/cq/cloud/testing/it/smoke/picture/" + imgName;
-    static String imgMimeType = "image/png";
-
-    static String pdfName = "testPDF.pdf";
-    static String pdfResourcePath = "/com/adobe/cq/cloud/testing/it/smoke/pdf/" + pdfName;
-    static String pdfMimeType = "application/pdf";
-
+    static CQClient adminAuthor;
 
     @BeforeClass
-    public static void beforeClass() throws ClientException {
-        adminAuthor = cqBaseClassRule.authorRule.getAdminClient(CQAssetsClient.class);
+    public static void beforeClass() {
+        adminAuthor = cqBaseClassRule.authorRule.getAdminClient(CQClient.class);
 
-        //upload one test picture
-        adminAuthor.uploadAsset(imgName, imgResourcePath, imgMimeType, damParentPath, SC_CREATED, SC_OK);
-
-        //upload one test pdf
-        adminAuthor.uploadAsset(pdfName, pdfResourcePath, pdfMimeType, damParentPath, SC_CREATED, SC_OK);
-    }
-
-    @AfterClass
-    public static void afterClass() throws ClientException {
-        adminAuthor.deletePath(damParentPath);
-    }
-
-    /**
-     * Utility that uses omnisearch with a poller to search using a {{searchText}} in a specific {{location}}
-     * and checks that the expected {{expectedResult}} is in the response
-     *
-     * @throws Exception if an error occurred
-     */
-    private void checkSearchResults(final String searchText, final String location, final String expectedResult) throws Exception {
-
-        new Polling() {
-            @Override
-            public Boolean call() throws Exception {
-                return adminAuthor.doGet(OMNISEARCH_PATH, URLParameterBuilder.create()
-                                .add("fulltext", searchText)
-                                .add("location", location)
-                                .getList(),
-                        SC_OK).getContent().toString().contains(expectedResult);
-            }
-        }.poll(TIMEOUT, 500);
     }
 
     /**
@@ -114,27 +64,4 @@ public class SearchIT {
         }.poll(TIMEOUT, 500);
     }
 
-    /**
-     * Uses omnisearch to search for a picture uploaded during test setup
-     *
-     * @throws Exception if an error occurred
-     */
-    @Test
-    @Ignore
-    public void searchUploadedAssets() throws Exception {
-
-        checkSearchResults(imgName, "asset", imgName);
-    }
-
-    /**
-     * Uses omnisearch to search for text inside PDF uploaded during test setup
-     *
-     * @throws Exception if an error occurred
-     */
-    @Test
-    @Ignore("CQ-4274795: Text extraction issue, re-enable when nui asset processing is enabled")
-    public void searchTextInPdf() throws Exception {
-
-        checkSearchResults(SEARCH_TEXT, "asset", pdfName);
-    }
 }
