@@ -15,16 +15,18 @@
  */
 package com.adobe.cq.cloud.testing.it.smoke;
 
+import java.util.Collection;
 import java.util.Collections;
+import java.util.List;
 import java.util.concurrent.TimeUnit;
 
+import org.apache.http.NameValuePair;
 import org.apache.http.message.BasicNameValuePair;
 import org.apache.sling.testing.clients.ClientException;
+import org.apache.sling.testing.clients.SlingHttpResponse;
+import org.apache.sling.testing.clients.util.HttpUtils;
 import org.apache.sling.testing.clients.util.poller.Polling;
-import org.junit.BeforeClass;
-import org.junit.ClassRule;
-import org.junit.Rule;
-import org.junit.Test;
+import org.junit.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -72,7 +74,7 @@ public class ReplicationIT {
     @Test
     public void testActivateAndDeactivate() throws Exception {
         rClient.activate(root.getPath());
-        checkPage(SC_OK, SC_UNAUTHORIZED); // in case there is auth on the publish instance, expect either 200 or 401
+        checkPage(SC_OK);
         rClient.deactivate(root.getPath(), SC_OK);
         checkPage(SC_NOT_FOUND);
     }
@@ -85,7 +87,7 @@ public class ReplicationIT {
     @Test
     public void testActivateAndDelete() throws Exception {
         rClient.activate(root.getPath());
-        checkPage(SC_OK, SC_UNAUTHORIZED);
+        checkPage(SC_OK);
 
         adminAuthor.deletePage(new String[]{root.getPath()}, true, false);
         checkPage(SC_NOT_FOUND);
@@ -99,16 +101,25 @@ public class ReplicationIT {
     private void checkPage(boolean skipDispatcherCache, final int...  expectedStatus) throws Exception {
         final String path = root.getPath() + ".html";
         log.info("Checking page {} returns status {}", adminPublish.getUrl(path), expectedStatus);
+        SlingHttpResponse res = null;
+        final List<NameValuePair> queryParams = skipDispatcherCache
+                ? Collections.singletonList(
+                new BasicNameValuePair("timestamp", String.valueOf(System.currentTimeMillis())))
+                : Collections.emptyList();
+
+        res = adminPublish.doGet(path, queryParams, Collections.emptyList());
+        if (null != res && res.getStatusLine().getStatusCode() == SC_UNAUTHORIZED) {
+            throw new AssumptionViolatedException("Publish requires auth for (SAML?). Skipping...");
+        }
+
         new Polling() {
             @Override
             public Boolean call() throws Exception {
-                adminPublish.doGet(path,
-                        skipDispatcherCache ? Collections.singletonList(
-                                new BasicNameValuePair("timestamp", String.valueOf(System.currentTimeMillis())))
-                                : Collections.emptyList(),
-                        Collections.emptyList(),
-                        expectedStatus);
-
+                final List<NameValuePair> queryParams = skipDispatcherCache
+                        ? Collections.singletonList(
+                            new BasicNameValuePair("timestamp", String.valueOf(System.currentTimeMillis())))
+                        : Collections.emptyList();
+                adminPublish.doGet(path, queryParams, Collections.emptyList(), expectedStatus);
                 return true;
             }
         }.poll(TIMEOUT, 1000);
