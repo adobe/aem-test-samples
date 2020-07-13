@@ -129,6 +129,7 @@ public class XfSmokeIT {
     }
 
     @Test
+    @Ignore
     public void deleteExperienceFragmentTest() throws ClientException {
         final ExperienceFragmentsClient client = cqAuthorPublishClassRule.authorRule.getAdminClient(ExperienceFragmentsClient.class);
         for (XF_TEMPLATE predefinedTemplate : XF_TEMPLATE.values()) {
@@ -149,6 +150,7 @@ public class XfSmokeIT {
     }
 
     @Test
+    @Ignore
     public void createXFVariantTest() throws ClientException {
         final CQClient adminAuthor = cqAuthorPublishClassRule.authorRule.getAdminClient(CQClient.class);
         final ExperienceFragmentsClient adminXFClient = adminAuthor.adaptTo(ExperienceFragmentsClient.class);
@@ -185,6 +187,7 @@ public class XfSmokeIT {
     }
 
     @Test
+    @Ignore
     public void masterVariantDelete() throws ClientException {
         final CQClient adminAuthor = cqAuthorPublishClassRule.authorRule.getAdminClient(CQClient.class);
         final ExperienceFragmentsClient authorXFClient = adminAuthor.adaptTo(ExperienceFragmentsClient.class);
@@ -204,6 +207,7 @@ public class XfSmokeIT {
     }
 
     @Test
+    @Ignore
     public void variantDelete() throws ClientException {
         final CQClient authorAuthor = cqAuthorPublishClassRule.authorRule.getAdminClient(CQClient.class);
         final ExperienceFragmentsClient authorXFClient = authorAuthor.adaptTo(ExperienceFragmentsClient.class);
