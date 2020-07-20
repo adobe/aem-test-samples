@@ -1,0 +1,160 @@
+{
+    "hrefs": [
+        {
+            "href"         : "http://localhost/?q=a+b&amp;r=1",
+            "expectedValid": true
+        },
+        {
+            "href"         : "/libs/wcm/core/content/sites/createlaunchwizard.html/content/launches/2019/10/11/l3/content/we-retail/language-masters/en/products/equipment?create_nested_launch=true&redirect=/sites.html/content/we-retail/language-masters/en/products/equipment#/content/launches/2019/10/11/l3/content/we-retail/language-masters/en/products/equipment/biking,/content/launches/2019/10/11/l3/content/we-retail/language-masters/en/products/equipment/hiking/buffalo-plaid-shorts,/content/launches/2019/10/11/l3/content/we-retail/language-masters/en/products/equipment/hiking/candide-trail-short,/content/launches/2019/10/11/l3/content/we-retail/language-masters/en/products/equipment/hiking/corona-shorts,/content/launches/2019/10/11/l3/content/we-retail/language-masters/en/products/equipment/hiking/cuzco,/content/launches/2019/10/11/l3/content/we-retail/language-masters/en/products/equipment/hiking/desert-sky-shorts,/content/launches/2019/10/11/l3/content/we-retail/language-masters/en/products/equipment/hiking/fleet-fox-running-shorts,/content/launches/2019/10/11/l3/content/we-retail/language-masters/en/products/equipment/hiking/hiking-pants,/content/launches/2019/10/11/l3/content/we-retail/language-masters/en/products/equipment/hiking/hiking-poles,/content/launches/2019/10/11/l3/content/we-retail/language-masters/en/products/equipment/hiking/rios-t-shirt,/content/launches/2019/10/11/l3/content/we-retail/language-masters/en/products/equipment/hiking/slot-canyon-active-shorts,/content/launches/2019/10/11/l3/content/we-retail/language-masters/en/products/equipment/hiking/stretch-fatigue-shorts,/content/launches/2019/10/11/l3/content/we-retail/language-masters/en/products/equipment/hiking/trail-model-pants",
+            "expectedValid": true
+        },
+        {
+            "href"         : "/libs/wcm/core/content/sites/createlaunchwizard.html/content/launches/2019/10/11/l3/content/we-retail/language-masters/en/products/equipment?create_nested_launch=true&redirect=/sites.html/content/we-retail/language-masters/en/products/equipment#/content/launches/2019/10/11/l3/content/we-retail/language-masters/en/products/equipment/biking,/content/launches/2019/10/11/l3/content/we-retail/language-masters/en/products/equipment/hiking/buffalo-plaid-shorts,/content/launches/2019/10/11/l3/content/we-retail/language-masters/en/products/equipment/hiking/candide-trail-short,/content/launches/2019/10/11/l3/content/we-retail/language-masters/en/products/equipment/hiking/corona-shorts,/content/launches/2019/10/11/l3/content/we-retail/language-masters/en/products/equipment/hiking/cuzco,/content/launches/2019/10/11/l3/content/we-retail/language-masters/en/products/equipment/hiking/desert-sky-shorts,/content/launches/2019/10/11/l3/content/we-retail/language-masters/en/products/equipment/hiking/fleet-fox-running-shorts,/content/launches/2019/10/11/l3/content/we-retail/language-masters/en/products/equipment/hiking/hiking-pants,/content/launches/2019/10/11/l3/content/we-retail/language-masters/en/products/equipment/hiking/hiking-poles,/content/launches/2019/10/11/l3/content/we-retail/language-masters/en/products/equipment/hiking/rios-t-shirt,/content/launches/2019/10/11/l3/content/we-retail/language-masters/en/products/equipment/hiking/slot-canyon-active-shorts,/content/launches/2019/10/11/l3/content/we-retail/language-masters/en/products/equipment/hiking/stretch-fatigue-shorts,/content/launches/2019/10/11/l3/content/we-retail/language-masters/en/products/equipment/hiking/trail-model-pants\\\"><script>alert(1)</script>",
+            "expectedValid": false
+        },
+        {
+            "href"         : "/libs/wcm/core/content/sites/createlaunchwizard.html/content/launches/2019/10/11/l3/content/we-retail/language-masters/en/products/equipment?create_nested_launch=true&redirect=/sites.html/content/we-retail/language-masters/en/products/equipment#/content/launches/2019/10/11/l3/content/we-retail/language-masters/en/products/equipment/biking,/content/launches/2019/10/11/l3/content/we-retail/language-masters/en/products/equipment/hiking/buffalo-plaid-shorts,/content/launches/2019/10/11/l3/content/we-retail/language-masters/en/products/equipment/hiking/candide-trail-short,/content/launches/2019/10/11/l3/content/we-retail/language-masters/en/products/equipment/hiking/corona-shorts,/content/launches/2019/10/11/l3/content/we-retail/language-masters/en/products/equipment/hiking/cuzco,/content/launches/2019/10/11/l3/content/we-retail/language-masters/en/products/equipment/hiking/desert-sky-shorts,/content/launches/2019/10/11/l3/content/we-retail/language-masters/en/products/equipment/hiking/fleet-fox-running-shorts,/content/launches/2019/10/11/l3/content/we-retail/language-masters/en/products/equipment/hiking/hiking-pants,/content/launches/2019/10/11/l3/content/we-retail/language-masters/en/products/equipment/hiking/hiking-poles,/content/launches/2019/10/11/l3/content/we-retail/language-masters/en/products/equipment/hiking/rios-t-shirt,/content/launches/2019/10/11/l3/content/we-retail/language-masters/en/products/equipment/hiking/slot-canyon-active-shorts,/content/launches/2019/10/11/l3/content/we-retail/language-masters/en/products/equipment/hiking/stretch-fatigue-shorts,/content/launches/2019/10/11/l3/content/we-retail/language-masters/en/products/equipment/hiking/trail-model-pants%22%3E%3Cscript%3Ealert(1)%3C/script%3E",
+            "expectedValid": true
+        },
+        {
+            "href"         : "test?discount=25%25",
+            "expectedValid": true
+        },
+        {
+            "href"         : "/base?backHref=%26%23x6a%3b%26%23x61%3b%26%23x76%3b%26%23x61%3b%26%23x73%3b%26%23x63%3b%26%23x72%3b%26%23x69%3b%26%23x70%3b%26%23x74%3b%26%23x3a%3balert%281%29",
+            "expectedValid": true
+        },
+        {
+            "href"         : "%26%23x6a%3b%26%23x61%3b%26%23x76%3b%26%23x61%3b%26%23x73%3b%26%23x63%3b%26%23x72%3b%26%23x69%3b%26%23x70%3b%26%23x74%3b%26%23x3a%3balert%281%29",
+            "expectedValid": false
+        },
+        {
+            "href"         : "&#x6a;&#x61;&#x76;&#x61;&#x73;&#x63;&#x72;&#x69;&#x70;&#x74;&#x3a;alert(1)",
+            "expectedValid": false
+        },
+        {
+            "href"         : "%2Fscripts%2Ftest.js",
+            "expectedValid": true
+        },
+        {
+            "href"         : "/etc/commerce/collections/中文",
+            "expectedValid": true
+        },
+        {
+            "href"         : "/etc/commerce/collections/\u09aa\u09b0\u09c0\u0995\u09cd\u09b7\u09be\u09ae\u09c2\u09b2\u0995",
+            "expectedValid": true
+        },
+        {
+            "href"         : "repo/günter",
+            "expectedValid": true
+        },
+        {
+            "href"         : "../parent",
+            "expectedValid": true
+        },
+        {
+            "href"         : "my/page/jcr:content.feed",
+            "expectedValid": true
+        },
+        {
+            "href"         : "my/jcr:content/page/jcr:content",
+            "expectedValid": true
+        },
+        {
+            "href"         : "my/jcr:content/encoded%20spaces",
+            "expectedValid": true
+        },
+        {
+            "href"         : "my/jcr:content/unencoded spaces",
+            "expectedValid": false
+        },
+        {
+            "href"         : "javascript:alert(1)",
+            "expectedValid": false
+        },
+        {
+            "href"         : "/test/ab\"cd",
+            "expectedValid": false
+        },
+        {
+            "href"         : "/test/ab%22cd",
+            "expectedValid": true
+        },
+        {
+            "href"         : "/test/ab=cd",
+            "expectedValid": true
+        },
+        {
+            "href"         : "/test/ab>cd",
+            "expectedValid": false
+        },
+        {
+            "href"         : "/test/ab%3Ccd",
+            "expectedValid": true
+        },
+        {
+            "href"         : "/test/ab`cd",
+            "expectedValid": false
+        },
+        {
+            "href"         : "/test/ab%60cd",
+            "expectedValid": true
+        },
+        {
+            "href": "/test/search.html?0_tag:id=test",
+            "expectedValid": true
+        },
+        {
+            "href": "/test/jcr:content/search.html?0_tag:id=test",
+            "expectedValid": true
+        },
+        {
+            "href": "/test%20with%20encoded%20spaces/jcr:content/search.html?0_tag:id=test",
+            "expectedValid": true
+        },
+        {
+            "href": "/test%20with%20spaces/jcr:content/search.html?0_tag:id=test",
+            "expectedValid": true
+        },
+        {
+            "href": "/test/search.html?0_tag:id=test?ing&1_tag:id=abc",
+            "expectedValid": true
+        },
+        {
+            "href": "/test/search.html?0_tag:id=test?ing&1_tag:id=abc#fragment:test",
+            "expectedValid": true
+        },
+        {
+            "href": "https://sling.apache.org/?a=1#fragment:test",
+            "expectedValid": true
+        },
+        {
+            "href": "https://sling.apache.org/#fragment:test",
+            "expectedValid": true
+        },
+        {
+            "href": "/path/to/page/jcr:content/par?key=%25text",
+            "expectedValid": true
+        },
+        {
+            "href": "/path/to/page/jcr:content/par?key=%text",
+            "expectedValid": false
+        },
+        {
+            "href": "/path/to/page/_jcr_content/par?key=%text",
+            "expectedValid": false
+        },
+        {
+            "href": "#javascript:alert(23)",
+            "expectedValid": true
+        },
+        {
+            "href": "#\">",
+            "expectedValid": false
+        },
+        {
+            "href": "/promotion/25%/",
+            "expectedValid": false
+        }
+    ]
+}
