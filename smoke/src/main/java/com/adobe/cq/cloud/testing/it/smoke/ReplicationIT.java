@@ -15,18 +15,23 @@
  */
 package com.adobe.cq.cloud.testing.it.smoke;
 
-import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.TimeoutException;
 
 import org.apache.http.NameValuePair;
 import org.apache.http.message.BasicNameValuePair;
 import org.apache.sling.testing.clients.ClientException;
 import org.apache.sling.testing.clients.SlingHttpResponse;
-import org.apache.sling.testing.clients.util.HttpUtils;
 import org.apache.sling.testing.clients.util.poller.Polling;
-import org.junit.*;
+import org.codehaus.jackson.JsonNode;
+import org.junit.AssumptionViolatedException;
+import org.junit.Before;
+import org.junit.BeforeClass;
+import org.junit.ClassRule;
+import org.junit.Rule;
+import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -36,12 +41,16 @@ import com.adobe.cq.testing.junit.rules.CQAuthorPublishClassRule;
 import com.adobe.cq.testing.junit.rules.CQRule;
 import com.adobe.cq.testing.junit.rules.Page;
 
-import static org.apache.http.HttpStatus.*;
+import static org.apache.http.HttpStatus.SC_NOT_FOUND;
+import static org.apache.http.HttpStatus.SC_OK;
+import static org.apache.http.HttpStatus.SC_UNAUTHORIZED;
 
 public class ReplicationIT {
     private Logger log = LoggerFactory.getLogger(ReplicationIT.class);
 
     private static final long TIMEOUT = TimeUnit.MINUTES.toMillis(5);
+    private static final String DIST_AGENTS_PATH = "/libs/sling/distribution/services/agents";
+    private static final String PUBLISH_DIST_AGENT = "publish";
 
     @ClassRule
     public static CQAuthorPublishClassRule cqBaseClassRule = new CQAuthorPublishClassRule();
@@ -64,6 +73,20 @@ public class ReplicationIT {
         adminPublish = cqBaseClassRule.publishRule.getAdminClient(CQClient.class);
         anonymousPublish = cqBaseClassRule.publishRule.getClient(CQClient.class, null, null);
         rClient = adminAuthor.adaptTo(ReplicationClient.class);
+    }
+
+    @Before
+    public void before() throws TimeoutException, InterruptedException {
+        // Make sure the "publish" distribution agent is present and log its configuration
+        new Polling(() -> {
+            JsonNode agents = adminAuthor.doGetJson(DIST_AGENTS_PATH, 3);
+            log.info("Replication agents list: {}", agents);
+            if (agents.path(PUBLISH_DIST_AGENT).isMissingNode()) {
+                log.warn("Default distribution agent {} is missing from the distribution list", PUBLISH_DIST_AGENT);
+                return false;
+            }
+            return true;
+        }).poll(TIMEOUT, 500);
     }
 
     /**
