@@ -18,17 +18,42 @@ mvn clean verify -Ptest-all
 ```
 
 ### Run the test against your AEM Cloud Service author and publish tiers
-The `eaas-local` profile allows to run the test locally but against Skyline author and publish service. The same test client configuration is used like when the test module is executed using EAAS:
+The `eaas-local` profile has been added for convenience to allow to run the test locally against an AEM Cloud Service. 
+The same test client configuration is used when the test module is executed in the Cloud Service
 
 ```bash
 mvn -Peaas-local clean verify \
--Dcloud.author.url=<your-skyline-author-url> \
+-Dcloud.author.url=<your-aem-author-url> \
 -Dcloud.author.user=admin \
 -Dcloud.author.password=<your-admin-password> \
--Dcloud.publish.url=<your-skyline-publish-url \
+-Dcloud.publish.url=<your-aem-publish-url \
 -Dcloud.publish.user=admin \
 -Dcloud.publish.password=<your-admin-password> \
 ```
+### About the admin user
+
+The test modules require the `admin` user or an admin-like user with enough privileges to create content, new users, 
+groups and replicate content.
+
+
+### Sling properties 
+
+The `eaas-local` profile facilitates the definition of sling properties expected by the aem-testing-clients 
+(and the underlying Sling Testing Clients) in a convenient way. 
+
+The system properties are as follows:
+
+* sling.it.instances - should be set to 2
+* sling.it.instance.url.1 - should be set to the author URL, for example, http://localhost:4502
+* sling.it.instance.runmode.1 - should be set to author
+* sling.it.instance.adminUser.1 - should be set to the author admin user, e.g. admin
+* sling.it.instance.adminPassword.1 - should be set to the author admin password
+* sling.it.instance.url.2 - should be set to the author URL, for example, http://localhost:4503
+* sling.it.instance.runmode.2 - should be set to publish
+* sling.it.instance.adminUser.2 - should be set to the publish admin user, for example, admin
+* sling.it.instance.adminPassword.2 - should be set to the publish admin password
+* sling.it.configure.default.replication.agents - should be set to false
+
 
 ## How to deploy pre-release (maintainers only)
 
