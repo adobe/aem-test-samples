@@ -30,10 +30,17 @@ mvn -Peaas-local clean verify \
 -Dcloud.publish.user=admin \
 -Dcloud.publish.password=<your-admin-password> \
 ```
-### About the admin user
+## Requirements
+
+##### User 
 
 The test modules require the `admin` user or an admin-like user with enough privileges to create content, new users, 
 groups and replicate content.
+
+##### Replication
+
+The tests also verify author-publish replication therefore for them to work correctly replication needs be be 
+configured correctly.
 
 
 ### Sling properties 
