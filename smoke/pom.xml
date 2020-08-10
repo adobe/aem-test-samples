@@ -233,7 +233,7 @@
         <dependency>
             <groupId>com.adobe.cq</groupId>
             <artifactId>aem-cloud-testing-clients</artifactId>
-            <version>0.4.0</version>
+            <version>0.5.0</version>
         </dependency>
 
         <!-- logging -->
