@@ -62,19 +62,16 @@ public class GetTogglesIT {
      */
     @Test
     public void testTogglesEndpointReturnsStaticEnabledFlagInJsonResponseOnAuthor() throws ClientException {
-        sharedTestResponseAlwaysContainsEnabledFlag(adminAuthor);
-    }
+        ObjectMapper mapper = new ObjectMapper();
+        SlingHttpResponse response = adminAuthor.doGet("etc.clientlibs/toggles.json", 200);
+        String responseContent = response.getContent();
+        try {
+            ToggleResponse tr = mapper.readValue(responseContent, ToggleResponse.class);
+            Assert.assertTrue(Arrays.asList(tr.enabled).contains("ENABLED"));
 
-    /**
-     * Verifies if the "ENABLED" flag is always enabled on Publish Instance
-     * Considers the test failed if the answer can't be parsed.
-     *
-     * @throws ClientException if an error occurred
-     */
-    @Test
-    @Ignore
-    public void testTogglesEndpointReturnsStaticEnabledFlagInJsonResponseOnPublish() throws ClientException {
-        sharedTestResponseAlwaysContainsEnabledFlag(adminPublish);
+        } catch (IOException e) {
+            Assert.fail("Couldn't read response from ClientLibs toggle endpoint. \nError: " + e.getMessage() + "\nContents: " + responseContent);
+        }
     }
 
     /**
@@ -121,19 +118,6 @@ public class GetTogglesIT {
             }
         }
         return match;
-    }
-
-    private void sharedTestResponseAlwaysContainsEnabledFlag(CQClient cqClient) throws ClientException {
-        ObjectMapper mapper = new ObjectMapper();
-        SlingHttpResponse response = cqClient.doGet("etc.clientlibs/toggles.json", 200);
-        String responseContent = response.getContent();
-        try {
-            ToggleResponse tr = mapper.readValue(responseContent, ToggleResponse.class);
-            Assert.assertTrue(Arrays.asList(tr.enabled).contains("ENABLED"));
-
-        } catch (IOException e) {
-            Assert.fail("Couldn't read response from ClientLibs toggle endpoint. \nError: " + e.getMessage() + "\nContents: " + responseContent);
-        }
     }
 
     public static final class ToggleResponse {
