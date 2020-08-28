@@ -72,6 +72,7 @@ public class GetTogglesIT {
      * @throws ClientException if an error occurred
      */
     @Test
+    @Ignore
     public void testTogglesEndpointReturnsStaticEnabledFlagInJsonResponseOnPublish() throws ClientException {
         sharedTestResponseAlwaysContainsEnabledFlag(adminPublish);
     }
