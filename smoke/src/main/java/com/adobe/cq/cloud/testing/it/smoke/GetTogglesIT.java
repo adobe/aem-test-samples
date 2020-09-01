@@ -29,15 +29,12 @@ import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 import org.xml.sax.InputSource;
-import org.xml.sax.SAXException;
 
 import java.io.IOException;
 import java.io.StringReader;
 import java.util.Arrays;
 
-import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
-import javax.xml.parsers.ParserConfigurationException;
 
 public class GetTogglesIT {
 
@@ -59,25 +56,22 @@ public class GetTogglesIT {
 
     /**
      * Verifies if the "ENABLED" flag is always enabled on Author Instance
+     * Considers the test failed if the answer can't be parsed.
      *
      * @throws ClientException if an error occurred
-     * @throws IOException if the json response could not be read
      */
     @Test
-    public void testTogglesEndpointReturnsStaticEnabledFlagInJsonResponseOnAuthor() throws ClientException, IOException {
-        sharedTestResponseAlwaysContainsEnabledFlag(adminAuthor);
-    }
+    public void testTogglesEndpointReturnsStaticEnabledFlagInJsonResponseOnAuthor() throws ClientException {
+        ObjectMapper mapper = new ObjectMapper();
+        SlingHttpResponse response = adminAuthor.doGet("etc.clientlibs/toggles.json", 200);
+        String responseContent = response.getContent();
+        try {
+            ToggleResponse tr = mapper.readValue(responseContent, ToggleResponse.class);
+            Assert.assertTrue(Arrays.asList(tr.enabled).contains("ENABLED"));
 
-    /**
-     * Verifies if the "ENABLED" flag is always enabled on Publish Instance
-     *
-     * @throws ClientException if an error occurred
-     * @throws IOException if the json response could not be read
-     */
-    @Test
-    @Ignore
-    public void testTogglesEndpointReturnsStaticEnabledFlagInJsonResponseOnPublish() throws ClientException, IOException {
-        sharedTestResponseAlwaysContainsEnabledFlag(adminPublish);
+        } catch (IOException e) {
+            Assert.fail("Couldn't read response from ClientLibs toggle endpoint. \nError: " + e.getMessage() + "\nContents: " + responseContent);
+        }
     }
 
     /**
@@ -126,14 +120,7 @@ public class GetTogglesIT {
         return match;
     }
 
-    private void sharedTestResponseAlwaysContainsEnabledFlag(CQClient cqClient) throws ClientException, IOException {
-        ObjectMapper mapper = new ObjectMapper();
-        SlingHttpResponse response = cqClient.doGet("etc.clientlibs/toggles.json", 200);
-        ToggleResponse tr = mapper.readValue(response.getContent(), ToggleResponse.class);
-        Assert.assertTrue(Arrays.asList(tr.enabled).contains("ENABLED"));
-    }
-
-    public final static class ToggleResponse {
+    public static final class ToggleResponse {
 
         public String[] enabled;
     }
