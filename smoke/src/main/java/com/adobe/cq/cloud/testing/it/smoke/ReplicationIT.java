@@ -49,6 +49,8 @@ public class ReplicationIT {
     private Logger log = LoggerFactory.getLogger(ReplicationIT.class);
 
     private static final long TIMEOUT = TimeUnit.MINUTES.toMillis(5);
+    private static final long TIMEOUT_PER_TRY = TimeUnit.MINUTES.toMillis(1);
+
     private static final String DIST_AGENTS_PATH = "/libs/sling/distribution/services/agents";
     private static final String PUBLISH_DIST_AGENT = "publish";
 
@@ -77,31 +79,21 @@ public class ReplicationIT {
 
     @Before
     public void before() throws TimeoutException, InterruptedException {
-        // Make sure the "publish" distribution agent is present and log its configuration
-        new Polling(() -> {
-            JsonNode agents = adminAuthor.doGetJson(DIST_AGENTS_PATH, 3);
-            log.info("Replication agents list: {}", agents);
-            if (agents.path(PUBLISH_DIST_AGENT).isMissingNode()) {
-                log.warn("Default distribution agent {} is missing from the distribution list", PUBLISH_DIST_AGENT);
-                return false;
-            }
-            return true;
-        }).poll(TIMEOUT, 500);
+        new Polling(this::checkContentDistributionAgentExists)
+        	.poll(TIMEOUT, 500);
     }
 
-    /**
+	/**
      * Activates a page as admin, then deactivates it. Verifies that the page gets removed from publish.
      *
      * @throws Exception if an error occurred
      */
     @Test
     public void testActivateAndDeactivate() throws Exception {
-        rClient.activate(root.getPath());
-        checkPage(SC_OK);
-        rClient.deactivate(root.getPath(), SC_OK);
-        checkPage(SC_NOT_FOUND);
+    	new Polling(this::activateAndDeactivate)
+    		.poll(TIMEOUT, 500);
     }
-
+    
     /**
      * Activates a page as admin, than deletes it. Verifies that deleted page gets removed from publish.
      *
@@ -109,14 +101,28 @@ public class ReplicationIT {
      */
     @Test
     public void testActivateAndDelete() throws Exception {
+    	new Polling(this::activateAndDelete)
+    		.poll(TIMEOUT, 500);
+    }
+    
+    private boolean activateAndDelete() throws Exception {
         rClient.activate(root.getPath());
         checkPage(SC_OK);
 
         adminAuthor.deletePage(new String[]{root.getPath()}, true, false);
         checkPage(SC_NOT_FOUND);
+        return true;
     }
     
-    /**
+    private boolean activateAndDeactivate() throws Exception {
+	    rClient.activate(root.getPath());
+	    checkPage(SC_OK);
+	    rClient.deactivate(root.getPath(), SC_OK);
+	    checkPage(SC_NOT_FOUND);
+	    return true;
+	}
+
+	/**
      * Checks that a GET on the page on publish has the {{expectedStatus}} in the response
      *
      * @throws Exception if an error occurred
@@ -145,11 +151,21 @@ public class ReplicationIT {
                 adminPublish.doGet(path, queryParams, Collections.emptyList(), expectedStatus);
                 return true;
             }
-        }.poll(TIMEOUT, 1000);
+        }.poll(TIMEOUT_PER_TRY, 1000);
     }
 
     private void checkPage(final int... expectedStatus) throws Exception {
         checkPage(true, expectedStatus);
     }
+
+	private Boolean checkContentDistributionAgentExists() throws ClientException {
+		JsonNode agents = adminAuthor.doGetJson(DIST_AGENTS_PATH, 3);
+		log.info("Replication agents list: {}", agents);
+		if (agents.path(PUBLISH_DIST_AGENT).isMissingNode()) {
+		    log.warn("Default distribution agent {} is missing from the distribution list", PUBLISH_DIST_AGENT);
+		    return false;
+		}
+		return true;
+	}
 
 }
