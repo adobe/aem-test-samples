@@ -20,6 +20,11 @@ import java.util.List;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 
+import com.adobe.cq.testing.client.CQClient;
+import com.adobe.cq.testing.client.ReplicationClient;
+import com.adobe.cq.testing.junit.rules.CQAuthorPublishClassRule;
+import com.adobe.cq.testing.junit.rules.CQRule;
+import com.adobe.cq.testing.junit.rules.Page;
 import org.apache.http.NameValuePair;
 import org.apache.http.message.BasicNameValuePair;
 import org.apache.sling.testing.clients.ClientException;
@@ -34,12 +39,6 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import com.adobe.cq.testing.client.CQClient;
-import com.adobe.cq.testing.client.ReplicationClient;
-import com.adobe.cq.testing.junit.rules.CQAuthorPublishClassRule;
-import com.adobe.cq.testing.junit.rules.CQRule;
-import com.adobe.cq.testing.junit.rules.Page;
 
 import static org.apache.http.HttpStatus.SC_NOT_FOUND;
 import static org.apache.http.HttpStatus.SC_OK;
@@ -90,8 +89,19 @@ public class ReplicationIT {
      */
     @Test
     public void testActivateAndDeactivate() throws Exception {
-    	new Polling(this::activateAndDeactivate)
-    		.poll(TIMEOUT, 500);
+
+        // This is a workaround for correctly detecting assumption violations.
+        // Any AssumptionViolatedException throw by the the Callable will be
+        // swallowed by the Poller and wrapped in a TimeoutException. As a
+        // consequence, the test will be marked as failed instead of skipped.
+
+        try {
+            activateAndDeactivate();
+        } catch (AssumptionViolatedException e) {
+            throw e;
+        } catch (Exception e) {
+            new Polling(this::activateAndDeactivate).poll(TIMEOUT, 500);
+        }
     }
     
     /**
@@ -101,8 +111,19 @@ public class ReplicationIT {
      */
     @Test
     public void testActivateAndDelete() throws Exception {
-    	new Polling(this::activateAndDelete)
-    		.poll(TIMEOUT, 500);
+
+        // This is a workaround for correctly detecting assumption violations.
+        // Any AssumptionViolatedException throw by the the Callable will be
+        // swallowed by the Poller and wrapped in a TimeoutException. As a
+        // consequence, the test will be marked as failed instead of skipped.
+
+        try {
+            activateAndDelete();
+        } catch (AssumptionViolatedException e) {
+            throw e;
+        } catch (Exception e) {
+            new Polling(this::activateAndDelete).poll(TIMEOUT, 500);
+        }
     }
     
     private boolean activateAndDelete() throws Exception {
