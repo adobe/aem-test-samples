@@ -1,13 +1,14 @@
 package com.adobe.cq.cloud.testing.it.smoke;
 
-import java.io.IOException;
 import java.io.InputStream;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.TimeoutException;
 
 import org.apache.http.HttpEntity;
 import org.apache.http.entity.ContentType;
 import org.apache.http.entity.InputStreamEntity;
-import org.apache.sling.testing.clients.ClientException;
 import org.apache.sling.testing.clients.SlingHttpResponse;
+import org.apache.sling.testing.clients.util.poller.Polling;
 import org.junit.BeforeClass;
 import org.junit.ClassRule;
 import org.junit.Test;
@@ -24,6 +25,8 @@ public class ValidateAntiSamyConfigurationIT {
 
     private static final String AUTHOR_VALIDATION_URLS = "/com/adobe/cq/cloud/testing/it/smoke/xss/author_validation_urls.json";
     private static final String TEST_REQUEST_PATH = "/libs/cq/xssprotection.json";
+    private static final long TIMEOUT = TimeUnit.SECONDS.toMillis(30);
+    private static final long DELAY = TimeUnit.SECONDS.toMillis(1);
 
     @ClassRule
     public static CQAuthorClassRule cqAuthorClassRule = new CQAuthorClassRule();
@@ -38,20 +41,27 @@ public class ValidateAntiSamyConfigurationIT {
     }
 
     @Test
-    public void validateConfigurationOnAuthor() throws ClientException, IOException {
-        try (InputStream inputStream = this.getClass().getResourceAsStream(AUTHOR_VALIDATION_URLS)) {
-            if (inputStream == null) {
-                fail("Test failure: unable to read embedded JSON file.");
+    public void validateConfigurationOnAuthor() throws TimeoutException, InterruptedException {
+        new Polling(){
+            @Override
+            public Boolean call() throws Exception {
+                try (InputStream inputStream = this.getClass().getResourceAsStream(AUTHOR_VALIDATION_URLS)) {
+                    if (inputStream == null) {
+                        fail("Test failure: unable to read embedded JSON file.");
+                    }
+                    HttpEntity httpEntity = new InputStreamEntity(inputStream, ContentType.APPLICATION_JSON);
+                    SlingHttpResponse response = adminAuthor.doPost(TEST_REQUEST_PATH, httpEntity, 200);
+                    JsonParser jsonParser = new JsonParser();
+                    JsonElement jsonElement = jsonParser.parse(response.getContent());
+                    JsonObject result = jsonElement.getAsJsonObject();
+                    if (!"ok".equalsIgnoreCase(result.get("status").getAsString())) {
+                        fail(String.format("Invalid AntiSamy configuration detected. The following URLs were not validated as expected:\n%s",
+                                response.getContent()));
+                    }
+                    return true;
+                }
             }
-            HttpEntity httpEntity = new InputStreamEntity(inputStream, ContentType.APPLICATION_JSON);
-            SlingHttpResponse response = adminAuthor.doPost(TEST_REQUEST_PATH, httpEntity, 200);
-            JsonParser jsonParser = new JsonParser();
-            JsonElement jsonElement = jsonParser.parse(response.getContent());
-            JsonObject result = jsonElement.getAsJsonObject();
-            if (!"ok".equalsIgnoreCase(result.get("status").getAsString())) {
-                fail(String.format("Invalid AntiSamy configuration detected. The following URLs were not validated as expected:\n%s",
-                        response.getContent()));
-            }
-        }
+        }.poll(TIMEOUT, DELAY);
+
     }
 }
