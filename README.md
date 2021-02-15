@@ -42,6 +42,8 @@ groups and replicate content.
 The tests also verify author-publish replication therefore for them to work correctly replication needs be be 
 configured correctly.
 
+Tote that `ReplicationIT` will create and delete a randomized page in path like: `/content/test-site/testpage_632460d4-361c-4b9b-9eef-d2446f79ec9c` 
+
 
 ### Sling properties 
 
