@@ -44,8 +44,6 @@ public class GetTogglesIT {
     static CQClient adminPublish;
     @Rule
     public CQRule cqBaseRule = new CQRule(cqBaseClassRule.authorRule, cqBaseClassRule.publishRule);
-    @Rule
-    public Page root = new Page(cqBaseClassRule.authorRule);
 
     @BeforeClass
     public static void beforeClass() {

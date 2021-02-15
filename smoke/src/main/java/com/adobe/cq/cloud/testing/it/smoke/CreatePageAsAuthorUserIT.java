@@ -19,6 +19,7 @@ import com.adobe.cq.testing.client.security.CreateUserRule;
 import com.adobe.cq.testing.junit.rules.CQAuthorClassRule;
 import com.adobe.cq.testing.junit.rules.CQRule;
 import com.adobe.cq.testing.junit.rules.EmptyPage;
+import org.junit.Assert;
 import org.junit.ClassRule;
 import org.junit.Rule;
 import org.junit.Test;
@@ -52,7 +53,7 @@ public class CreatePageAsAuthorUserIT {
     @Test
     public void testCreatePageAsAuthor() throws InterruptedException {
         // This shows that it exists for the author user
-        userRule.getClient().pageExistsWithRetry(pageRule.getPath(), TIMEOUT);
+        Assert.assertTrue(String.format("Page %s not created within %s timeout", pageRule.getPath(), TIMEOUT), userRule.getClient().pageExistsWithRetry(pageRule.getPath(), TIMEOUT));
     }
 
 }
