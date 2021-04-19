@@ -15,21 +15,28 @@
  */
 package com.adobe.cq.cloud.testing.it.smoke;
 
-import com.adobe.cq.testing.client.security.CreateUserRule;
+import com.adobe.cq.testing.client.CQClient;
 import com.adobe.cq.testing.junit.rules.CQAuthorClassRule;
 import com.adobe.cq.testing.junit.rules.CQRule;
-import com.adobe.cq.testing.junit.rules.EmptyPage;
+import com.adobe.cq.testing.junit.rules.TemporaryUser;
+import org.apache.http.HttpStatus;
+import org.apache.sling.testing.clients.ClientException;
+import org.apache.sling.testing.clients.SlingHttpResponse;
 import org.junit.Assert;
 import org.junit.ClassRule;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.RuleChain;
 import org.junit.rules.TestRule;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
+import java.util.UUID;
 
 import static java.util.concurrent.TimeUnit.MINUTES;
 
 public class CreatePageAsAuthorUserIT {
+    private static final Logger LOG = LoggerFactory.getLogger(CreatePageAsAuthorUserIT.class);
 
     private static final int TIMEOUT = (int) MINUTES.toMillis(2);
     public static final String CONTENT_AUTHORS_GROUP = "content-authors";
@@ -38,22 +45,39 @@ public class CreatePageAsAuthorUserIT {
     public static CQAuthorClassRule cqBaseClassRule = new CQAuthorClassRule();
 
     public CQRule cqBaseRule = new CQRule(cqBaseClassRule.authorRule);
-    public CreateUserRule userRule = new CreateUserRule(cqBaseClassRule.authorRule, CONTENT_AUTHORS_GROUP);
-    public EmptyPage pageRule = new EmptyPage(userRule.getClientSupplier());
+    public TemporaryUser userRule = new TemporaryUser(() -> cqBaseClassRule.authorRule.getAdminClient(), CONTENT_AUTHORS_GROUP);
 
     @Rule
-    public TestRule cqRuleChain = RuleChain.outerRule(cqBaseRule).around(userRule).around(pageRule);
-
+    public TestRule cqRuleChain = RuleChain.outerRule(cqBaseRule).around(userRule);
 
     /**
      * Verifies that a user belonging to the "Authors" group can create a page
      *
      * @throws InterruptedException if the wait was interrupted
+     * @throws ClientException if an error occurred
      */
     @Test
-    public void testCreatePageAsAuthor() throws InterruptedException {
-        // This shows that it exists for the author user
-        Assert.assertTrue(String.format("Page %s not created within %s timeout", pageRule.getPath(), TIMEOUT), userRule.getClient().pageExistsWithRetry(pageRule.getPath(), TIMEOUT));
-    }
+    public void testCreatePageAsAuthor() throws InterruptedException, ClientException {
+        String pageName = "testpage_" +  UUID.randomUUID();
+        String pagePath = "/content/" + pageName;
+        try {
+            SlingHttpResponse response = userRule.getClient().createPageWithRetry(pageName, "Page created by CreatePageAsAuthorUserIT",
+                    "/content", "", MINUTES.toMillis(1), 500, HttpStatus.SC_OK);
+            pagePath = response.getSlingLocation();
+            LOG.info("Created page at {}", pagePath);
 
+            // This shows that it exists for the author user
+            Assert.assertTrue(String.format("Page %s not created within %s timeout", pagePath, TIMEOUT),
+                    userRule.getClient().pageExistsWithRetry(pagePath, TIMEOUT));
+        } finally {
+            try {
+                cqBaseClassRule.authorRule.getAdminClient().adaptTo(CQClient.class)
+                        .deletePageWithRetry(pagePath, true, false, 2000, 500);
+                LOG.info("Deleted page at {}", pagePath);
+
+            } catch (ClientException e) {
+                LOG.error("Unable to delete the page", e);
+            }
+        }
+    }
 }
