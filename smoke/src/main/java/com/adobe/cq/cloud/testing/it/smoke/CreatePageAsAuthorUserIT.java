@@ -39,6 +39,7 @@ public class CreatePageAsAuthorUserIT {
     private static final Logger LOG = LoggerFactory.getLogger(CreatePageAsAuthorUserIT.class);
 
     private static final int TIMEOUT = (int) MINUTES.toMillis(2);
+    private static final String SITE_ROOT_PATH = "/content/test-site";
     public static final String CONTENT_AUTHORS_GROUP = "content-authors";
 
     @ClassRule
@@ -59,10 +60,10 @@ public class CreatePageAsAuthorUserIT {
     @Test
     public void testCreatePageAsAuthor() throws InterruptedException, ClientException {
         String pageName = "testpage_" +  UUID.randomUUID();
-        String pagePath = "/content/" + pageName;
+        String pagePath = SITE_ROOT_PATH + "/" + pageName;
         try {
             SlingHttpResponse response = userRule.getClient().createPageWithRetry(pageName, "Page created by CreatePageAsAuthorUserIT",
-                    "/content", "", MINUTES.toMillis(1), 500, HttpStatus.SC_OK);
+                    SITE_ROOT_PATH, "", MINUTES.toMillis(1), 500, HttpStatus.SC_OK);
             pagePath = response.getSlingLocation();
             LOG.info("Created page at {}", pagePath);
 
