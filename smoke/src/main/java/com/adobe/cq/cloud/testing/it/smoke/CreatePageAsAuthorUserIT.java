@@ -18,6 +18,7 @@ package com.adobe.cq.cloud.testing.it.smoke;
 import com.adobe.cq.testing.client.CQClient;
 import com.adobe.cq.testing.junit.rules.CQAuthorClassRule;
 import com.adobe.cq.testing.junit.rules.CQRule;
+import com.adobe.cq.testing.junit.rules.Page;
 import com.adobe.cq.testing.junit.rules.TemporaryUser;
 import org.apache.http.HttpStatus;
 import org.apache.sling.testing.clients.ClientException;
@@ -36,20 +37,25 @@ import java.util.UUID;
 import static java.util.concurrent.TimeUnit.MINUTES;
 
 public class CreatePageAsAuthorUserIT {
+
     private static final Logger LOG = LoggerFactory.getLogger(CreatePageAsAuthorUserIT.class);
 
     private static final int TIMEOUT = (int) MINUTES.toMillis(2);
-    private static final String SITE_ROOT_PATH = "/content/test-site";
+
     public static final String CONTENT_AUTHORS_GROUP = "content-authors";
 
     @ClassRule
     public static CQAuthorClassRule cqBaseClassRule = new CQAuthorClassRule();
 
     public CQRule cqBaseRule = new CQRule(cqBaseClassRule.authorRule);
+
+    // Create a random page so the test site is initialized properly.
+    private final Page temporaryPage = new Page(cqBaseClassRule.authorRule);
+
     public TemporaryUser userRule = new TemporaryUser(() -> cqBaseClassRule.authorRule.getAdminClient(), CONTENT_AUTHORS_GROUP);
 
     @Rule
-    public TestRule cqRuleChain = RuleChain.outerRule(cqBaseRule).around(userRule);
+    public TestRule cqRuleChain = RuleChain.outerRule(cqBaseRule).around(temporaryPage).around(userRule);
 
     /**
      * Verifies that a user belonging to the "Authors" group can create a page
@@ -60,10 +66,10 @@ public class CreatePageAsAuthorUserIT {
     @Test
     public void testCreatePageAsAuthor() throws InterruptedException, ClientException {
         String pageName = "testpage_" +  UUID.randomUUID();
-        String pagePath = SITE_ROOT_PATH + "/" + pageName;
+        String pagePath = temporaryPage.getParentPath() + "/" + pageName;
         try {
             SlingHttpResponse response = userRule.getClient().createPageWithRetry(pageName, "Page created by CreatePageAsAuthorUserIT",
-                    SITE_ROOT_PATH, "", MINUTES.toMillis(1), 500, HttpStatus.SC_OK);
+                    temporaryPage.getParentPath(), "", MINUTES.toMillis(1), 500, HttpStatus.SC_OK);
             pagePath = response.getSlingLocation();
             LOG.info("Created page at {}", pagePath);
 
