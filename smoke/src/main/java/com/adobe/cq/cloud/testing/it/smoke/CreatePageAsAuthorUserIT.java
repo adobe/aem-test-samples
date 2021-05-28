@@ -25,6 +25,7 @@ import org.apache.sling.testing.clients.ClientException;
 import org.apache.sling.testing.clients.SlingHttpResponse;
 import org.junit.Assert;
 import org.junit.ClassRule;
+import org.junit.Ignore;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.RuleChain;
@@ -36,6 +37,7 @@ import java.util.UUID;
 
 import static java.util.concurrent.TimeUnit.MINUTES;
 
+@Ignore
 public class CreatePageAsAuthorUserIT {
 
     private static final Logger LOG = LoggerFactory.getLogger(CreatePageAsAuthorUserIT.class);
