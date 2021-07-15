@@ -43,7 +43,7 @@ public class CreatePageAsAuthorUserIT {
     private static final Logger LOG = LoggerFactory.getLogger(CreatePageAsAuthorUserIT.class);
 
     private static final int TIMEOUT = (int) MINUTES.toMillis(2);
-    
+
     @ClassRule
     public static CQAuthorClassRule cqBaseClassRule = new CQAuthorClassRule();
 
@@ -80,7 +80,7 @@ public class CreatePageAsAuthorUserIT {
 
             // This shows that it exists for the author user
             Assert.assertTrue(String.format("Page %s not created within %s timeout", pagePath, TIMEOUT),
-                    userRule.getClient().pageExistsWithRetry(pagePath, 1000));
+                    userRule.getClient().pageExistsWithRetry(pagePath, TIMEOUT));
         } finally {
             try {
                 cqBaseClassRule.authorRule.getAdminClient().adaptTo(CQClient.class)
