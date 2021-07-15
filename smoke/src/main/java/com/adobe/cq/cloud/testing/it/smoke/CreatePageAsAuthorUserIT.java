@@ -52,6 +52,7 @@ public class CreatePageAsAuthorUserIT {
     // Create a random page so the test site is initialized properly.
     private final Page temporaryPage = new Page(cqBaseClassRule.authorRule);
 
+    @Rule
     public TemporaryContentAuthorGroup groupRule = new TemporaryContentAuthorGroup(() -> cqBaseClassRule.authorRule.getAdminClient());
 
     @Rule
