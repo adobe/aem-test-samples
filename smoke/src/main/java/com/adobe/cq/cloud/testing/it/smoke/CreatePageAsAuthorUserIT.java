@@ -19,6 +19,7 @@ import com.adobe.cq.testing.client.CQClient;
 import com.adobe.cq.testing.junit.rules.CQAuthorClassRule;
 import com.adobe.cq.testing.junit.rules.CQRule;
 import com.adobe.cq.testing.junit.rules.Page;
+import com.adobe.cq.testing.junit.rules.TemporaryContentAuthorGroup;
 import com.adobe.cq.testing.junit.rules.TemporaryUser;
 import org.apache.http.HttpStatus;
 import org.apache.sling.testing.clients.ClientException;
@@ -37,14 +38,11 @@ import java.util.UUID;
 
 import static java.util.concurrent.TimeUnit.MINUTES;
 
-@Ignore
 public class CreatePageAsAuthorUserIT {
 
     private static final Logger LOG = LoggerFactory.getLogger(CreatePageAsAuthorUserIT.class);
 
     private static final int TIMEOUT = (int) MINUTES.toMillis(2);
-
-    public static final String CONTENT_AUTHORS_GROUP = "content-authors";
 
     @ClassRule
     public static CQAuthorClassRule cqBaseClassRule = new CQAuthorClassRule();
@@ -53,8 +51,13 @@ public class CreatePageAsAuthorUserIT {
 
     // Create a random page so the test site is initialized properly.
     private final Page temporaryPage = new Page(cqBaseClassRule.authorRule);
+    
+    public TemporaryContentAuthorGroup groupRule = new TemporaryContentAuthorGroup(() -> cqBaseClassRule.authorRule.getAdminClient());
 
-    public TemporaryUser userRule = new TemporaryUser(() -> cqBaseClassRule.authorRule.getAdminClient(), CONTENT_AUTHORS_GROUP);
+    @Rule
+    public TestRule cqRuleChainGroup = RuleChain.outerRule(cqBaseRule).around(groupRule);
+
+    public TemporaryUser userRule = new TemporaryUser(() -> cqBaseClassRule.authorRule.getAdminClient(), groupRule.getGroupName());
 
     @Rule
     public TestRule cqRuleChain = RuleChain.outerRule(cqBaseRule).around(temporaryPage).around(userRule);
