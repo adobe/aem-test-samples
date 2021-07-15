@@ -16,91 +16,51 @@
 package com.adobe.cq.cloud.testing.it.smoke;
 
 import com.adobe.cq.testing.client.CQClient;
-import com.adobe.cq.testing.client.CQSecurityClient;
-import com.adobe.cq.testing.client.security.CQAuthorizableManager;
-import com.adobe.cq.testing.client.security.CQPermissions;
-import com.adobe.cq.testing.client.security.Group;
-import com.adobe.cq.testing.client.security.User;
 import com.adobe.cq.testing.junit.rules.CQAuthorClassRule;
+import com.adobe.cq.testing.junit.rules.CQRule;
+import com.adobe.cq.testing.junit.rules.Page;
+import com.adobe.cq.testing.junit.rules.TemporaryContentAuthorGroup;
+import com.adobe.cq.testing.junit.rules.TemporaryUser;
 import org.apache.http.HttpStatus;
 import org.apache.sling.testing.clients.ClientException;
 import org.apache.sling.testing.clients.SlingHttpResponse;
 import org.junit.Assert;
-import org.junit.After;
-import org.junit.Before;
 import org.junit.ClassRule;
+import org.junit.Ignore;
+import org.junit.Rule;
 import org.junit.Test;
+import org.junit.rules.RuleChain;
+import org.junit.rules.TestRule;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.Date;
 import java.util.UUID;
 
 import static java.util.concurrent.TimeUnit.MINUTES;
 
-
 public class CreatePageAsAuthorUserIT {
 
-    private static final String CONTENT_NODE = "/content";
     private static final Logger LOG = LoggerFactory.getLogger(CreatePageAsAuthorUserIT.class);
-    private static final int TIMEOUT = (int) MINUTES.toMillis(2);
 
+    private static final int TIMEOUT = (int) MINUTES.toMillis(2);
+    
     @ClassRule
     public static CQAuthorClassRule cqBaseClassRule = new CQAuthorClassRule();
 
-    private CQAuthorizableManager authorizableManager;
-    private CQClient adminAuthor;
-    private CQClient authorAuthor;
+    public CQRule cqBaseRule = new CQRule(cqBaseClassRule.authorRule);
 
-    private CQSecurityClient sClient;
-    private CQPermissions permissionsObj;
+    // Create a random page so the test site is initialized properly.
+    private final Page temporaryPage = new Page(cqBaseClassRule.authorRule);
 
-    private User testUser;
-    private Group testGroup;
-    private CQClient testUserClient;
+    public TemporaryContentAuthorGroup groupRule = new TemporaryContentAuthorGroup(() -> cqBaseClassRule.authorRule.getAdminClient());
 
+    @Rule
+    public TestRule cqRuleChainGroup = RuleChain.outerRule(cqBaseRule).around(groupRule);
 
-    @Before
-    public void setupSecurityBase() throws ClientException, InterruptedException {
-        adminAuthor = cqBaseClassRule.authorRule.getAdminClient(CQClient.class);
-        authorAuthor = cqBaseClassRule.authorRule.getClient(CQClient.class, "author", "author");
-        sClient = cqBaseClassRule.authorRule.getAdminClient(CQSecurityClient.class);
-        permissionsObj = new CQPermissions(sClient);
-        authorizableManager = sClient.getManager();
+    public TemporaryUser userRule = new TemporaryUser(() -> cqBaseClassRule.authorRule.getAdminClient(), groupRule.getGroupName());
 
-        String authorizableId = createUniqueAuthorizableId("testUser");
-        testUser = sClient.createUser(authorizableId, authorizableId, null, null, false, null, 201);
-        testGroup = sClient.createGroup(createUniqueAuthorizableId("testGroup"), 201);
-        // Add the new user to this group
-        testGroup.addMembers(new User[]{testUser});
-
-        // set permissions
-        permissionsObj.changePermissions(testGroup.getId(), CONTENT_NODE, true, true, true, false,
-                false, false, false, 200);
-        // Login as testuser
-        testUserClient = new CQClient(sClient.getUrl(), testUser.getId(), testUser.getId());
-    }
-
-    @After
-    public void cleanupAuthorizables() throws ClientException {
-        if (testUser != null && testUser.exists()) {
-            testUser.delete(200);
-        }
-
-        if (testGroup != null && testGroup.exists()) {
-            testGroup.delete(200);
-        }
-    }
-
-    /**
-     * Create unique authorizable Id to make sure no side effects from versioning / restore occurs
-     *
-     * @param authorizableId authorizable id
-     * @return unique authorizableId
-     */
-    public static String createUniqueAuthorizableId(String authorizableId) {
-        return authorizableId + new Date().getTime();
-    }
+    @Rule
+    public TestRule cqRuleChain = RuleChain.outerRule(cqBaseRule).around(temporaryPage).around(userRule);
 
     /**
      * Verifies that a user belonging to the "Authors" group can create a page
@@ -111,16 +71,16 @@ public class CreatePageAsAuthorUserIT {
     @Test
     public void testCreatePageAsAuthor() throws InterruptedException, ClientException {
         String pageName = "testpage_" +  UUID.randomUUID();
-        String pagePath = "/content/" + pageName;
+        String pagePath = temporaryPage.getParentPath() + "/" + pageName;
         try {
-            SlingHttpResponse response = testUserClient.createPageWithRetry(pageName, "Page created by CreatePageAsAuthorUserIT",
-                    "/content", "", MINUTES.toMillis(1), 500, HttpStatus.SC_OK);
+            SlingHttpResponse response = userRule.getClient().createPageWithRetry(pageName, "Page created by CreatePageAsAuthorUserIT",
+                    temporaryPage.getParentPath(), "", MINUTES.toMillis(1), 500, HttpStatus.SC_OK);
             pagePath = response.getSlingLocation();
             LOG.info("Created page at {}", pagePath);
 
             // This shows that it exists for the author user
             Assert.assertTrue(String.format("Page %s not created within %s timeout", pagePath, TIMEOUT),
-                    testUserClient.pageExistsWithRetry(pagePath, TIMEOUT));
+                    userRule.getClient().pageExistsWithRetry(pagePath, 1000));
         } finally {
             try {
                 cqBaseClassRule.authorRule.getAdminClient().adaptTo(CQClient.class)
