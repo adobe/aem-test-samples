@@ -21,7 +21,7 @@ import org.slf4j.LoggerFactory;
 /**
  * Tests to check replication
  */
-public class ReplicationIT extends PublishIT {
+public class ReplicationIT extends PublishEndToEndIT {
     private static Logger log = LoggerFactory.getLogger(ReplicationIT.class);
     
     @Override
