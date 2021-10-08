@@ -15,33 +15,22 @@
  */
 package com.adobe.cq.cloud.testing.it.smoke;
 
-import java.io.IOException;
 import java.util.concurrent.TimeUnit;
-import java.util.concurrent.TimeoutException;
 
-import com.adobe.cq.cloud.testing.it.smoke.utils.PublishUtils;
-import com.adobe.cq.testing.client.CQClient;
-import com.adobe.cq.testing.client.ReplicationClient;
+import com.adobe.cq.cloud.testing.it.smoke.rules.PublishRule;
 import com.adobe.cq.testing.junit.rules.CQAuthorPublishClassRule;
 import com.adobe.cq.testing.junit.rules.CQRule;
 import com.adobe.cq.testing.junit.rules.Page;
-import org.apache.sling.testing.clients.ClientException;
 import org.apache.sling.testing.clients.util.poller.Polling;
 import org.junit.AssumptionViolatedException;
-import org.junit.Before;
-import org.junit.BeforeClass;
 import org.junit.ClassRule;
 import org.junit.Rule;
 import org.junit.Test;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * End to end publication test
  */
 public class PublishEndToEndIT {
-    private static Logger log = LoggerFactory.getLogger(PublishEndToEndIT.class);
-
     protected static final long TIMEOUT = TimeUnit.MINUTES.toMillis(5);
     
     @ClassRule
@@ -53,28 +42,8 @@ public class PublishEndToEndIT {
     @Rule
     public Page root = new Page(cqBaseClassRule.authorRule);
 
-    static CQClient adminAuthor;
-    static CQClient adminPublish;
-    static CQClient anonymousPublish;
-
-    private static ReplicationClient rClient;
-    
-    private PublishUtils publishUtils;
-    
-    @BeforeClass
-    public static void beforeClass() throws ClientException, IOException {
-        adminAuthor = cqBaseClassRule.authorRule.getAdminClient(CQClient.class);
-        adminPublish = cqBaseClassRule.publishRule.getAdminClient(CQClient.class);
-        anonymousPublish = cqBaseClassRule.publishRule.getClient(CQClient.class, null, null);
-        rClient = adminAuthor.adaptTo(ReplicationClient.class);
-    }
-
-    @Before
-    public void before() throws TimeoutException, InterruptedException {
-        publishUtils = new PublishUtils(root, adminAuthor, adminPublish, rClient);
-        new Polling(publishUtils::checkContentDistributionAgentExists)
-        	.poll(TIMEOUT, 500);
-    }
+    @Rule
+    public PublishRule publishRule = new PublishRule(root, cqBaseClassRule.authorRule, cqBaseClassRule.publishRule);
 
 	/**
      * Activates a page as admin, then deactivates it.
@@ -95,11 +64,11 @@ public class PublishEndToEndIT {
         // consequence, the test will be marked as failed instead of skipped.
 
         try {
-            publishUtils.activateAndDeactivate(true);
+            publishRule.activateAndDeactivate(true);
         } catch (AssumptionViolatedException e) {
             throw e;
         } catch (Exception e) {
-            new Polling(() -> publishUtils.activateAndDeactivate(true)).poll(TIMEOUT, 500);
+            new Polling(() -> publishRule.activateAndDeactivate(true)).poll(TIMEOUT, 500);
         }
     }
     
@@ -121,11 +90,11 @@ public class PublishEndToEndIT {
         // consequence, the test will be marked as failed instead of skipped.
 
         try {
-            publishUtils.activateAndDelete(true);
+            publishRule.activateAndDelete(true);
         } catch (AssumptionViolatedException e) {
             throw e;
         } catch (Exception e) {
-            new Polling(() -> publishUtils.activateAndDelete(true)).poll(TIMEOUT, 500);
+            new Polling(() -> publishRule.activateAndDelete(true)).poll(TIMEOUT, 500);
         }
     }
 }
