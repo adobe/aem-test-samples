@@ -46,7 +46,7 @@ import static org.apache.http.HttpStatus.SC_NOT_FOUND;
 import static org.apache.http.HttpStatus.SC_OK;
 import static org.apache.http.HttpStatus.SC_UNAUTHORIZED;
 
-public class PublishRule extends ExternalResource {
+public class ContentPublishRule extends ExternalResource {
     private Logger log = LoggerFactory.getLogger(Page.class);
 
     protected static final long TIMEOUT = TimeUnit.MINUTES.toMillis(5);
@@ -68,7 +68,7 @@ public class PublishRule extends ExternalResource {
     private CQClient publishClient;
     private CQClient authorClient;
 
-    public PublishRule(Page root, Instance authorRule, Instance publishRule) {
+    public ContentPublishRule(Page root, Instance authorRule, Instance publishRule) {
         this.root = root;
         this.authorRule = authorRule;
         this.publishRule = publishRule;
