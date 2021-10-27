@@ -40,7 +40,7 @@ import static org.apache.http.HttpStatus.SC_OK;
 import static org.apache.http.HttpStatus.SC_UNAUTHORIZED;
 
 public class ContentPublishRule extends ExternalResource {
-    private Logger log = LoggerFactory.getLogger(Page.class);
+    private Logger log = LoggerFactory.getLogger(ContentPublishRule.class);
 
     protected static final long TIMEOUT = TimeUnit.MINUTES.toMillis(5);
     protected static final long TIMEOUT_PER_TRY = TimeUnit.MINUTES.toMillis(1);
