@@ -182,6 +182,8 @@ public class ContentPublishRule extends ExternalResource {
             JsonNode queueJson = queuesJson.get(queueId);
 
             boolean isEmpty = queueJson.get("empty").getBooleanValue();
+            log.debug("Queue {} is empty {}", queueId, isEmpty);
+
             if (!isEmpty) {
                 Set<String> pkgs = elementsAsText(queueJson.get("items"));
                 for (String pkg : pkgs) {
@@ -195,7 +197,6 @@ public class ContentPublishRule extends ExternalResource {
                                 paths, pkgJson.get("errorMessage"));
                         }
                     }
-                    log.debug("Queue {} is empty {}", queueId, isEmpty);
                     return false;
                 }
             }
