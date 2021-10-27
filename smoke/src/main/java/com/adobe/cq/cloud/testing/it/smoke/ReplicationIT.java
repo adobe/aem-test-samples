@@ -17,7 +17,7 @@ package com.adobe.cq.cloud.testing.it.smoke;
 
 import java.util.concurrent.TimeUnit;
 
-import com.adobe.cq.cloud.testing.it.smoke.rules.PublishRule;
+import com.adobe.cq.cloud.testing.it.smoke.rules.ContentPublishRule;
 import com.adobe.cq.testing.junit.rules.CQAuthorPublishClassRule;
 import com.adobe.cq.testing.junit.rules.CQRule;
 import com.adobe.cq.testing.junit.rules.Page;
@@ -43,7 +43,8 @@ public class ReplicationIT {
     public Page root = new Page(cqBaseClassRule.authorRule);
 
     @Rule
-    public PublishRule publishRule = new PublishRule(root, cqBaseClassRule.authorRule, cqBaseClassRule.publishRule);
+    public ContentPublishRule
+        contentPublishRule = new ContentPublishRule(root, cqBaseClassRule.authorRule, cqBaseClassRule.publishRule);
 
     /**
      * Activates a page as admin, then deactivates it.
@@ -63,11 +64,11 @@ public class ReplicationIT {
         // consequence, the test will be marked as failed instead of skipped.
 
         try {
-            publishRule.activateAndDeactivate(false);
+            contentPublishRule.activateAndDeactivate(false);
         } catch (AssumptionViolatedException e) {
             throw e;
         } catch (Exception e) {
-            new Polling(() -> publishRule.activateAndDeactivate(false)).poll(TIMEOUT, 500);
+            new Polling(() -> contentPublishRule.activateAndDeactivate(false)).poll(TIMEOUT, 500);
         }
     }
 
@@ -88,11 +89,11 @@ public class ReplicationIT {
         // consequence, the test will be marked as failed instead of skipped.
 
         try {
-            publishRule.activateAndDelete(false);
+            contentPublishRule.activateAndDelete(false);
         } catch (AssumptionViolatedException e) {
             throw e;
         } catch (Exception e) {
-            new Polling(() -> publishRule.activateAndDelete(false)).poll(TIMEOUT, 500);
+            new Polling(() -> contentPublishRule.activateAndDelete(false)).poll(TIMEOUT, 500);
         }
     }
 }

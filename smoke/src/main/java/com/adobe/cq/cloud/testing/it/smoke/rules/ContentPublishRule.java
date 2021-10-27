@@ -39,12 +39,12 @@ import static org.apache.http.HttpStatus.SC_NOT_FOUND;
 import static org.apache.http.HttpStatus.SC_OK;
 import static org.apache.http.HttpStatus.SC_UNAUTHORIZED;
 
-public class PublishRule extends ExternalResource {
+public class ContentPublishRule extends ExternalResource {
     private Logger log = LoggerFactory.getLogger(Page.class);
 
     protected static final long TIMEOUT = TimeUnit.MINUTES.toMillis(5);
     protected static final long TIMEOUT_PER_TRY = TimeUnit.MINUTES.toMillis(1);
-    
+
     protected static final String PUBLISH_DIST_AGENT = "publish";
     protected static final String PREVIEW_DIST_AGENT = "preview";
 
@@ -62,7 +62,7 @@ public class PublishRule extends ExternalResource {
     private CQClient publishClient;
     private CQClient authorClient;
 
-    public PublishRule(Page root, Instance authorRule, Instance publishRule) {
+    public ContentPublishRule(Page root, Instance authorRule, Instance publishRule) {
         this.root = root;
         this.authorRule = authorRule;
         this.publishRule = publishRule;
@@ -72,13 +72,13 @@ public class PublishRule extends ExternalResource {
      * Initialize the replication client
      * Assert publish agent is available
      * Check if preview agent exists
-     * 
+     *
      * @throws Exception if exception occurs
      */
     @Override
     protected void before() throws Exception {
         replicationClient = getAuthorClient().adaptTo(ReplicationClient.class);
-        
+
         try {
             new Polling(this::checkContentDistributionPublishAgentExists).poll(TIMEOUT, 500);
         } catch (Exception e) {
@@ -94,7 +94,7 @@ public class PublishRule extends ExternalResource {
 
     /**
      * Execute activate and delete on publish and preview if available
-     * 
+     *
      * @param isCheckPage if to assert on the presence/absence of the page on publish
      * @return
      * @throws Exception if exception occurs
@@ -139,7 +139,7 @@ public class PublishRule extends ExternalResource {
     private void checkPage(final int... expectedStatus) throws Exception {
         checkPage(true, expectedStatus);
     }
-    
+
     /**
      * Checks that a GET on the page on publish has the {{expectedStatus}} in the response
      *
@@ -184,7 +184,7 @@ public class PublishRule extends ExternalResource {
     private Boolean checkContentDistributionPreviewAgentExists() throws ClientException {
         return replicationClient.checkContentDistributionAgentExists(PREVIEW_DIST_AGENT);
     }
-    
+
     private void activateAssertPublish(boolean isCheckPage) throws Exception {
         replicationClient.activate(root.getPath());
         waitPublishQueueEmptyOfPath();
@@ -200,7 +200,7 @@ public class PublishRule extends ExternalResource {
             waitPreviewQueueEmptyOfPath();
         }
     }
-    
+
     private void deactivateAssertPublish(boolean isCheckPage) throws Exception {
         replicationClient.deactivate(root.getPath());
         waitPublishQueueEmptyOfPath();
@@ -216,7 +216,7 @@ public class PublishRule extends ExternalResource {
             waitPreviewQueueEmptyOfPath();
         }
     }
-    
+
     private void deleteAssertPublish(boolean isCheckPage) throws Exception {
         getAuthorClient().deletePage(new String[]{root.getPath()}, true, false);
         waitPublishQueueEmptyOfPath();
@@ -224,7 +224,7 @@ public class PublishRule extends ExternalResource {
             checkPage(SC_NOT_FOUND);
         }
     }
-    
+
     /**
      * The client to use to create and delete this page. The default implementation creates a {@link CQClient}.
      * The default implementation also uses the default admin user.
@@ -251,4 +251,3 @@ public class PublishRule extends ExternalResource {
         return authorClient;
     }
 }
-
