@@ -85,8 +85,12 @@ public class ContentPublishRule extends ExternalResource {
             log.error("Unable to assert publish agent", e);
             throw e;
         }
+        waitPublishQueueEmptyOfPath();
         try {
             this.previewAvailable = checkContentDistributionPreviewAgentExists();
+            if (previewAvailable) {
+                waitPreviewQueueEmptyOfPath();
+            }
         } catch (Exception e) {
             log.info("No preview agent found", e);
         }
