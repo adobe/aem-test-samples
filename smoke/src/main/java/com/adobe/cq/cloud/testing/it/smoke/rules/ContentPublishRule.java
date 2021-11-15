@@ -91,6 +91,7 @@ public class ContentPublishRule extends ExternalResource {
             log.error("Unable to assert publish agent", e);
             throw e;
         }
+        waitPublishQueueEmptyOfPath();
     }
 
     /**
