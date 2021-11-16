@@ -54,7 +54,8 @@ public class PublishEndToEndIT {
      * Verifies:
      * <ul>
      *      <li>That the replication queue is empty</li>
-     *      <li>If check enabled verifies that deleted page gets removed from publish</li>
+     *      <li>After activation, that the page is accessible via the publish ingress</li>
+     *      <li>After deactivation, that the page is no longer accessible via the publish ingress and that the queue is empty</li>
      * </ul>
      *
      * @throws Exception if an error occurred
@@ -80,8 +81,9 @@ public class PublishEndToEndIT {
      * Activates a page as admin, then deletes it.
      * Verifies:
      * <ul>
-     *  <li>That the replication queue is empty</li>
-     *  <li>If check enabled verifies that deleted page gets removed from publish</li>
+     *      <li>That the replication queue is empty</li>
+     *      <li>After activation, that the page is accessible via the publish ingress</li>
+     *      <li>After page deletion, that the page is no longer accessible via the publish ingress and that the queue is empty</li>
      * </ul>
      * @throws Exception if an error occurred
      */
