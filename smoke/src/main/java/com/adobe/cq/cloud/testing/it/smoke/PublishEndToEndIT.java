@@ -28,7 +28,10 @@ import org.junit.Rule;
 import org.junit.Test;
 
 /**
- * End to end publication test
+ * End to end publication test.
+ * 
+ * A test page is published from author and publication is validated through the AEM
+ * publish ingress (CDN -&gt; Dispatcher -&gt; AEM publish tier).
  */
 public class PublishEndToEndIT {
     protected static final long TIMEOUT = TimeUnit.MINUTES.toMillis(5);

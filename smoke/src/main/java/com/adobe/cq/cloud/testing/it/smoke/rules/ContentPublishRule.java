@@ -64,7 +64,6 @@ public class ContentPublishRule extends ExternalResource {
 
     private ReplicationClient replicationClient;
 
-    private boolean previewAvailable;
     private CQClient publishClient;
     private CQClient authorClient;
 
@@ -91,7 +90,12 @@ public class ContentPublishRule extends ExternalResource {
             log.error("Unable to assert publish agent", e);
             throw e;
         }
-        waitPublishQueueEmptyOfPath();
+        try {
+            waitPublishQueueEmptyOfPath(TIMEOUT_PER_TRY, 1000);
+        } catch(Exception e) {
+            log.error("Failed to run test due to blocked queue. Please unblock the queue before running the test again", e);
+            throw e;
+        }
     }
 
     /**
@@ -122,9 +126,13 @@ public class ContentPublishRule extends ExternalResource {
         return true;
     }
 
-    private void waitPublishQueueEmptyOfPath() throws Exception {
+    private void waitPublishQueueEmptyOfPath(long timeout, long delay) throws Exception {
         new Polling(() -> waitQueueEmptyOfPath(PUB_QUEUES_PATH, root.getPath()))
-            .poll(TIMEOUT, 500);
+            .poll(timeout, delay);            
+    }
+    
+    private void waitPublishQueueEmptyOfPath() throws Exception {
+        waitPublishQueueEmptyOfPath(TIMEOUT, 500);
     }
     
     /**
@@ -194,10 +202,11 @@ public class ContentPublishRule extends ExternalResource {
                         Set<String> paths = elementsAsText(pkgJson.get("paths"));
 
                         if (paths.contains(replicatedPath)) {
-                            log.warn("Package [{}] in queue [{}] with paths {} failed due to [{}]", pkg, queueId,
-                                paths, pkgJson.get("errorMessage"));
+                            log.warn("The replication queue {} is blocked by the item {} with paths {} due to {}.", 
+                                queueId, pkg, paths, pkgJson.get("errorMessage"));
                         }
                     }
+                    log.warn("The replication queue {} is blocked by the item {}.", queueId, pkg);
                     return false;
                 }
             }
@@ -216,25 +225,18 @@ public class ContentPublishRule extends ExternalResource {
         Iterator<JsonNode> elementsIt = node.getElements();
         return StreamSupport.stream(Spliterators.spliteratorUnknownSize(elementsIt, Spliterator.ORDERED), false);
     }
-
-
-    private void checkPage(final int... expectedStatus) throws Exception {
-        checkPage(true, expectedStatus);
-    }
     
     /**
      * Checks that a GET on the page on publish has the {{expectedStatus}} in the response
      *
      * @throws Exception if an error occurred
      */
-    private void checkPage(boolean skipDispatcherCache, final int...  expectedStatus) throws Exception {
+    private void checkPage(final int...  expectedStatus) throws Exception {
         final String path = root.getPath() + ".html";
         log.info("Checking page {} returns status {}", getPublishClient().getUrl(path), expectedStatus);
         SlingHttpResponse res = null;
-        final List<NameValuePair> queryParams = skipDispatcherCache
-            ? Collections.singletonList(
-            new BasicNameValuePair("timestamp", String.valueOf(System.currentTimeMillis())))
-            : Collections.emptyList();
+        final List<NameValuePair> queryParams = Collections.singletonList(
+            new BasicNameValuePair("timestamp", String.valueOf(System.currentTimeMillis())));
 
         res = getPublishClient().doGet(path, queryParams, Collections.emptyList());
         if (null != res && res.getStatusLine().getStatusCode() == SC_UNAUTHORIZED) {
@@ -244,17 +246,14 @@ public class ContentPublishRule extends ExternalResource {
         try {
             new Polling() {
                 @Override public Boolean call() throws Exception {
-                    final List<NameValuePair> queryParams = skipDispatcherCache ?
-                        Collections.singletonList(
-                            new BasicNameValuePair("timestamp", String.valueOf(System.currentTimeMillis()))) :
-                        Collections.emptyList();
+                    final List<NameValuePair> queryParams = Collections.singletonList(
+                            new BasicNameValuePair("timestamp", String.valueOf(System.currentTimeMillis())));
                     getPublishClient().doGet(path, queryParams, Collections.emptyList(), expectedStatus);
                     return true;
                 }
             }.poll(TIMEOUT_PER_TRY, 1000);
         } catch (TimeoutException te) {
-            log.warn("Checking page {} with expected status {} failed. Please check that the connectivity to {} is proper",
-                root.getPath(), expectedStatus, getPublishClient().getUrl());
+            log.warn("Failed to check the page {} via the AEM publish ingress (expected status {}). Please ensure that the CDN and Dispatcher configurations allow fetching the page.", root.getPath(), expectedStatus);
             throw te;
         }
     }
