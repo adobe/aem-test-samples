@@ -28,14 +28,14 @@ import org.junit.Rule;
 import org.junit.Test;
 
 /**
- * Tests to check replication. 
+ * End to end publication test.
  * 
- * A test page is published from author and publication is 
- * validated through the replication queues on author.
+ * A test page is published from author and publication is validated through the AEM
+ * publish ingress (CDN -&gt; Dispatcher -&gt; AEM publish tier).
  */
-public class ReplicationIT {
+public class PublishEndToEndIT {
     protected static final long TIMEOUT = TimeUnit.MINUTES.toMillis(5);
-
+    
     @ClassRule
     public static CQAuthorPublishClassRule cqBaseClassRule = new CQAuthorPublishClassRule();
 
@@ -49,11 +49,13 @@ public class ReplicationIT {
     public ContentPublishRule
         contentPublishRule = new ContentPublishRule(root, cqBaseClassRule.authorRule, cqBaseClassRule.publishRule);
 
-    /**
+	/**
      * Activates a page as admin, then deactivates it.
      * Verifies:
      * <ul>
      *      <li>That the replication queue is empty</li>
+     *      <li>After activation, that the page is accessible via the publish ingress</li>
+     *      <li>After deactivation, that the page is no longer accessible via the publish ingress and that the queue is empty</li>
      * </ul>
      *
      * @throws Exception if an error occurred
@@ -67,11 +69,38 @@ public class ReplicationIT {
         // consequence, the test will be marked as failed instead of skipped.
 
         try {
-            contentPublishRule.activateAndDeactivate(false);
+            contentPublishRule.activateAndDeactivate(true);
         } catch (AssumptionViolatedException e) {
             throw e;
         } catch (Exception e) {
-            new Polling(() -> contentPublishRule.activateAndDeactivate(false)).poll(TIMEOUT, 500);
+            new Polling(() -> contentPublishRule.activateAndDeactivate(true)).poll(TIMEOUT, 500);
+        }
+    }
+    
+    /**
+     * Activates a page as admin, then deletes it.
+     * Verifies:
+     * <ul>
+     *      <li>That the replication queue is empty</li>
+     *      <li>After activation, that the page is accessible via the publish ingress</li>
+     *      <li>After page deletion, that the page is no longer accessible via the publish ingress and that the queue is empty</li>
+     * </ul>
+     * @throws Exception if an error occurred
+     */
+    @Test
+    public void testActivateAndDelete() throws Exception {
+
+        // This is a workaround for correctly detecting assumption violations.
+        // Any AssumptionViolatedException throw by the Callable will be
+        // swallowed by the Poller and wrapped in a TimeoutException. As a
+        // consequence, the test will be marked as failed instead of skipped.
+
+        try {
+            contentPublishRule.activateAndDelete(true);
+        } catch (AssumptionViolatedException e) {
+            throw e;
+        } catch (Exception e) {
+            new Polling(() -> contentPublishRule.activateAndDelete(true)).poll(TIMEOUT, 500);
         }
     }
 }
