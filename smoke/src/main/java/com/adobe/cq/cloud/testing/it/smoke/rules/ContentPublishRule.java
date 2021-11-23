@@ -25,7 +25,6 @@ import com.adobe.cq.testing.client.ReplicationClient;
 import com.adobe.cq.testing.junit.rules.Page;
 import org.apache.http.NameValuePair;
 import org.apache.http.message.BasicNameValuePair;
-import org.apache.sling.testing.clients.ClientException;
 import org.apache.sling.testing.clients.SlingHttpResponse;
 import org.apache.sling.testing.clients.util.poller.Polling;
 import org.apache.sling.testing.junit.rules.instance.Instance;
@@ -70,37 +69,61 @@ public class ContentPublishRule extends ExternalResource {
 
     /**
      * Initialize the replication client
-     * Assert publish agent is available
-     * Check if preview agent exists
+     * Assert publish agent is available and agent queue is empty
+     * Check if preview agent exists and if exists the agent queue is empty
      *
      * @throws Exception if exception occurs
      */
     @Override
     protected void before() throws Exception {
         replicationClient = getAuthorClient().adaptTo(ReplicationClient.class);
-
+        checkPublishQueue();
+        previewAvailable = checkPreviewQueue();
+    }
+    
+    private void checkPublishQueue() throws Exception {
         try {
-            new Polling(this::checkContentDistributionPublishAgentExists).poll(TIMEOUT, 500);
+            new Polling(() -> replicationClient.checkContentDistributionAgentExists(PUBLISH_DIST_AGENT)).poll(TIMEOUT, 500);
         } catch (Exception e) {
             log.error("Unable to assert publish agent", e);
             throw e;
         }
-        waitPublishQueueEmptyOfPath();
         try {
-            this.previewAvailable = checkContentDistributionPreviewAgentExists();
-            if (previewAvailable) {
-                waitPreviewQueueEmptyOfPath();
-            }
+            new Polling(() -> replicationClient.waitQueueEmptyOfPath(PUB_QUEUES_PATH, root.getPath())).poll(TIMEOUT_PER_TRY,
+                1000);
         } catch (Exception e) {
-            log.info("No preview agent found", e);
+            log.error(
+                "Failed to run test due to blocked publish queue. Please unblock the queue before running the test again", e);
+            throw e;
         }
     }
 
+    private boolean checkPreviewQueue() throws Exception {
+        boolean agentAvailable = false;
+        try {
+            new Polling(() -> replicationClient.checkContentDistributionAgentExists(PREVIEW_DIST_AGENT)).poll(TIMEOUT, 500);
+            agentAvailable = true;
+        } catch (Exception e) {
+            log.info("Unable to assert preview agent");
+        }
+        if (agentAvailable) {
+            try {
+                new Polling(() -> replicationClient.waitQueueEmptyOfPath(PREVIEW_QUEUES_PATH, root.getPath())).poll(TIMEOUT_PER_TRY,
+                    1000);
+            } catch (Exception e) {
+                log.error(
+                    "Failed to run test due to blocked preview queue. Please unblock the queue before running the test again", e);
+                throw e;
+            }
+        }
+        return agentAvailable;
+    }
+    
     /**
      * Execute activate and delete on publish and preview if available
      *
      * @param isCheckPage if to assert on the presence/absence of the page on publish
-     * @return
+     * @return true if success
      * @throws Exception if exception occurs
      */
     public boolean activateAndDelete(boolean isCheckPage) throws Exception {
@@ -117,7 +140,7 @@ public class ContentPublishRule extends ExternalResource {
      * Execute activate and deactivate on publish and preview if available
      *
      * @param isCheckPage if to assert on the presence/absence of the page on publish
-     * @return
+     * @return true if success
      * @throws Exception if exception occurs
      */
     public boolean activateAndDeactivate(boolean isCheckPage) throws Exception {
@@ -140,23 +163,17 @@ public class ContentPublishRule extends ExternalResource {
             .poll(TIMEOUT, 500);
     }
 
-    private void checkPage(final int... expectedStatus) throws Exception {
-        checkPage(true, expectedStatus);
-    }
-
     /**
      * Checks that a GET on the page on publish has the {{expectedStatus}} in the response
      *
      * @throws Exception if an error occurred
      */
-    private void checkPage(boolean skipDispatcherCache, final int...  expectedStatus) throws Exception {
+    private void checkPage(final int...  expectedStatus) throws Exception {
         final String path = root.getPath() + ".html";
         log.info("Checking page {} returns status {}", getPublishClient().getUrl(path), expectedStatus);
         SlingHttpResponse res = null;
-        final List<NameValuePair> queryParams = skipDispatcherCache
-            ? Collections.singletonList(
-            new BasicNameValuePair("timestamp", String.valueOf(System.currentTimeMillis())))
-            : Collections.emptyList();
+        final List<NameValuePair> queryParams = Collections.singletonList(
+            new BasicNameValuePair("timestamp", String.valueOf(System.currentTimeMillis())));
 
         res = getPublishClient().doGet(path, queryParams, Collections.emptyList());
         if (null != res && res.getStatusLine().getStatusCode() == SC_UNAUTHORIZED) {
@@ -166,27 +183,16 @@ public class ContentPublishRule extends ExternalResource {
         try {
             new Polling() {
                 @Override public Boolean call() throws Exception {
-                    final List<NameValuePair> queryParams = skipDispatcherCache ?
-                        Collections.singletonList(
-                            new BasicNameValuePair("timestamp", String.valueOf(System.currentTimeMillis()))) :
-                        Collections.emptyList();
+                    final List<NameValuePair> queryParams = Collections.singletonList(
+                            new BasicNameValuePair("timestamp", String.valueOf(System.currentTimeMillis())));
                     getPublishClient().doGet(path, queryParams, Collections.emptyList(), expectedStatus);
                     return true;
                 }
             }.poll(TIMEOUT_PER_TRY, 1000);
         } catch (TimeoutException te) {
-            log.warn("Checking page {} with expected status {} failed. Please check that the connectivity to {} is proper",
-                root.getPath(), expectedStatus, getPublishClient().getUrl());
+            log.warn("Failed to check the page {} via the AEM publish ingress (expected status {}). Please ensure that the CDN and Dispatcher configurations allow fetching the page.", root.getPath(), expectedStatus);
             throw te;
         }
-    }
-
-    private Boolean checkContentDistributionPublishAgentExists() throws ClientException {
-        return replicationClient.checkContentDistributionAgentExists(PUBLISH_DIST_AGENT);
-    }
-
-    private Boolean checkContentDistributionPreviewAgentExists() throws ClientException {
-        return replicationClient.checkContentDistributionAgentExists(PREVIEW_DIST_AGENT);
     }
 
     private void activateAssertPublish(boolean isCheckPage) throws Exception {
