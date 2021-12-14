@@ -20,9 +20,9 @@ import com.adobe.cq.testing.junit.rules.CQAuthorPublishClassRule;
 import com.adobe.cq.testing.junit.rules.CQRule;
 import com.adobe.cq.testing.junit.rules.Page;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.apache.sling.testing.clients.ClientException;
 import org.apache.sling.testing.clients.SlingHttpResponse;
-import org.codehaus.jackson.map.ObjectMapper;
 import org.junit.*;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
