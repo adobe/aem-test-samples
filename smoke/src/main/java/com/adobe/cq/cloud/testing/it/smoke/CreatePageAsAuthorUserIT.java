@@ -25,6 +25,7 @@ import org.apache.http.HttpStatus;
 import org.apache.sling.testing.clients.ClientException;
 import org.apache.sling.testing.clients.SlingHttpResponse;
 import org.junit.Assert;
+import org.junit.AssumptionViolatedException;
 import org.junit.ClassRule;
 import org.junit.Ignore;
 import org.junit.Rule;
@@ -37,6 +38,7 @@ import org.slf4j.LoggerFactory;
 import java.util.UUID;
 
 import static java.util.concurrent.TimeUnit.MINUTES;
+import static org.apache.http.HttpStatus.SC_UNAUTHORIZED;
 
 public class CreatePageAsAuthorUserIT {
 
@@ -75,7 +77,16 @@ public class CreatePageAsAuthorUserIT {
         try {
             SlingHttpResponse response = userRule.getClient().createPageWithRetry(pageName, "Page created by CreatePageAsAuthorUserIT",
                     temporaryPage.getParentPath(), "", MINUTES.toMillis(1), 500, HttpStatus.SC_OK);
+            if (null != response && response.getStatusLine().getStatusCode() == SC_UNAUTHORIZED) {
+                throw new AssumptionViolatedException("Author User not authorized to create page. Skipping...");
+            }
             pagePath = response.getSlingLocation();
+            if(pagePath == null || pagePath.isEmpty()) {
+                pagePath = response.getSlingPath();
+            }
+            if(pagePath == null || pagePath.isEmpty()) {
+                throw new AssumptionViolatedException("Not able to get created page path from sling response. Skipping...");
+            }
             LOG.info("Created page at {}", pagePath);
 
             // This shows that it exists for the author user
