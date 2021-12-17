@@ -78,7 +78,7 @@ public class CreatePageAsAuthorUserIT {
             SlingHttpResponse response = userRule.getClient().createPageWithRetry(pageName, "Page created by CreatePageAsAuthorUserIT",
                     temporaryPage.getParentPath(), "", MINUTES.toMillis(1), 500, HttpStatus.SC_OK);
             if (null != response && response.getStatusLine().getStatusCode() == SC_UNAUTHORIZED) {
-                throw new AssumptionViolatedException("Author User not authorized to create page. Skipping...");
+                throw new AssumptionViolatedException("Author User " + userRule.getClient().getUser() + " not authorized to create page. Skipping...");
             }
             pagePath = response.getSlingLocation();
             if(pagePath == null || pagePath.isEmpty()) {
