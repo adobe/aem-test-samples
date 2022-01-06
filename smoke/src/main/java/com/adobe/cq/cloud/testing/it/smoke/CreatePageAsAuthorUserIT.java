@@ -21,6 +21,7 @@ import com.adobe.cq.testing.junit.rules.CQRule;
 import com.adobe.cq.testing.junit.rules.Page;
 import com.adobe.cq.testing.junit.rules.TemporaryContentAuthorGroup;
 import com.adobe.cq.testing.junit.rules.TemporaryUser;
+import com.google.common.base.Strings;
 import org.apache.http.HttpStatus;
 import org.apache.sling.testing.clients.ClientException;
 import org.apache.sling.testing.clients.SlingHttpResponse;
@@ -83,15 +84,11 @@ public class CreatePageAsAuthorUserIT {
                 throw new AssumptionViolatedException("Author User " + userRule.getClient().getUser() + " not authorized to create page. Skipping...");
             }
             pagePath = response.getSlingLocation();
-            if(pagePath == null || pagePath.isEmpty()) {
+            if (Strings.isNullOrEmpty(pagePath)) {
                 pagePath = response.getSlingPath();
             }
-            String expectedResponseLike = "<tr>\n <td>Location</td>\n" +
-                    " <td><a href=\""  + pagePathExpected +"\" id=\"Location\">" + pagePathExpected +"</a></td>\n</tr>\n.\n.\n.\n" +
-                    "<tr>\n <td>Path</td>\n" +
-                    " <td><div id=\"Path\">" + pagePathExpected + "</div></td>\n" +
-                    "</tr>";
-            assertFalse("Not able to get created page path from sling response. Expected response like " + expectedResponseLike, pagePath == null || pagePath.isEmpty());
+            String expectedResponseLike = "[...] <a href=\""  + pagePathExpected +"\" id=\"Location\">" + pagePathExpected + "</a> [...]";
+            assertFalse("Not able to get created page path from sling response. Expected response like " + expectedResponseLike, Strings.isNullOrEmpty(pagePath));
             LOG.info("Created page at {}", pagePath);
 
             // This shows that it exists for the author user
@@ -102,7 +99,6 @@ public class CreatePageAsAuthorUserIT {
                 cqBaseClassRule.authorRule.getAdminClient().adaptTo(CQClient.class)
                         .deletePageWithRetry(pagePath, true, false, 2000, 500);
                 LOG.info("Deleted page at {}", pagePath);
-
             } catch (ClientException e) {
                 LOG.error("Unable to delete the page", e);
             }
