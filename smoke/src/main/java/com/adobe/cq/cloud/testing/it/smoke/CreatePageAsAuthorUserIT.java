@@ -25,6 +25,7 @@ import org.apache.http.HttpStatus;
 import org.apache.sling.testing.clients.ClientException;
 import org.apache.sling.testing.clients.SlingHttpResponse;
 import org.junit.Assert;
+import org.junit.AssumptionViolatedException;
 import org.junit.ClassRule;
 import org.junit.Ignore;
 import org.junit.Rule;
@@ -37,6 +38,8 @@ import org.slf4j.LoggerFactory;
 import java.util.UUID;
 
 import static java.util.concurrent.TimeUnit.MINUTES;
+import static org.apache.http.HttpStatus.SC_UNAUTHORIZED;
+import static org.junit.Assert.assertFalse;
 
 public class CreatePageAsAuthorUserIT {
 
@@ -71,11 +74,24 @@ public class CreatePageAsAuthorUserIT {
     @Test
     public void testCreatePageAsAuthor() throws InterruptedException, ClientException {
         String pageName = "testpage_" +  UUID.randomUUID();
-        String pagePath = temporaryPage.getParentPath() + "/" + pageName;
+        String pagePathExpected = temporaryPage.getParentPath() + "/" + pageName;
+        String pagePath = pagePathExpected;
         try {
             SlingHttpResponse response = userRule.getClient().createPageWithRetry(pageName, "Page created by CreatePageAsAuthorUserIT",
                     temporaryPage.getParentPath(), "", MINUTES.toMillis(1), 500, HttpStatus.SC_OK);
+            if (null != response && response.getStatusLine().getStatusCode() == SC_UNAUTHORIZED) {
+                throw new AssumptionViolatedException("Author User " + userRule.getClient().getUser() + " not authorized to create page. Skipping...");
+            }
             pagePath = response.getSlingLocation();
+            if(pagePath == null || pagePath.isEmpty()) {
+                pagePath = response.getSlingPath();
+            }
+            String expectedResponseLike = "<tr>\n <td>Location</td>\n" +
+                    " <td><a href=\""  + pagePathExpected +"\" id=\"Location\">" + pagePathExpected +"</a></td>\n</tr>\n.\n.\n.\n" +
+                    "<tr>\n <td>Path</td>\n" +
+                    " <td><div id=\"Path\">" + pagePathExpected + "</div></td>\n" +
+                    "</tr>";
+            assertFalse("Not able to get created page path from sling response. Expected response like " + expectedResponseLike, pagePath == null || pagePath.isEmpty());
             LOG.info("Created page at {}", pagePath);
 
             // This shows that it exists for the author user
