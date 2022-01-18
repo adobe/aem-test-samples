@@ -124,7 +124,7 @@ public class XfSmokeIT {
             Assert.assertEquals("First variation template is incorrect", masterVariant.getTemplateType(), predefinedTemplate);
             Assert.assertEquals("First variation title is incorrect", CREATE_VARIANT_TITLE, masterVariant.getTitle());
             Assert.assertTrue("First variation is not marked as master", masterVariant.isMasterVariant());
-            Assert.assertEquals("Variant tags should be empty", masterVariant.getTags().size(), 0);
+            Assert.assertEquals("Variant tags should contains at least one tag from initial content", 1, masterVariant.getTags().size());
         }
     }
 
