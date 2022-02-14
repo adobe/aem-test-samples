@@ -21,7 +21,7 @@ import com.adobe.cq.testing.junit.rules.CQRule;
 import com.adobe.cq.testing.junit.rules.Page;
 import com.adobe.cq.testing.junit.rules.TemporaryContentAuthorGroup;
 import com.adobe.cq.testing.junit.rules.TemporaryUser;
-import com.google.common.base.Strings;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.http.HttpStatus;
 import org.apache.sling.testing.clients.ClientException;
 import org.apache.sling.testing.clients.SlingHttpResponse;
@@ -84,11 +84,11 @@ public class CreatePageAsAuthorUserIT {
                 throw new AssumptionViolatedException("Author User " + userRule.getClient().getUser() + " not authorized to create page. Skipping...");
             }
             pagePath = response.getSlingLocation();
-            if (Strings.isNullOrEmpty(pagePath)) {
+            if (StringUtils.isEmpty(pagePath)) {
                 pagePath = response.getSlingPath();
             }
             String expectedResponseLike = "[...] <a href=\""  + pagePathExpected +"\" id=\"Location\">" + pagePathExpected + "</a> [...]";
-            assertFalse("Not able to get created page path from sling response. Expected response like " + expectedResponseLike, Strings.isNullOrEmpty(pagePath));
+            assertFalse("Not able to get created page path from sling response. Expected response like " + expectedResponseLike, StringUtils.isEmpty(pagePath));
             LOG.info("Created page at {}", pagePath);
 
             // This shows that it exists for the author user
