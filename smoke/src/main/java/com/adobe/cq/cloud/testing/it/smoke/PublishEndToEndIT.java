@@ -44,8 +44,8 @@ import static org.apache.http.HttpStatus.SC_NOT_FOUND;
 import static org.apache.http.HttpStatus.SC_OK;
 import static org.apache.http.HttpStatus.SC_UNAUTHORIZED;
 
-public class ReplicationIT {
-    private Logger log = LoggerFactory.getLogger(ReplicationIT.class);
+public class PublishEndToEndIT {
+    private Logger log = LoggerFactory.getLogger(PublishEndToEndIT.class);
 
     private static final long TIMEOUT = TimeUnit.MINUTES.toMillis(5);
     private static final long TIMEOUT_PER_TRY = TimeUnit.MINUTES.toMillis(1);
@@ -102,37 +102,6 @@ public class ReplicationIT {
         } catch (Exception e) {
             new Polling(this::activateAndDeactivate).poll(TIMEOUT, 500);
         }
-    }
-    
-    /**
-     * Activates a page as admin, than deletes it. Verifies that deleted page gets removed from publish.
-     *
-     * @throws Exception if an error occurred
-     */
-    @Test
-    public void testActivateAndDelete() throws Exception {
-
-        // This is a workaround for correctly detecting assumption violations.
-        // Any AssumptionViolatedException throw by the the Callable will be
-        // swallowed by the Poller and wrapped in a TimeoutException. As a
-        // consequence, the test will be marked as failed instead of skipped.
-
-        try {
-            activateAndDelete();
-        } catch (AssumptionViolatedException e) {
-            throw e;
-        } catch (Exception e) {
-            new Polling(this::activateAndDelete).poll(TIMEOUT, 500);
-        }
-    }
-    
-    private boolean activateAndDelete() throws Exception {
-        rClient.activate(root.getPath());
-        checkPage(SC_OK);
-
-        adminAuthor.deletePage(new String[]{root.getPath()}, true, false);
-        checkPage(SC_NOT_FOUND);
-        return true;
     }
     
     private boolean activateAndDeactivate() throws Exception {
