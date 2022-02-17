@@ -21,17 +21,13 @@ import com.adobe.cq.testing.junit.rules.CQRule;
 import com.adobe.cq.testing.junit.rules.Page;
 import com.adobe.cq.testing.junit.rules.TemporaryContentAuthorGroup;
 import com.adobe.cq.testing.junit.rules.TemporaryUser;
-import com.adobe.cq.testing.util.WCMCommands;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.http.HttpStatus;
 import org.apache.sling.testing.clients.ClientException;
 import org.apache.sling.testing.clients.SlingHttpResponse;
-import org.apache.sling.testing.clients.util.HttpUtils;
-import org.apache.sling.testing.clients.util.poller.Polling;
 import org.junit.Assert;
 import org.junit.AssumptionViolatedException;
 import org.junit.ClassRule;
-import org.junit.Ignore;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.RuleChain;
@@ -40,11 +36,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.UUID;
-import java.util.concurrent.TimeoutException;
 
 import static java.util.concurrent.TimeUnit.MINUTES;
-import static org.apache.http.HttpStatus.SC_OK;
-import static org.apache.http.HttpStatus.SC_UNAUTHORIZED;
 import static org.junit.Assert.assertFalse;
 
 public class CreatePageAsAuthorUserIT {
@@ -85,7 +78,7 @@ public class CreatePageAsAuthorUserIT {
         try {
             SlingHttpResponse response = userRule.getClient().createPageWithRetry(pageName, "Page created by CreatePageAsAuthorUserIT",
                     temporaryPage.getParentPath(), "", MINUTES.toMillis(1), 500, HttpStatus.SC_OK, HttpStatus.SC_UNAUTHORIZED);
-            if (null != response && response.getStatusLine().getStatusCode() == SC_UNAUTHORIZED) {
+            if (null != response && response.getStatusLine().getStatusCode() == HttpStatus.SC_UNAUTHORIZED) {
                 throw new AssumptionViolatedException("Author User " + userRule.getClient().getUser() + " not authorized to create page. Skipping...");
             }
             pagePath = response.getSlingLocation();
