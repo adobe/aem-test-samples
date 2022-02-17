@@ -83,8 +83,8 @@ public class CreatePageAsAuthorUserIT {
         String pagePathExpected = temporaryPage.getParentPath() + "/" + pageName;
         String pagePath = pagePathExpected;
         try {
-            SlingHttpResponse response = createPageWithRetry(userRule.getClient(), pageName, "Page created by CreatePageAsAuthorUserIT",
-                    temporaryPage.getParentPath(), "", MINUTES.toMillis(1), 500, HttpStatus.SC_OK);
+            SlingHttpResponse response = userRule.getClient().createPageWithRetry(pageName, "Page created by CreatePageAsAuthorUserIT",
+                    temporaryPage.getParentPath(), "", MINUTES.toMillis(1), 500, HttpStatus.SC_OK, HttpStatus.SC_UNAUTHORIZED);
             if (null != response && response.getStatusLine().getStatusCode() == SC_UNAUTHORIZED) {
                 throw new AssumptionViolatedException("Author User " + userRule.getClient().getUser() + " not authorized to create page. Skipping...");
             }
@@ -108,37 +108,6 @@ public class CreatePageAsAuthorUserIT {
                 LOG.error("Unable to delete the page", e);
             }
         }
-    }
-
-    private SlingHttpResponse createPageWithRetry(CQClient client, final String pageName, final String pageTitle,
-                                                 final String parentPath, final String templatePath,
-                                                 long timeout, long delay, final int... expectedStatus)
-            throws ClientException, InterruptedException {
-
-        class CreatePagePolling extends Polling {
-            SlingHttpResponse response;
-            protected final WCMCommands wcmCommands = new WCMCommands(client);
-            @Override
-            public Boolean call() throws Exception {
-                try {
-                    response = wcmCommands.createPage(pageName, pageTitle, parentPath, templatePath, HttpUtils.getExpectedStatus(SC_OK, expectedStatus));
-                } catch (ClientException e) {
-                    ClientException ex = (ClientException) e.getCause();
-                    response = ex.getResponse();
-                    LOG.info("Exception while creating page " + e.toString() + "\n Cause is: " + e.getCause());
-                    throw e;
-                }
-                return true;
-            }
-        }
-
-        CreatePagePolling createPolling = new CreatePagePolling();
-        try {
-            createPolling.poll(timeout, delay);
-        } catch (TimeoutException e) {
-            throw new ClientException("Failed to create page " + pageName + " in " + createPolling.getWaited(), e);
-        }
-        return createPolling.response;
     }
 
 }
