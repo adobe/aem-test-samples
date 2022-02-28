@@ -22,6 +22,7 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 import java.util.concurrent.atomic.AtomicReference;
 
+import com.adobe.cq.cloud.testing.it.smoke.exception.PublishException;
 import com.adobe.cq.cloud.testing.it.smoke.exception.SmokeTestException;
 import com.adobe.cq.cloud.testing.it.smoke.replication.ReplicationClient;
 import com.adobe.cq.cloud.testing.it.smoke.replication.data.Agents;
@@ -30,6 +31,7 @@ import com.adobe.cq.testing.client.CQClient;
 import com.adobe.cq.testing.junit.rules.Page;
 import org.apache.http.NameValuePair;
 import org.apache.http.message.BasicNameValuePair;
+import org.apache.sling.testing.clients.ClientException;
 import org.apache.sling.testing.clients.SlingHttpResponse;
 import org.apache.sling.testing.clients.util.poller.Polling;
 import org.apache.sling.testing.junit.rules.instance.Instance;
@@ -38,10 +40,12 @@ import org.junit.rules.ExternalResource;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import static com.adobe.cq.cloud.testing.it.smoke.exception.PublishException.getPageErrorCode;
 import static com.adobe.cq.cloud.testing.it.smoke.exception.ReplicationException.ITEM_NOT_REPLICATED;
 import static com.adobe.cq.cloud.testing.it.smoke.exception.ReplicationException.QUEUE_BLOCKED;
 import static com.adobe.cq.cloud.testing.it.smoke.exception.ReplicationException.REPLICATION_UNAVAILABLE;
 import static com.adobe.cq.cloud.testing.it.smoke.replication.ReplicationClient.checkPackageInQueue;
+import static org.apache.http.HttpStatus.SC_FORBIDDEN;
 import static org.apache.http.HttpStatus.SC_NOT_FOUND;
 import static org.apache.http.HttpStatus.SC_OK;
 import static org.apache.http.HttpStatus.SC_UNAUTHORIZED;
@@ -111,37 +115,54 @@ public class ContentPublishRule extends ExternalResource {
         }
         return authorClient;
     }
-    
+
     /**
      * Checks that a GET on the page on publish has the {{expectedStatus}} in the response
      *
      * @throws Exception if an error occurred
+     * @return
      */
-    private void checkPage(final int...  expectedStatus) throws Exception {
+    private void checkPage(final int expectedStatus) throws PublishException {
         final String path = root.getPath() + ".html";
         log.info("Checking page {} returns status {}", getPublishClient().getUrl(path), expectedStatus);
-        SlingHttpResponse res;
-        final List<NameValuePair> queryParams = Collections.singletonList(
-            new BasicNameValuePair("timestamp", String.valueOf(System.currentTimeMillis())));
-
-        res = getPublishClient().doGet(path, queryParams, Collections.emptyList());
-        if (null != res && res.getStatusLine().getStatusCode() == SC_UNAUTHORIZED) {
-            throw new AssumptionViolatedException("Publish requires auth for (SAML?). Skipping...");
-        }
+        String errorMessage = String.format("Failed to check the page %s via the AEM publish ingress (expected status %s). "
+            + "Please ensure that the CDN and Dispatcher configurations allow fetching the page.", path, expectedStatus);
 
         try {
-            new Polling() {
-                @Override public Boolean call() throws Exception {
-                    final List<NameValuePair> queryParams = Collections.singletonList(
-                            new BasicNameValuePair("timestamp", String.valueOf(System.currentTimeMillis())));
-                    getPublishClient().doGet(path, queryParams, Collections.emptyList(), expectedStatus);
+            SlingHttpResponse res = null;
+            final List<NameValuePair> queryParams = Collections.singletonList(new BasicNameValuePair("timestamp", String.valueOf(System.currentTimeMillis())));
+
+            res = getPublishClient().doGet(path, queryParams, Collections.emptyList());
+            if (null != res && (res.getStatusLine().getStatusCode() == SC_UNAUTHORIZED
+                || res.getStatusLine().getStatusCode() == SC_FORBIDDEN)) {
+                log.warn("Got status {} while checking page, expected status {}", res.getStatusLine().getStatusCode(),
+                    expectedStatus);
+                throw new AssumptionViolatedException("Publish requires auth for (SAML?) or not authorized. Skipping...");
+            }
+
+            Polling polling = null;
+            try {
+                polling = new Polling(() -> {
+                    final List<NameValuePair> newQueryParams = Collections.singletonList(
+                        new BasicNameValuePair("timestamp", String.valueOf(System.currentTimeMillis())));
+                    getPublishClient().doGet(path, newQueryParams, Collections.emptyList(), expectedStatus);
                     return true;
-                }
-            }.poll(TIMEOUT_PER_TRY, 1000);
-        } catch (TimeoutException te) {
-            log.warn("Failed to check the page {} via the AEM publish ingress (expected status {}). Please ensure that the CDN and Dispatcher configurations allow fetching the page.", root.getPath(), expectedStatus);
-            throw te;
+                });
+                polling.poll(TIMEOUT_PER_TRY, 1000);
+            } catch (TimeoutException te) {
+                throw getPublishException(getPageErrorCode(expectedStatus), errorMessage, polling.getLastException());
+            } catch (InterruptedException e) {
+                throw getPublishException(getPageErrorCode(expectedStatus), errorMessage, e);
+            }
+        } catch (ClientException e) {
+            throw getPublishException(getPageErrorCode(expectedStatus), errorMessage, e);
         }
+    }
+
+    private PublishException getPublishException(String code, String message, Throwable t) {
+        PublishException exception = new PublishException(code, message, t);
+        log.error(exception.getMessage(), exception);
+        return exception;
     }
     
     public void activateAssertPublish() throws Exception {
