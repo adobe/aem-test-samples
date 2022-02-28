@@ -19,6 +19,7 @@ package com.adobe.cq.cloud.testing.it.smoke;
 import java.util.concurrent.TimeUnit;
 
 import com.adobe.cq.cloud.testing.it.smoke.rules.ContentPublishRule;
+import com.adobe.cq.cloud.testing.it.smoke.rules.ServiceAccessibleRule;
 import com.adobe.cq.testing.junit.rules.CQAuthorPublishClassRule;
 import com.adobe.cq.testing.junit.rules.CQRule;
 import com.adobe.cq.testing.junit.rules.Page;
@@ -27,6 +28,7 @@ import org.junit.AssumptionViolatedException;
 import org.junit.ClassRule;
 import org.junit.Rule;
 import org.junit.Test;
+import org.junit.rules.RuleChain;
 
 /**
  * End to end publication test.
@@ -42,10 +44,13 @@ public class PublishEndToEndIT {
 
     @Rule
     public CQRule cqBaseRule = new CQRule(cqBaseClassRule.authorRule, cqBaseClassRule.publishRule);
-
-    @Rule
+    
     public Page root = new Page(cqBaseClassRule.authorRule);
-
+    @Rule
+    public RuleChain ruleChain = RuleChain.outerRule(new ServiceAccessibleRule(cqBaseClassRule.authorRule))
+        .around(new ServiceAccessibleRule(cqBaseClassRule.publishRule))
+        .around(root);
+    
     @Rule
     public ContentPublishRule
         contentPublishRule = new ContentPublishRule(root, cqBaseClassRule.authorRule, cqBaseClassRule.publishRule);
