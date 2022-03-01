@@ -16,6 +16,7 @@
 
 package com.adobe.cq.cloud.testing.it.smoke.rules;
 
+import java.net.URI;
 import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
@@ -30,7 +31,10 @@ import com.adobe.cq.cloud.testing.it.smoke.replication.data.ReplicationResponse;
 import com.adobe.cq.testing.client.CQClient;
 import com.adobe.cq.testing.junit.rules.Page;
 import org.apache.http.NameValuePair;
+import org.apache.http.client.methods.HttpGet;
+import org.apache.http.client.methods.HttpUriRequest;
 import org.apache.http.message.BasicNameValuePair;
+import org.apache.http.params.BasicHttpParams;
 import org.apache.sling.testing.clients.ClientException;
 import org.apache.sling.testing.clients.SlingHttpResponse;
 import org.apache.sling.testing.clients.util.poller.Polling;
@@ -46,9 +50,12 @@ import static com.adobe.cq.cloud.testing.it.smoke.exception.ReplicationException
 import static com.adobe.cq.cloud.testing.it.smoke.exception.ReplicationException.REPLICATION_UNAVAILABLE;
 import static com.adobe.cq.cloud.testing.it.smoke.replication.ReplicationClient.checkPackageInQueue;
 import static org.apache.http.HttpStatus.SC_FORBIDDEN;
+import static org.apache.http.HttpStatus.SC_MOVED_PERMANENTLY;
+import static org.apache.http.HttpStatus.SC_MOVED_TEMPORARILY;
 import static org.apache.http.HttpStatus.SC_NOT_FOUND;
 import static org.apache.http.HttpStatus.SC_OK;
 import static org.apache.http.HttpStatus.SC_UNAUTHORIZED;
+import static org.apache.http.client.params.ClientPNames.HANDLE_REDIRECTS;
 
 /**
  * Junit test rule to check content distribution functionality
@@ -116,13 +123,17 @@ public class ContentPublishRule extends ExternalResource {
         return authorClient;
     }
 
+    private void checkPage(final int expectedStatus) throws Exception {
+        checkPage(true, expectedStatus);
+    }
+    
     /**
      * Checks that a GET on the page on publish has the {{expectedStatus}} in the response
      *
      * @throws Exception if an error occurred
      * @return
      */
-    private void checkPage(final int expectedStatus) throws PublishException {
+    private void checkPage(boolean skipDispatcherCache, final int expectedStatus) throws PublishException {
         final String path = root.getPath() + ".html";
         log.info("Checking page {} returns status {}", getPublishClient().getUrl(path), expectedStatus);
         String errorMessage = String.format("Failed to check the page %s via the AEM publish ingress (expected status %s). "
@@ -130,22 +141,45 @@ public class ContentPublishRule extends ExternalResource {
 
         try {
             SlingHttpResponse res = null;
-            final List<NameValuePair> queryParams = Collections.singletonList(new BasicNameValuePair("timestamp", String.valueOf(System.currentTimeMillis())));
-
-            res = getPublishClient().doGet(path, queryParams, Collections.emptyList());
+            final List<NameValuePair> queryParams = skipDispatcherCache
+                ? Collections.singletonList(
+                new BasicNameValuePair("timestamp", String.valueOf(System.currentTimeMillis())))
+                : Collections.emptyList();
+            
+            URI uri = getPublishClient().getUrl(path, queryParams);
+            HttpUriRequest request = new HttpGet(uri);
+            // Disable following redirects
+            request.setParams(new BasicHttpParams().setParameter(HANDLE_REDIRECTS, false));
+            
+            res  = getPublishClient().doStreamRequest(request, null);
+            
+            // Special handling for 401,403,301,302
             if (null != res && (res.getStatusLine().getStatusCode() == SC_UNAUTHORIZED
                 || res.getStatusLine().getStatusCode() == SC_FORBIDDEN)) {
                 log.warn("Got status {} while checking page, expected status {}", res.getStatusLine().getStatusCode(),
                     expectedStatus);
                 throw new AssumptionViolatedException("Publish requires auth for (SAML?) or not authorized. Skipping...");
+            } else if (null != res && (res.getStatusLine().getStatusCode() == SC_MOVED_PERMANENTLY 
+                || res.getStatusLine().getStatusCode() == SC_MOVED_TEMPORARILY)) {
+                log.warn("Got status {} while checking page, expected status {}", res.getStatusLine().getStatusCode(),
+                    expectedStatus);
+                throw new AssumptionViolatedException(String.format("Publish %s configured for redirect", path));
+            } else if (null != res && (res.getStatusLine().getStatusCode() == expectedStatus)) {
+                log.info("Page check completed with status {}", res.getStatusLine().getStatusCode());
+                return;
             }
-
+            
+            // Continue with a retry if any other status
             Polling polling = null;
             try {
                 polling = new Polling(() -> {
-                    final List<NameValuePair> newQueryParams = Collections.singletonList(
-                        new BasicNameValuePair("timestamp", String.valueOf(System.currentTimeMillis())));
-                    getPublishClient().doGet(path, newQueryParams, Collections.emptyList(), expectedStatus);
+                    final List<NameValuePair> newQueryParams = skipDispatcherCache
+                        ? Collections.singletonList(
+                        new BasicNameValuePair("timestamp", String.valueOf(System.currentTimeMillis())))
+                        : Collections.emptyList();
+                    SlingHttpResponse slingHttpResponse =
+                        getPublishClient().doGet(path, newQueryParams, Collections.emptyList(), expectedStatus);
+                    log.info("Page check completed with status {}", slingHttpResponse.getStatusLine().getStatusCode());
                     return true;
                 });
                 polling.poll(TIMEOUT_PER_TRY, 1000);
