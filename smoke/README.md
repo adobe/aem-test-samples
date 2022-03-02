@@ -14,12 +14,12 @@ of this repository.
 | Exceptions           | Error Code                  | Reason                                                             |
 |----------------------|-----------------------------|--------------------------------------------------------------------|
 | PublishException     | PAGE_NOT_AVAILABLE          | Activated page not available on publish                            |
-|                      | PAGE_AVAILABLE              | Deactivated page not available on publish                          |
+|                      | PAGE_AVAILABLE              | Deactivated page still available on publish                        |
 | ReplicationException | QUEUE_BLOCKED               | Replication queue blocked before test                              |
 |                      | ACTIVATION_REQUEST_FAILED   | Replication action failed                                          |
 |                      | DEACTIVATION_REQUEST_FAILED | Deactivation action failed                                         |
-|                      | ITEM_NOT_REPLICATED         | Item replicated still available on agent queues                    |
-|                      | REPLICATION_UNAVAILABLE     | Replication agents not available                                   |
+|                      | ITEM_NOT_REPLICATED         | Item to be replicated still available on agent queues              |
+|                      | REPLICATION_UNAVAILABLE     | Replication agents not available before test                       |
 | ServiceException     | AUTHOR_DOWN                 | Author is down before test                                         |
 |                      | PUBLISH_DOWN                | Publish is down before test                                        |
 | SmokeTestException   | GENERIC                     | Any generic exception. Mostly connection problems with the service |
