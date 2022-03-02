@@ -153,7 +153,7 @@ public class ContentPublishRule extends ExternalResource {
             
             res  = getPublishClient().doStreamRequest(request, null);
             
-            // Special handling for 401,403,301,302
+            // Special handling for 401,403, logging for 301,302
             if (null != res && (res.getStatusLine().getStatusCode() == SC_UNAUTHORIZED
                 || res.getStatusLine().getStatusCode() == SC_FORBIDDEN)) {
                 log.warn("Got status {} while checking page, expected status {}", res.getStatusLine().getStatusCode(),
@@ -161,9 +161,7 @@ public class ContentPublishRule extends ExternalResource {
                 throw new AssumptionViolatedException("Publish requires auth for (SAML?) or not authorized. Skipping...");
             } else if (null != res && (res.getStatusLine().getStatusCode() == SC_MOVED_PERMANENTLY 
                 || res.getStatusLine().getStatusCode() == SC_MOVED_TEMPORARILY)) {
-                log.warn("Got status {} while checking page, expected status {}", res.getStatusLine().getStatusCode(),
-                    expectedStatus);
-                throw new AssumptionViolatedException(String.format("Publish %s configured for redirect", path));
+                log.info("Redirect status {} detected for page {}", res.getStatusLine().getStatusCode(), path);
             } else if (null != res && (res.getStatusLine().getStatusCode() == expectedStatus)) {
                 log.info("Page check completed with status {}", res.getStatusLine().getStatusCode());
                 return;

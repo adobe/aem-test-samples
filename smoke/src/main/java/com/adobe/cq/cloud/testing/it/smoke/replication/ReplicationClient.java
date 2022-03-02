@@ -76,6 +76,7 @@ public class ReplicationClient extends CQClient {
      */
     public ReplicationResponse activate(String nodePath) throws SmokeTestException {
         try {
+            log.info("Activating {}", nodePath);
             ReplicationResponse response = ReplicationResponse.from(activateInternal("", nodePath));
             if (response.getCode() != HttpStatus.SC_OK) {
                 throw getReplicationException(ACTIVATION_REQUEST_FAILED, response.getMessage(), null);
@@ -96,6 +97,7 @@ public class ReplicationClient extends CQClient {
      */
     public ReplicationResponse deactivate(String pagePath) throws SmokeTestException {
         try {
+            log.info("De-Activating {}", pagePath);
             ReplicationResponse response = ReplicationResponse.from(deactivateInternal("", pagePath));
             if (response.getCode() != HttpStatus.SC_OK) {
                 throw getReplicationException(DEACTIVATION_REQUEST_FAILED, response.getMessage(), null);
