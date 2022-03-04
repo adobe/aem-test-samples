@@ -59,7 +59,7 @@ public class PublishEndToEndIT {
      * Activates a page as admin, then deactivates it.
      * Verifies:
      * <ul>
-     *      <li>That the replication queue is empty</li>
+     *      <li>That the replication queue(s) is empty</li>
      *      <li>After activation, that the page is accessible via the publish ingress</li>
      *      <li>After deactivation, that the page is no longer accessible via the publish ingress and that the queue is empty</li>
      * </ul>
@@ -84,7 +84,7 @@ public class PublishEndToEndIT {
     }
 
     /**
-     * Execute activate and deactivate on publish
+     * Execute activate and deactivate on publish & preview
      *
      * @return true if success
      * @throws Exception if exception occurs
@@ -92,6 +92,9 @@ public class PublishEndToEndIT {
     private boolean activateAndDeactivate() throws Exception {
         contentPublishRule.activateAssertPublish();
         contentPublishRule.deactivateAssertPublish();
+        
+        contentPublishRule.activateAssertPreview();
+        contentPublishRule.deactivateAssertPreview();
         return true;
     }
 }

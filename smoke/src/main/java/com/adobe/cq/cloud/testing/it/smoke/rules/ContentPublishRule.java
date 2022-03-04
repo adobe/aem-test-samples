@@ -24,6 +24,7 @@ import java.util.concurrent.TimeoutException;
 import java.util.concurrent.atomic.AtomicReference;
 
 import com.adobe.cq.cloud.testing.it.smoke.exception.PublishException;
+import com.adobe.cq.cloud.testing.it.smoke.exception.ReplicationException;
 import com.adobe.cq.cloud.testing.it.smoke.exception.SmokeTestException;
 import com.adobe.cq.cloud.testing.it.smoke.replication.ReplicationClient;
 import com.adobe.cq.cloud.testing.it.smoke.replication.data.Agents;
@@ -67,7 +68,8 @@ public class ContentPublishRule extends ExternalResource {
     protected static final long TIMEOUT_PER_TRY = TimeUnit.MINUTES.toMillis(1);
 
     protected static final String PUBLISH_DIST_AGENT = "publish";
-    
+    private static final String PREVIEW_DIST_AGENT = "preview";
+
     private final Page root;
 
     private final Instance authorRule;
@@ -78,6 +80,8 @@ public class ContentPublishRule extends ExternalResource {
     private CQClient publishClient;
     private CQClient authorClient;
     
+    private boolean previewAvailable;
+
     public ContentPublishRule(Page root, Instance authorRule, Instance publishRule) {
         this.root = root;
         this.authorRule = authorRule;
@@ -199,34 +203,50 @@ public class ContentPublishRule extends ExternalResource {
     
     public void activateAssertPublish() throws Exception {
         // Activate Page
-        ReplicationResponse replicationResponse = replicationClient.activate(root.getPath());
+        ReplicationResponse replicationResponse = replicationClient.activate(PUBLISH_DIST_AGENT, root.getPath());
 
         // Check activation successful
-        waitPublishQueueEmptyOfPath(replicationResponse.getId(), root.getPath(), "Activate");
-        
+        waitQueueEmptyOfPath(PUBLISH_DIST_AGENT, root.getPath(), replicationResponse.getId(), "Activate");
+
         // Assert page added on publish
         checkPage(SC_OK);
     }
 
+    public void activateAssertPreview() throws Exception {
+        if (previewAvailable) {
+            // Activate Page
+            ReplicationResponse replicationResponse = replicationClient.activate(PREVIEW_DIST_AGENT, root.getPath());
+
+            // Check activation successful
+            waitQueueEmptyOfPath(PREVIEW_DIST_AGENT, root.getPath(), replicationResponse.getId(), "Activate");
+        }
+    }
+
     public void deactivateAssertPublish() throws Exception {
         // Deactivate Page
-        ReplicationResponse replicationResponse = replicationClient.deactivate(root.getPath());
-        
+        ReplicationResponse replicationResponse = replicationClient.deactivate(PUBLISH_DIST_AGENT, root.getPath());
+
         // Check deactivation successful
-        waitPublishQueueEmptyOfPath(replicationResponse.getId(), root.getPath(), "Deactivate");
-        
+        waitQueueEmptyOfPath(PUBLISH_DIST_AGENT, root.getPath(), replicationResponse.getId(), "Deactivate");
+
         // Assert page deleted on publish
         checkPage(SC_NOT_FOUND);
     }
-    
-    private void waitPublishQueueEmptyOfPath(String id, String path, String action)
-        throws SmokeTestException {
-       waitQueueEmptyOfPath(PUBLISH_DIST_AGENT, path, id, action);
-    }
 
+    public void deactivateAssertPreview() throws Exception {
+        if (previewAvailable) {
+            // Deactivate Page
+            ReplicationResponse replicationResponse = replicationClient.deactivate(PREVIEW_DIST_AGENT, root.getPath());
+
+            // Check deactivation successful
+            waitQueueEmptyOfPath(PREVIEW_DIST_AGENT, root.getPath(), replicationResponse.getId(), "Deactivate");
+        }
+    }
+    
     /**
-     * Checks presence of publish distribution agent and waits until timeout if it's available
+     * Checks presence of publish distribution agent and waits until timeout if its available
      * Checks if the publish agent is not blocked
+     * Checks if the preview agent is available and not blocked
      * 
      * @throws SmokeTestException exception if problems
      */
@@ -260,6 +280,22 @@ public class ContentPublishRule extends ExternalResource {
             throw replicationClient.getReplicationException(QUEUE_BLOCKED, 
                 "Replication agent queue blocked - " + agents.getAgent(PUBLISH_DIST_AGENT), null);
         }
+        
+        // Check is preview agent available and not blocked
+        this.previewAvailable = doPreviewChecks(agents);
+    }
+    
+    private boolean doPreviewChecks(Agents agents) throws ReplicationException {
+        boolean previewAgentExists = replicationClient.checkDistributionAgentExists(agents, PREVIEW_DIST_AGENT);
+        if (previewAgentExists) {
+            //throw if preview agent is blocked
+            boolean previewBlocked = replicationClient.isAgentQueueBlocked(agents, PREVIEW_DIST_AGENT);
+            if (previewBlocked) {
+                throw replicationClient.getReplicationException(QUEUE_BLOCKED,
+                    "Replication agent queue blocked - " + agents.getAgent(PREVIEW_DIST_AGENT), null); 
+            }
+        }
+        return previewAgentExists;
     }
     
     /**
