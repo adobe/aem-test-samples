@@ -17,7 +17,7 @@
 package com.adobe.cq.cloud.testing.it.smoke.exception;
 
 public class ServiceException extends SmokeTestException {
-    public static final String SUFFIX = "_DOWN";
+    public static final String SUFFIX = "_NOT_AVAILABLE";
     
     public ServiceException(String errorCode, String message) {
         super(errorCode, message);

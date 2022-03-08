@@ -18,8 +18,8 @@ of this repository.
 | ReplicationException | QUEUE_BLOCKED               | Replication queue blocked before test                              |
 |                      | ACTIVATION_REQUEST_FAILED   | Replication action failed                                          |
 |                      | DEACTIVATION_REQUEST_FAILED | Deactivation action failed                                         |
-|                      | ITEM_NOT_REPLICATED         | Item to be replicated still available on agent queues              |
-|                      | REPLICATION_UNAVAILABLE     | Replication agents not available before test                       |
-| ServiceException     | AUTHOR_DOWN                 | Author is down before test                                         |
-|                      | PUBLISH_DOWN                | Publish is down before test                                        |
+|                      | ACTION_NOT_REPLICATED       | Replication action still pending in agent queues                   |
+|                      | REPLICATION_NOT_AVAILABLE   | Replication agents not available before test                       |
+| ServiceException     | AUTHOR_NOT_AVAILABLE        | Author is not available before test                                |
+|                      | PUBLISH_NOT_AVAILABLE       | Publish is not available before test                               |
 | SmokeTestException   | GENERIC                     | Any generic exception. Mostly connection problems with the service |

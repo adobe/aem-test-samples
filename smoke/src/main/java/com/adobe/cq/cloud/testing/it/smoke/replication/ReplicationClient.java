@@ -77,7 +77,7 @@ public class ReplicationClient extends CQClient {
     public ReplicationResponse activate(String nodePath) throws SmokeTestException {
         try {
             log.info("Activating {}", nodePath);
-            ReplicationResponse response = ReplicationResponse.from(activateInternal("", nodePath));
+            ReplicationResponse response = ReplicationResponse.from(activateInternal("Activate", "", nodePath));
             if (response.getCode() != HttpStatus.SC_OK) {
                 throw getReplicationException(ACTIVATION_REQUEST_FAILED, response.getMessage(), null);
             }
@@ -98,7 +98,7 @@ public class ReplicationClient extends CQClient {
     public ReplicationResponse deactivate(String pagePath) throws SmokeTestException {
         try {
             log.info("De-Activating {}", pagePath);
-            ReplicationResponse response = ReplicationResponse.from(deactivateInternal("", pagePath));
+            ReplicationResponse response = ReplicationResponse.from(activateInternal("Deactivate", "", pagePath));
             if (response.getCode() != HttpStatus.SC_OK) {
                 throw getReplicationException(DEACTIVATION_REQUEST_FAILED, response.getMessage(), null);
             }
@@ -109,19 +109,9 @@ public class ReplicationClient extends CQClient {
         }
     }
 
-    private SlingHttpResponse deactivateInternal(String agent, String pagePath) throws ClientException {
+    private SlingHttpResponse activateInternal(String cmd, String agent, String nodePath) throws ClientException {
         FormEntityBuilder formEntityBuilder =
-            FormEntityBuilder.create().addParameter("cmd", "Deactivate").addParameter("_charset_", "utf-8").addParameter("path", pagePath).addParameter("sync", String.valueOf(true));
-        if (StringUtils.isNotBlank(agent)) {
-            formEntityBuilder.addParameter("agentId", agent);
-        }
-
-        return this.doPost("/bin/replicate.json", formEntityBuilder.build(), Collections.emptyList());
-    }
-
-    private SlingHttpResponse activateInternal(String agent, String nodePath) throws ClientException {
-        FormEntityBuilder formEntityBuilder =
-            FormEntityBuilder.create().addParameter("cmd", "Activate").addParameter("_charset_", "utf-8").addParameter("path", nodePath).addParameter("sync", String.valueOf(true));
+            FormEntityBuilder.create().addParameter("cmd", cmd).addParameter("_charset_", "utf-8").addParameter("path", nodePath).addParameter("sync", String.valueOf(true));
         if (StringUtils.isNotBlank(agent)) {
             formEntityBuilder.addParameter("agentId", agent);
         }
