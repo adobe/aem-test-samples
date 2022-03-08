@@ -20,8 +20,8 @@ public class ReplicationException extends SmokeTestException {
     public static final String QUEUE_BLOCKED = "QUEUE_BLOCKED";
     public static final String ACTIVATION_REQUEST_FAILED = "ACTIVATION_REQUEST_FAILED";
     public static final String DEACTIVATION_REQUEST_FAILED = "DEACTIVATION_REQUEST_FAILED";
-    public static final String ITEM_NOT_REPLICATED = "ITEM_NOT_REPLICATED";
-    public static final String REPLICATION_UNAVAILABLE = "REPLICATION_UNAVAILABLE";
+    public static final String ACTION_NOT_REPLICATED = "ACTION_NOT_REPLICATED";
+    public static final String REPLICATION_NOT_AVAILABLE = "REPLICATION_NOT_AVAILABLE";
 
     public ReplicationException(String errorCode, String message) {
         super(errorCode, message);

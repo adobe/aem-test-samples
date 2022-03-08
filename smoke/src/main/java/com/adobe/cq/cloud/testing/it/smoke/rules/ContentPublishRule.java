@@ -46,9 +46,9 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import static com.adobe.cq.cloud.testing.it.smoke.exception.PublishException.getPageErrorCode;
-import static com.adobe.cq.cloud.testing.it.smoke.exception.ReplicationException.ITEM_NOT_REPLICATED;
+import static com.adobe.cq.cloud.testing.it.smoke.exception.ReplicationException.ACTION_NOT_REPLICATED;
 import static com.adobe.cq.cloud.testing.it.smoke.exception.ReplicationException.QUEUE_BLOCKED;
-import static com.adobe.cq.cloud.testing.it.smoke.exception.ReplicationException.REPLICATION_UNAVAILABLE;
+import static com.adobe.cq.cloud.testing.it.smoke.exception.ReplicationException.REPLICATION_NOT_AVAILABLE;
 import static com.adobe.cq.cloud.testing.it.smoke.replication.ReplicationClient.checkPackageInQueue;
 import static org.apache.http.HttpStatus.SC_FORBIDDEN;
 import static org.apache.http.HttpStatus.SC_MOVED_PERMANENTLY;
@@ -266,7 +266,7 @@ public class ContentPublishRule extends ExternalResource {
             });
             polling.poll(TIMEOUT, 500);
         } catch (TimeoutException e) {
-            throw replicationClient.getReplicationException(REPLICATION_UNAVAILABLE, 
+            throw replicationClient.getReplicationException(REPLICATION_NOT_AVAILABLE, 
                 String.format("Replication agent %s unavailable", PUBLISH_DIST_AGENT), polling.getLastException());
         } catch (Exception e) {
             throw replicationClient.getGenericException("Replication agent unavailable", e);
@@ -324,7 +324,7 @@ public class ContentPublishRule extends ExternalResource {
             polling.poll(TIMEOUT, 2000);
         } catch (TimeoutException e) {
             log.info("Agent not empty of item {}", ((agentsRef.get() != null) ? agentsRef.get().getAgent(agent) : ""));
-            throw replicationClient.getReplicationException(ITEM_NOT_REPLICATED, 
+            throw replicationClient.getReplicationException(ACTION_NOT_REPLICATED, 
                 String.format("Item not activated within %s ms", TIMEOUT),
                 polling.getLastException());
         } catch (Exception e) {
