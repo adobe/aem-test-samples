@@ -55,7 +55,7 @@ public class PublishEndToEndIT {
     public ContentPublishRule
         contentPublishRule = new ContentPublishRule(root, cqBaseClassRule.authorRule, cqBaseClassRule.publishRule);
 
-	/**
+        /**
      * Activates a page as admin, then deactivates it.
      * Verifies:
      * <ul>
