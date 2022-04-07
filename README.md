@@ -64,16 +64,6 @@ The system properties are as follows:
 * sling.it.configure.default.replication.agents - should be set to false
 
 
-## How to deploy pre-release (maintainers only)
-
- * Commit your changes
- * Get the git short version hash of the commit e.g. `git rev-parse --short HEAD`
- * Create a package: `mvn clean package`
- * Deploy on artifactory:
-    ```
-    mvn deploy:deploy-file -DgroupId=com.adobe.cq.cloud -DartifactId=com.adobe.cq.cloud.testing.it.smoke -Dversion=0.1.0-<git short version hash> -Dpackaging=jar -Dfile=target/com.adobe.cq.cloud.testing.it.smoke-0.1.0-SNAPSHOT.jar -DrepositoryId=maven-eaas-release -Durl=https://artifactory-uw2.adobeitc.com/artifactory/maven-eaas-release
-    ```
-   
 ## Notable Examples
 
 * [Creating a page with the admin user](./smoke/src/main/java/com/adobe/cq/cloud/testing/it/smoke/CreatePageAdminIT.java)
