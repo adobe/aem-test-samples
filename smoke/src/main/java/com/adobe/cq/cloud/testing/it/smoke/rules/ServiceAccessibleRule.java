@@ -17,6 +17,8 @@
 package com.adobe.cq.cloud.testing.it.smoke.rules;
 
 import java.io.IOException;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicInteger;
 
 import com.adobe.cq.cloud.testing.it.smoke.exception.ServiceException;
 import com.adobe.cq.testing.client.CQClient;
@@ -25,6 +27,7 @@ import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.impl.client.HttpClientBuilder;
 import org.apache.http.util.EntityUtils;
+import org.apache.sling.testing.clients.util.poller.Polling;
 import org.apache.sling.testing.junit.rules.instance.Instance;
 import org.junit.rules.TestRule;
 import org.junit.runner.Description;
@@ -39,7 +42,9 @@ import static com.adobe.cq.cloud.testing.it.smoke.exception.ServiceException.SUF
  */
 public class ServiceAccessibleRule implements TestRule {
     private static final Logger log = LoggerFactory.getLogger(ServiceAccessibleRule.class);
-    
+
+    protected static final long TIMEOUT = TimeUnit.MINUTES.toMillis(5);
+
     public static final String SYSTEM_READY = "systemready";
     
     private final Instance instance;
@@ -53,15 +58,27 @@ public class ServiceAccessibleRule implements TestRule {
     }
 
     public Statement apply(Statement base, Description description) {
+        Polling polling;
+
         try {
             HttpClient client = HttpClientBuilder.create().build();
-            HttpResponse httpResponse = client.execute(new HttpGet(adminClient.getUrl(SYSTEM_READY)));
-            int status = httpResponse.getStatusLine().getStatusCode();
-            String response = EntityUtils.toString(httpResponse.getEntity());
-            if (status != 200) {
-                throw new IOException(String.format("Status Code - %s, response - %s", status, response));
-            }
-            log.info("Health check for {} passed - {}", runmode.toUpperCase(), response);
+            AtomicInteger counter = new AtomicInteger();
+            polling = new Polling(() -> {
+                counter.incrementAndGet();
+                HttpResponse httpResponse = client.execute(new HttpGet(adminClient.getUrl(SYSTEM_READY)));
+                int status = httpResponse.getStatusLine().getStatusCode();
+                String response = EntityUtils.toString(httpResponse.getEntity());
+                if (status != 200) {
+                    String errMsg = String.format("Status Code - %s, response - %s", status, response);
+                    if (counter.get() % 20 == 0) {
+                        log.warn(errMsg);
+                    }
+                    throw new IOException(errMsg);
+                }
+                log.info("Health check for {} passed - {}", runmode.toUpperCase(), response);
+                return true;
+            });
+            polling.poll(TIMEOUT, 2000);
         } catch (Exception ce) {
             ServiceException serviceException = new ServiceException(runmode.toUpperCase() + SUFFIX, ce.getMessage());
             log.info("Health check failure", serviceException);

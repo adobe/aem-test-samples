@@ -17,6 +17,7 @@
 package com.adobe.cq.cloud.testing.it.smoke.replication.data;
 
 import com.fasterxml.jackson.databind.JsonNode;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.sling.testing.clients.ClientException;
 import org.apache.sling.testing.clients.SlingHttpResponse;
 
@@ -82,7 +83,7 @@ public class ReplicationResponse {
 
     @Override 
     public String toString() {
-        return "ReplicationResponse{" + "code=" + code + ", message='" + message + '\'' + ", artifactId='" + artifactId
-            + '\'' + '}';
+        return "ReplicationResponse{code=" + code + ", message=\"" + StringUtils.normalizeSpace(message) + "\", artifactId=\"" + artifactId
+            + "\"}";
     }
 }
