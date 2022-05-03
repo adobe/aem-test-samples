@@ -150,7 +150,6 @@ public class Package {
     @Override
     public String toString() {
         ObjectMapper mapper = new ObjectMapper();
-        mapper.enable(SerializationFeature.INDENT_OUTPUT);
 
         try {
             return mapper.writeValueAsString(this);
