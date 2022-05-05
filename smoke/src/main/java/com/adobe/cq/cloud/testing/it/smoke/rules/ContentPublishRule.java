@@ -244,11 +244,11 @@ public class ContentPublishRule extends ExternalResource {
     }
     
     /**
-     * Checks presence of publish distribution agent and waits until timeout if its available
+     * Checks presence of publish distribution agent and waits until timeout if it's unavailable
      * Checks if the publish agent is not blocked
      * Checks if the preview agent is available and not blocked
      * 
-     * @throws SmokeTestException exception if problems
+     * @throws SmokeTestException exception if a problem occurred
      */
     private void doReplicationChecks() throws SmokeTestException {
         Polling polling = null;
@@ -281,7 +281,7 @@ public class ContentPublishRule extends ExternalResource {
                 "Replication agent queue blocked - " + agents.getAgent(PUBLISH_DIST_AGENT), null);
         }
         
-        // Check is preview agent available and not blocked
+        // Check if preview agent is available and not blocked
         this.previewAvailable = doPreviewChecks(agents);
     }
     
