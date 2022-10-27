@@ -93,7 +93,7 @@ public class InstallPackageRule implements TestRule {
                             uploadedPackage.get().install();
                             Assert.assertEquals("Package path does not match expectations",
                                     finalNewPackagePath, uploadedPackage.get().getPath());
-                        } catch (Exception e) {
+                        } catch (FileNotFoundException | RuntimeException e) {
                             cleanupPackage(finalClient, finalNewPackagePath);
                         }
                         return finalClient.isPackageCreated(name, version, group);

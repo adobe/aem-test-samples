@@ -64,50 +64,60 @@ public class DeepGetPageIT {
     /**
      * Verifies that the homepage exists on author
      *
-     * @throws Exception if an error occurred
+     * @throws ClientException if an error occurred
+     * @throws IOException if an error occurred
+     * @throws URISyntaxException if an error occurred
      */
     @Test
-    public void testHomePageAuthor() throws Exception {
+    public void testHomePageAuthor() throws ClientException, IOException, URISyntaxException {
         verifyPageAndResources(adminAuthor, "/");
     }
 
     /**
      * Verifies that the sites console exists on author
      *
-     * @throws Exception if an error occurred
+     * @throws ClientException if an error occurred
+     * @throws IOException if an error occurred
+     * @throws URISyntaxException if an error occurred
      */
     @Test
-    public void testSitesAuthor() throws Exception {
+    public void testSitesAuthor() throws ClientException, IOException, URISyntaxException {
         verifyPageAndResources(adminAuthor, "/sites.html");
     }
 
     /**
      * Verifies that the assets console exists on author
      *
-     * @throws Exception if an error occurred
+     * @throws ClientException if an error occurred
+     * @throws IOException if an error occurred
+     * @throws URISyntaxException if an error occurred
      */
     @Test
-    public void testAssetsAuthor() throws Exception {
+    public void testAssetsAuthor() throws ClientException, IOException, URISyntaxException {
         verifyPageAndResources(adminAuthor, "/assets.html");
     }
 
     /**
      * Verifies that the projects console exists on author
      *
-     * @throws Exception if an error occurred
+     * @throws ClientException if an error occurred
+     * @throws IOException if an error occurred
+     * @throws URISyntaxException if an error occurred
      */
     @Test
-    public void testProjectsAuthor() throws Exception {
+    public void testProjectsAuthor() throws ClientException, IOException, URISyntaxException {
         verifyPageAndResources(adminAuthor, "/projects.html");
     }
 
     /**
      * Verifies that the homepage exists on publish
      *
-     * @throws Exception if an error occurred
+     * @throws ClientException if an error occurred
+     * @throws IOException if an error occurred
+     * @throws URISyntaxException if an error occurred
      */
     @Test @Ignore
-    public void testHomePagePublish() throws Exception {
+    public void testHomePagePublish() throws ClientException, IOException, URISyntaxException {
         verifyPageAndResources(adminPublish, "/");
     }
 

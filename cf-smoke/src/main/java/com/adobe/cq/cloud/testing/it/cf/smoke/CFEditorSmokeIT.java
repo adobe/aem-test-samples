@@ -77,14 +77,11 @@ public class CFEditorSmokeIT {
     public static void after() {
         try {
             CleanUpRule.cleanUp(cqBaseClassRule.authorRule, TEST_CONTENT_FRAGMENT_FOLDER, TIMEOUT, RETRY_DELAY);
-        } catch (Throwable t) {
-        }
+        } catch (InterruptedException | TimeoutException | RuntimeException ignored) {}
 
         try {
             CleanUpRule.cleanUp(cqBaseClassRule.authorRule, TEST_CONTENT_FRAGMENT_CONF_FOLDER, TIMEOUT, RETRY_DELAY);
-        } catch (Throwable t) {
-
-        }
+        } catch (InterruptedException | TimeoutException | RuntimeException ignored) {}
     }
 
     /**

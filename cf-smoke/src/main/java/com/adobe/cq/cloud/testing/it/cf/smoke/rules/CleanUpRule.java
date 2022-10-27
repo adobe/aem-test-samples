@@ -65,8 +65,7 @@ public class CleanUpRule extends ExternalResource {
                     rule.getAdminClient().deletePath(path);
                     return rule.getAdminClient().exists(path);
                 }).poll(timeout, delay);
-            } catch (Throwable t) {
-            }
+            } catch (InterruptedException | TimeoutException | RuntimeException ignored) {}
         });
     }
 

@@ -127,15 +127,14 @@ public class ContentPublishRule extends ExternalResource {
         return authorClient;
     }
 
-    private void checkPage(final int expectedStatus) throws Exception {
+    private void checkPage(final int expectedStatus) throws PublishException {
         checkPage(true, expectedStatus);
     }
     
     /**
      * Checks that a GET on the page on publish has the {{expectedStatus}} in the response
      *
-     * @throws Exception if an error occurred
-     * @return
+     * @throws PublishException if an error occurred
      */
     private void checkPage(boolean skipDispatcherCache, final int expectedStatus) throws PublishException {
         final String path = root.getPath() + ".html";
@@ -201,7 +200,7 @@ public class ContentPublishRule extends ExternalResource {
         return exception;
     }
     
-    public void activateAssertPublish() throws Exception {
+    public void activateAssertPublish() throws SmokeTestException {
         // Activate Page
         ReplicationResponse replicationResponse = replicationClient.activate(PUBLISH_DIST_AGENT, root.getPath());
 
@@ -212,7 +211,7 @@ public class ContentPublishRule extends ExternalResource {
         checkPage(SC_OK);
     }
 
-    public void activateAssertPreview() throws Exception {
+    public void activateAssertPreview() throws SmokeTestException {
         if (previewAvailable) {
             // Activate Page
             ReplicationResponse replicationResponse = replicationClient.activate(PREVIEW_DIST_AGENT, root.getPath());
@@ -222,7 +221,7 @@ public class ContentPublishRule extends ExternalResource {
         }
     }
 
-    public void deactivateAssertPublish() throws Exception {
+    public void deactivateAssertPublish() throws SmokeTestException {
         // Deactivate Page
         ReplicationResponse replicationResponse = replicationClient.deactivate(PUBLISH_DIST_AGENT, root.getPath());
 
@@ -233,7 +232,7 @@ public class ContentPublishRule extends ExternalResource {
         checkPage(SC_NOT_FOUND);
     }
 
-    public void deactivateAssertPreview() throws Exception {
+    public void deactivateAssertPreview() throws SmokeTestException {
         if (previewAvailable) {
             // Deactivate Page
             ReplicationResponse replicationResponse = replicationClient.deactivate(PREVIEW_DIST_AGENT, root.getPath());
@@ -266,9 +265,9 @@ public class ContentPublishRule extends ExternalResource {
             });
             polling.poll(TIMEOUT, 500);
         } catch (TimeoutException e) {
-            throw replicationClient.getReplicationException(REPLICATION_NOT_AVAILABLE, 
+            throw replicationClient.getReplicationException(REPLICATION_NOT_AVAILABLE,
                 String.format("Replication agent %s unavailable", PUBLISH_DIST_AGENT), polling.getLastException());
-        } catch (Exception e) {
+        } catch (InterruptedException | RuntimeException e) {
             throw replicationClient.getGenericException("Replication agent unavailable", e);
         }
 
@@ -277,7 +276,7 @@ public class ContentPublishRule extends ExternalResource {
         // throw if publish agent is blocked
         boolean agentQueueBlocked = ReplicationClient.isAgentQueueBlocked(agents, PUBLISH_DIST_AGENT);
         if (agentQueueBlocked) {
-            throw replicationClient.getReplicationException(QUEUE_BLOCKED, 
+            throw replicationClient.getReplicationException(QUEUE_BLOCKED,
                 "Replication agent queue blocked - " + agents.getAgent(PUBLISH_DIST_AGENT), null);
         }
         
@@ -327,7 +326,7 @@ public class ContentPublishRule extends ExternalResource {
             throw replicationClient.getReplicationException(ACTION_NOT_REPLICATED, 
                 String.format("Item not activated within %s ms", TIMEOUT),
                 polling.getLastException());
-        } catch (Exception e) {
+        } catch (InterruptedException | RuntimeException e) {
             throw replicationClient.getGenericException(String.format("Item not activated within %s ms", TIMEOUT), e);
         }
     }

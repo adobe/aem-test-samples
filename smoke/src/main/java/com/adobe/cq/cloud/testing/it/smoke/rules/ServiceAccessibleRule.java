@@ -85,7 +85,7 @@ public class ServiceAccessibleRule implements TestRule {
                 return true;
             });
             polling.poll(TIMEOUT, 2000);
-        } catch (Exception ce) {
+        } catch (TimeoutException | InterruptedException ce) {
             ServiceException serviceException = new ServiceException(runmode.toUpperCase() + SUFFIX, ce.getMessage());
             log.info("Health check failure", serviceException);
             // TODO throw exceptions once the instance health check URLs GA

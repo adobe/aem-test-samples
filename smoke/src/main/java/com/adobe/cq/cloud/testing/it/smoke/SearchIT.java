@@ -23,6 +23,8 @@ import org.apache.sling.testing.clients.util.poller.Polling;
 import org.junit.*;
 
 
+import java.util.concurrent.TimeoutException;
+
 import static java.util.concurrent.TimeUnit.SECONDS;
 
 public class SearchIT {
@@ -50,10 +52,11 @@ public class SearchIT {
      * Verifies that searching for the text inside the page created by the Page rule
      * returns the page containing it
      *
-     * @throws Exception if an error occurred
+     * @throws InterruptedException if an error occurred
+     * @throws TimeoutException if an error occurred
      */
     @Test
-    public void searchInPages() throws Exception {
+    public void searchInPages() throws InterruptedException, TimeoutException {
 
         new Polling() {
             @Override

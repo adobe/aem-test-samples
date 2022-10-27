@@ -83,7 +83,7 @@ public class ReplicationClient extends CQClient {
             }
             log.info("Activation response received {}", response);
             return response;
-        } catch (Exception e) {
+        } catch (ClientException | RuntimeException e) {
             throw getGenericException("Exception during activation", e);
         }
     }
@@ -104,7 +104,7 @@ public class ReplicationClient extends CQClient {
             }
             log.info("De-Activation response received {}", response);
             return response;
-        } catch (Exception e) {
+        } catch (ClientException | RuntimeException e) {
             throw getGenericException("Exception during deactivation", e);
         }
     }

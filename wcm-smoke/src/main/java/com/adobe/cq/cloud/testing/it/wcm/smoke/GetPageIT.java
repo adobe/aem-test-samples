@@ -37,7 +37,7 @@ public class GetPageIT {
     static CQClient adminPublish;
 
     @BeforeClass
-    public static void beforeClass() throws ClientException {
+    public static void beforeClass() {
         adminAuthor = cqBaseClassRule.authorRule.getAdminClient(CQClient.class);
         adminPublish = cqBaseClassRule.publishRule.getAdminClient(CQClient.class);
     }
@@ -45,10 +45,10 @@ public class GetPageIT {
     /**
      * Verifies that the homepage exists on author
      *
-     * @throws Exception if an error occurred
+     * @throws ClientException if an error occurred
      */
     @Test
-    public void testHomePageAuthor() throws Exception {
+    public void testHomePageAuthor() throws ClientException {
         // verify that page is present on author
         adminAuthor.doGet("/", 200);
     }
@@ -56,10 +56,10 @@ public class GetPageIT {
     /**
      * Verifies that the sites console exists on author
      *
-     * @throws Exception if an error occurred
+     * @throws ClientException if an error occurred
      */
     @Test
-    public void testSitesAuthor() throws Exception {
+    public void testSitesAuthor() throws ClientException {
         // verify that page is present on author
         adminAuthor.doGet("/sites.html", 200);
     }
@@ -67,10 +67,10 @@ public class GetPageIT {
     /**
      * Verifies that the assets console exists on author
      *
-     * @throws Exception if an error occurred
+     * @throws ClientException if an error occurred
      */
     @Test
-    public void testAssetsAuthor() throws Exception {
+    public void testAssetsAuthor() throws ClientException {
         // verify that page is present on author
         adminAuthor.doGet("/assets.html", 200);
     }
@@ -78,10 +78,10 @@ public class GetPageIT {
     /**
      * Verifies that the projects console exists on author
      *
-     * @throws Exception if an error occurred
+     * @throws ClientException if an error occurred
      */
     @Test
-    public void testProjectsAuthor() throws Exception {
+    public void testProjectsAuthor() throws ClientException {
         // verify that page is present on author
         adminAuthor.doGet("/projects.html", 200);
     }
@@ -89,12 +89,12 @@ public class GetPageIT {
     /**
      * Verifies that the homepage exists on publish
      *
-     * @throws Exception if an error occurred
+     * @throws ClientException if an error occurred
      *
      * TODO remove @Ignore once CQ-4265255 and NPR-29209 are fixed
      */
     @Test @Ignore
-    public void testHomePagePublish() throws Exception {
+    public void testHomePagePublish() throws ClientException {
         // verify that page is present on author
         adminPublish.doGet("/", 200);
     }
