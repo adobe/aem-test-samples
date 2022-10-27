@@ -51,8 +51,7 @@ public class ValidateAntiSamyConfigurationIT {
                     }
                     HttpEntity httpEntity = new InputStreamEntity(inputStream, ContentType.APPLICATION_JSON);
                     SlingHttpResponse response = adminAuthor.doPost(TEST_REQUEST_PATH, httpEntity, 200);
-                    JsonParser jsonParser = new JsonParser();
-                    JsonElement jsonElement = jsonParser.parse(response.getContent());
+                    JsonElement jsonElement = JsonParser.parseString(response.getContent().trim());
                     JsonObject result = jsonElement.getAsJsonObject();
                     if (!"ok".equalsIgnoreCase(result.get("status").getAsString())) {
                         fail(String.format("Invalid AntiSamy configuration detected. The following URLs were not validated as expected:\n%s",

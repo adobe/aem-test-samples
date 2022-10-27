@@ -32,7 +32,6 @@ import org.junit.Ignore;
 import org.junit.Rule;
 import org.junit.Test;
 
-import static org.apache.commons.io.IOUtils.closeQuietly;
 import static org.junit.Assert.assertEquals;
 
 public class DeepGetPageIT {
@@ -56,9 +55,23 @@ public class DeepGetPageIT {
     }
 
     @AfterClass
-    public static void afterClass() throws IOException {
-        closeQuietly(adminAuthor);
-        closeQuietly(adminPublish);
+    public static void afterClass() {
+        closeClientQuietly(adminAuthor);
+        closeClientQuietly(adminPublish);
+    }
+
+    /**
+     * Closes a client resource if applicable without notice in case it fails.
+     * INFO: Used instead of org.apache.commons.io.IOUtils.closeQuietly since it is still marked as deprecated in
+     * AEM, although it was un-deprecated in recent versions of commons-io (see <a href="https://issues.apache.org/jira/browse/IO-504">IO-504</a>)
+     * @param client client resource.
+     */
+    private static void closeClientQuietly(HtmlUnitClient client) {
+        if (client != null) {
+            try {
+                client.close();
+            } catch (IOException ignored) {}
+        }
     }
 
     /**

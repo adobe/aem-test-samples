@@ -17,6 +17,7 @@
 package com.adobe.cq.cloud.testing.it.smoke.rules;
 
 import java.net.URI;
+import java.net.URISyntaxException;
 import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
@@ -34,8 +35,8 @@ import com.adobe.cq.testing.junit.rules.Page;
 import org.apache.http.NameValuePair;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpUriRequest;
+import org.apache.http.client.utils.URIBuilder;
 import org.apache.http.message.BasicNameValuePair;
-import org.apache.http.params.BasicHttpParams;
 import org.apache.sling.testing.clients.ClientException;
 import org.apache.sling.testing.clients.SlingHttpResponse;
 import org.apache.sling.testing.clients.util.poller.Polling;
@@ -56,7 +57,6 @@ import static org.apache.http.HttpStatus.SC_MOVED_TEMPORARILY;
 import static org.apache.http.HttpStatus.SC_NOT_FOUND;
 import static org.apache.http.HttpStatus.SC_OK;
 import static org.apache.http.HttpStatus.SC_UNAUTHORIZED;
-import static org.apache.http.client.params.ClientPNames.HANDLE_REDIRECTS;
 
 /**
  * Junit test rule to check content distribution functionality
@@ -143,17 +143,18 @@ public class ContentPublishRule extends ExternalResource {
             + "Please ensure that the CDN and Dispatcher configurations allow fetching the page.", path, expectedStatus);
 
         try {
-            SlingHttpResponse res = null;
+            SlingHttpResponse res;
             final List<NameValuePair> queryParams = skipDispatcherCache
                 ? Collections.singletonList(
                 new BasicNameValuePair("timestamp", String.valueOf(System.currentTimeMillis())))
                 : Collections.emptyList();
             
             URI uri = getPublishClient().getUrl(path, queryParams);
-            HttpUriRequest request = new HttpGet(uri);
+            URIBuilder builder = new URIBuilder(uri);
             // Disable following redirects
-            request.setParams(new BasicHttpParams().setParameter(HANDLE_REDIRECTS, false));
-            
+            builder.setParameter("http.protocol.handle-redirects", "false");
+            HttpUriRequest request = new HttpGet(builder.build());
+
             res  = getPublishClient().doStreamRequest(request, null);
             
             // Special handling for 401,403, logging for 301,302
@@ -189,7 +190,7 @@ public class ContentPublishRule extends ExternalResource {
             } catch (InterruptedException e) {
                 throw getPublishException(getPageErrorCode(expectedStatus), errorMessage, e);
             }
-        } catch (ClientException e) {
+        } catch (ClientException | URISyntaxException e) {
             throw getPublishException(getPageErrorCode(expectedStatus), errorMessage, e);
         }
     }
