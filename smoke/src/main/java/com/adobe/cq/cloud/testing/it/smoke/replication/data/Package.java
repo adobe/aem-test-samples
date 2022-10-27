@@ -66,7 +66,8 @@ public class Package {
     public boolean isBlocked() {
         return state.equalsIgnoreCase(ERROR);
     }
-    
+
+    @SuppressWarnings("unused")
     public int getSize() {
         return size;
     }
@@ -91,6 +92,7 @@ public class Package {
         this.errorMessage = errorMessage;
     }
 
+    @SuppressWarnings("unused")
     public String getAction() {
         return action;
     }
@@ -114,7 +116,8 @@ public class Package {
     public void setPkgId(String pkgId) {
         this.pkgId = pkgId;
     }
-    
+
+    @SuppressWarnings("unused")
     public String getTime() {
         return time;
     }
@@ -123,6 +126,7 @@ public class Package {
         this.time = time;
     }
 
+    @SuppressWarnings("unused")
     public String getState() {
         return state;
     }
@@ -131,6 +135,7 @@ public class Package {
         this.state = state;
     }
 
+    @SuppressWarnings("unused")
     public String getUserid() {
         return userid;
     }
@@ -139,6 +144,7 @@ public class Package {
         this.userid = userid;
     }
 
+    @SuppressWarnings("unused")
     public int getAttempts() {
         return attempts;
     }
@@ -153,8 +159,7 @@ public class Package {
 
         try {
             return mapper.writeValueAsString(this);
-        } catch (JsonProcessingException e) {
-        }
+        } catch (JsonProcessingException ignored) {}
         return "";
     }
     

@@ -55,12 +55,12 @@ import static org.apache.http.HttpStatus.SC_OK;
 public class InstallPackageRule implements TestRule {
     private static final Logger LOG = LoggerFactory.getLogger(InstallPackageRule.class);
 
-    private String srcPath;
+    private final String srcPath;
     private final String name;
     private final String version;
     private final String group;
 
-    private Instance instance;
+    private final Instance instance;
 
     public  InstallPackageRule(Instance instance, String srcPath, String name, String version, String group) {
         this.instance = instance;
@@ -167,6 +167,7 @@ public class InstallPackageRule implements TestRule {
     }
 
     // TODO move to aem-testing-clients
+    @SuppressWarnings("UnusedReturnValue")
     private SlingHttpResponse cleanupPackage(SlingClient client, String path, String cmd) throws ClientException {
         FormEntityBuilder feb = FormEntityBuilder.create();
         feb.addParameter("cmd", cmd);

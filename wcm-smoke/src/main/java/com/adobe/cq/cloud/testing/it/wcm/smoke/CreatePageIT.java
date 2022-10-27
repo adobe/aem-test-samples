@@ -20,7 +20,6 @@ import com.adobe.cq.testing.junit.assertion.CQAssert;
 import com.adobe.cq.testing.junit.rules.CQAuthorClassRule;
 import com.adobe.cq.testing.junit.rules.CQRule;
 import com.adobe.cq.testing.junit.rules.Page;
-import org.apache.sling.testing.clients.ClientException;
 import org.junit.BeforeClass;
 import org.junit.ClassRule;
 import org.junit.Rule;

@@ -19,11 +19,10 @@ package com.adobe.cq.cloud.testing.it.cf.smoke.rules;
 import com.adobe.cq.testing.client.CQClient;
 import org.apache.sling.testing.clients.ClientException;
 import org.apache.sling.testing.clients.SlingHttpResponse;
+import org.apache.sling.testing.clients.exceptions.TestingSetupException;
 import org.apache.sling.testing.clients.util.FormEntityBuilder;
 import org.apache.sling.testing.junit.rules.instance.Instance;
 import org.junit.rules.ExternalResource;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import java.util.UUID;
 
@@ -32,9 +31,7 @@ import java.util.UUID;
  */
 public class ContentFragmentRule extends ExternalResource {
 
-    private static final Logger LOG = LoggerFactory.getLogger(ContentFragmentRule.class);
-
-    private Instance instance;
+    private final Instance instance;
     private CQClient client;
 
     public ContentFragmentRule(Instance instance) {
@@ -111,7 +108,7 @@ public class ContentFragmentRule extends ExternalResource {
      *  always require a parent path ( location where to create the Content
      *  Fragment ) and a model/template path for the Content Fragment ( the
      *  path of a Content Fragment Model ).
-     *
+     * <p>
      *  It will return the path of the newly created Content Fragment, if
      *  successful, or throw a Client Exception if it was not.
      *
@@ -126,11 +123,11 @@ public class ContentFragmentRule extends ExternalResource {
     public String createContentFragment(String parentPath, String templatePath, String title, String name, String description) throws ClientException {
 
         if(parentPath == null || parentPath.equals("")) {
-            throw new ClientException("Invalid parent path for Content Fragment creation.");
+            throw new TestingSetupException("Invalid parent path for Content Fragment creation.");
         }
         
         if(templatePath == null || templatePath.equals("")) {
-            throw new ClientException("Invalid template path for Content Fragment creation.");
+            throw new TestingSetupException("Invalid template path for Content Fragment creation.");
         }
 
         if(name == null || name.equals("")) {
@@ -176,7 +173,7 @@ public class ContentFragmentRule extends ExternalResource {
     public String createContentFragmentModel(String parentPath, String title, String description) throws ClientException {
 
         if(parentPath == null || parentPath.equals("")) {
-            throw new ClientException("Invalid parent path for Content Fragment Model creation.");
+            throw new TestingSetupException("Invalid parent path for Content Fragment Model creation.");
         }
 
         if(title == null || title.equals("")) {
@@ -205,7 +202,7 @@ public class ContentFragmentRule extends ExternalResource {
 
     /**
      *  Extracts a content fragment path from a Granite UI HTML response.
-     *
+     * <p>
      *  As the response returned from a call to create content fragment is a HTML response, we would have to
      *  extract the path from that using String manipulations.
      *
@@ -230,7 +227,7 @@ public class ContentFragmentRule extends ExternalResource {
 
     /**
      *  Extracts a content fragment model path from a Granite UI HTML response.
-     *
+     * <p>
      *  As the response returned from a call to create content fragment model is a HTML response, we would have to
      *  extract the path from that using String manipulations.
      *

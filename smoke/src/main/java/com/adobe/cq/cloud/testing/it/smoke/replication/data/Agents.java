@@ -21,7 +21,6 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.Optional;
-import java.util.function.Predicate;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
@@ -30,7 +29,6 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.DeserializationContext;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.SerializationFeature;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.deser.std.StdDeserializer;
 
@@ -65,12 +63,13 @@ public class Agents {
 
         try {
             return mapper.writeValueAsString(agents);
-        } catch (JsonProcessingException e) {
-        }
+        } catch (JsonProcessingException ignored) {}
         return "";
     }
 
     public static class AgentsDeserializer extends StdDeserializer<Agents> {
+
+        @SuppressWarnings("unused")
         protected AgentsDeserializer() {
             this(null);
         }

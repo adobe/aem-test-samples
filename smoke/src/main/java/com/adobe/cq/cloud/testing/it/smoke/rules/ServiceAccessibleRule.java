@@ -48,7 +48,8 @@ public class ServiceAccessibleRule implements TestRule {
     protected static final long TIMEOUT = TimeUnit.MINUTES.toMillis(5);
 
     public static final String SYSTEM_READY = "systemready";
-    
+
+    @SuppressWarnings({"FieldCanBeLocal", "unused"})
     private final Instance instance;
     private final String runmode;
     private final CQClient adminClient;

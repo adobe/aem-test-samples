@@ -57,12 +57,12 @@ public class ReplicationClient extends CQClient {
     // uses "NOSONAR" because CQRules:CQBP-71 is triggering, but can be ignored for this test case
     protected static final String DIST_AGENTS_PATH = "/libs/sling/distribution/services/agents"; //NOSONAR
 
-    protected static final String PUB_QUEUES_PATH = DIST_AGENTS_PATH + "/" + PUBLISH_DIST_AGENT;
-
+    @SuppressWarnings("unused")
     public ReplicationClient(CloseableHttpClient http, SlingClientConfig config) throws ClientException {
         super(http, config);
     }
 
+    @SuppressWarnings("unused")
     public ReplicationClient(URI serverUrl, String user, String password) throws ClientException {
         super(serverUrl, user, password);
     }

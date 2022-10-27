@@ -33,7 +33,6 @@ import org.junit.rules.TestRule;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.concurrent.Callable;
 import java.util.concurrent.TimeoutException;
 
 /**
@@ -87,7 +86,7 @@ public class CFEditorSmokeIT {
     /**
      * Given a Content Fragment already present on the instance, check to see the availability of the
      * Content Fragment Editor.
-     *
+     * <p>
      * 1. Check to see if Content Fragment exists on target instance.
      * 2. Open a Content Fragment Editor.
      * 3. Start an editing session in the Content Fragment Editor.
@@ -102,12 +101,7 @@ public class CFEditorSmokeIT {
         LOGGER.info("Testing Content Fragment Editor..");
         CQClient client = cqBaseClassRule.authorRule.getAdminClient(CQClient.class);
 
-        new Polling(new Callable<Boolean>() {
-            @Override
-            public Boolean call() throws Exception {
-                return client.exists(TEST_CONTENT_FRAGMENT_PATH);
-            }
-        }).poll(TIMEOUT, RETRY_DELAY);
+        new Polling(() -> client.exists(TEST_CONTENT_FRAGMENT_PATH)).poll(TIMEOUT, RETRY_DELAY);
 
         client.doGet("editor.html/" + TEST_CONTENT_FRAGMENT_PATH, 200);
 
@@ -120,7 +114,7 @@ public class CFEditorSmokeIT {
 
     /**
      * Given a Content Fragment Model, check to see if the Content Fragment Model Editor is available.
-     *
+     * <p>
      * 1. Check to see if a Content Fragment Model is available on the instance.
      * 2. Open the Content Fragment Model Editor.
      *
@@ -133,19 +127,14 @@ public class CFEditorSmokeIT {
         LOGGER.info("Testing Content Fragment Model Editor..");
         CQClient client = cqBaseClassRule.authorRule.getAdminClient(CQClient.class);
 
-        new Polling(new Callable<Boolean>() {
-            @Override
-            public Boolean call() throws Exception {
-                return client.exists(TEST_CONTENT_FRAGMENT_MODEL_PATH);
-            }
-        }).poll(TIMEOUT, RETRY_DELAY);
+        new Polling(() -> client.exists(TEST_CONTENT_FRAGMENT_MODEL_PATH)).poll(TIMEOUT, RETRY_DELAY);
 
         client.doGet("/mnt/overlay/dam/cfm/models/editor/content/editor.html/" + TEST_CONTENT_FRAGMENT_MODEL_PATH, 200);
     }
 
     /**
      *  Given a Content Fragment Metadata Editor ( Properties screen ) is available.
-     *
+     * <p>
      *  1. Check to see if a Content Fragment exists.
      *  2. Open the Content Fragment Metadata Editor.
      *
@@ -158,12 +147,7 @@ public class CFEditorSmokeIT {
         LOGGER.info("Testing Open Content Fragment Editor Metadata..");
         CQClient client = cqBaseClassRule.authorRule.getAdminClient(CQClient.class);
 
-        new Polling(new Callable<Boolean>() {
-            @Override
-            public Boolean call() throws Exception {
-                return client.exists(TEST_CONTENT_FRAGMENT_PATH);
-            }
-        }).poll(TIMEOUT, RETRY_DELAY);
+        new Polling(() -> client.exists(TEST_CONTENT_FRAGMENT_PATH)).poll(TIMEOUT, RETRY_DELAY);
 
         client.doGet("/mnt/overlay/dam/cfm/admin/content/v2/metadata-editor.html" + TEST_CONTENT_FRAGMENT_PATH, 200);
     }

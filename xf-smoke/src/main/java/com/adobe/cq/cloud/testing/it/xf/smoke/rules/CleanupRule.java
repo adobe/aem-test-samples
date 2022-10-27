@@ -51,7 +51,7 @@ public class CleanupRule extends ExternalResource {
 
     @Override
     protected void after() {
-        toDelete.get().stream().forEach((path) -> {
+        toDelete.get().forEach((path) -> {
             try {
                 new Polling(() -> {
                     rule.getAdminClient().deletePath(path);

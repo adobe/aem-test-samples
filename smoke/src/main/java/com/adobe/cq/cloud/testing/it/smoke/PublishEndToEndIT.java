@@ -17,7 +17,9 @@
 package com.adobe.cq.cloud.testing.it.smoke;
 
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.TimeoutException;
 
+import com.adobe.cq.cloud.testing.it.smoke.exception.SmokeTestException;
 import com.adobe.cq.cloud.testing.it.smoke.rules.ContentPublishRule;
 import com.adobe.cq.cloud.testing.it.smoke.rules.ServiceAccessibleRule;
 import com.adobe.cq.testing.junit.rules.CQAuthorPublishClassRule;
@@ -32,7 +34,7 @@ import org.junit.rules.RuleChain;
 
 /**
  * End to end publication test.
- * 
+ * <p>
  * A test page is published from author and publication is validated through the AEM
  * publish ingress (CDN -&gt; Dispatcher -&gt; AEM publish tier).
  */
@@ -65,10 +67,11 @@ public class PublishEndToEndIT {
      *      <li>After deactivation, that the page is no longer accessible via the publish ingress and that the queue is empty</li>
      * </ul>
      *
-     * @throws Exception if an error occurred
+     * @throws InterruptedException if an error occurred
+     * @throws TimeoutException if an error occurred
      */
     @Test
-    public void testActivateAndDeactivate() throws Exception {
+    public void testActivateAndDeactivate() throws InterruptedException, TimeoutException {
 
         // This is a workaround for correctly detecting assumption violations.
         // Any AssumptionViolatedException throw by the Callable will be
@@ -79,8 +82,8 @@ public class PublishEndToEndIT {
             activateAndDeactivate();
         } catch (AssumptionViolatedException e) {
             throw e;
-        } catch (Exception e) {
-            new Polling(() -> activateAndDeactivate()).poll(TIMEOUT, 500);
+        } catch (SmokeTestException | RuntimeException e) {
+            new Polling(this::activateAndDeactivate).poll(TIMEOUT, 500);
         }
     }
 
@@ -88,9 +91,9 @@ public class PublishEndToEndIT {
      * Execute activate and deactivate on publish & preview
      *
      * @return true if success
-     * @throws Exception if exception occurs
+     * @throws SmokeTestException if exception occurs
      */
-    private boolean activateAndDeactivate() throws Exception {
+    private boolean activateAndDeactivate() throws SmokeTestException {
         contentPublishRule.activateAssertPublish();
         contentPublishRule.deactivateAssertPublish();
         

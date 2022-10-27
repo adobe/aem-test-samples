@@ -22,6 +22,8 @@ public class ServiceException extends SmokeTestException {
     public ServiceException(String errorCode, String message) {
         super(errorCode, message);
     }
+
+    @SuppressWarnings("unused")
     public ServiceException(String errorCode, String message, Throwable t) {
         super(errorCode, message, t);
     }

@@ -130,11 +130,13 @@ public class XfSmokeIT {
             ExperienceFragmentsClient.ExperienceFragment experienceFragment = xfClient.getExperienceFragment(xfPath);
             Assert.assertEquals("Description is incorrect", TEST_DESCRIPTION, experienceFragment.getDescription());
             Assert.assertEquals("Child page is creation failed", experienceFragment.getVariants().size(), 1);
+            Assert.assertNotNull("XF tags should not be null", experienceFragment.getTags());
             Assert.assertEquals("XF tags should be empty", experienceFragment.getTags().size(), 0);
             ExperienceFragmentsClient.ExperienceFragmentVariant masterVariant = experienceFragment.getVariants().get(0);
             Assert.assertEquals("First variation template is incorrect", masterVariant.getTemplateType(), predefinedTemplate);
             Assert.assertEquals("First variation title is incorrect", CREATE_VARIANT_TITLE, masterVariant.getTitle());
             Assert.assertTrue("First variation is not marked as master", masterVariant.isMasterVariant());
+            Assert.assertNotNull("Variant tags should not be null", masterVariant.getTags());
             Assert.assertEquals("Variant tags should contain at least one tag from the initial content", 1, masterVariant.getTags().size());
         }
     }
@@ -199,7 +201,8 @@ public class XfSmokeIT {
             Assert.assertEquals("Variant name", VARCREA_VARIANT_NAME, variant.getName());
             Assert.assertEquals("Variant description", TEST_DESCRIPTION, variant.getDescription());
             Assert.assertEquals("Variant template", template, variant.getTemplateType());
-            Assert.assertTrue("Variant tags", variant.getTags().size() == 0);
+            Assert.assertNotNull("Variant tags should not be null", variant.getTags());
+            Assert.assertEquals("Variant tags", 0, variant.getTags().size());
 
             adminXFClient.deletePage(new String[] { variantPath }, true, false);
         }
@@ -220,7 +223,7 @@ public class XfSmokeIT {
                 throw new TestingIOException("Exception while handling sling response (auto-closeable) of fragment creation", e);
             }
 
-            cleanupRule.addPath(authorXFClient.getParentXFPath(variantPath));
+            cleanupRule.addPath(ExperienceFragmentsClient.getParentXFPath(variantPath));
 
             authorXFClient.deleteXfVariant(variantPath, HttpStatus.SC_INTERNAL_SERVER_ERROR);
             Assert.assertTrue("Master variant should not be deleted", authorXFClient.exists(variantPath));
@@ -249,9 +252,8 @@ public class XfSmokeIT {
                 throw new TestingIOException("Exception while handling sling response (auto-closeable) of variant creation", e);
             }
 
-            authorXFClient.deleteXfVariant(variantPath, HttpStatus.SC_OK);
-            Assert.assertFalse("Variant should be deleted", authorXFClient.exists(variantPath));
+            adminXFClient.deleteXfVariant(variantPath, HttpStatus.SC_OK);
+            Assert.assertFalse("Variant should be deleted", adminXFClient.exists(variantPath));
         }
     }
-
 }

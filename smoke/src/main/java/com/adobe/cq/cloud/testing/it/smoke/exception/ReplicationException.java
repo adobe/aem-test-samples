@@ -23,6 +23,7 @@ public class ReplicationException extends SmokeTestException {
     public static final String ACTION_NOT_REPLICATED = "ACTION_NOT_REPLICATED";
     public static final String REPLICATION_NOT_AVAILABLE = "REPLICATION_NOT_AVAILABLE";
 
+    @SuppressWarnings("unused")
     public ReplicationException(String errorCode, String message) {
         super(errorCode, message);
     }

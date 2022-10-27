@@ -18,7 +18,6 @@ package com.adobe.cq.cloud.testing.it.smoke;
 import com.adobe.cq.testing.client.CQClient;
 import com.adobe.cq.testing.junit.rules.CQAuthorPublishClassRule;
 import com.adobe.cq.testing.junit.rules.CQRule;
-import com.adobe.cq.testing.junit.rules.Page;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.apache.sling.testing.clients.ClientException;
@@ -113,7 +112,7 @@ public class GetTogglesIT {
                     match = true;
                     break;
                 } else {
-                    match = match || checkElementMatchesRegex(regex, item);
+                    match = checkElementMatchesRegex(regex, item);
                     if (match) {
                         break;
                     }

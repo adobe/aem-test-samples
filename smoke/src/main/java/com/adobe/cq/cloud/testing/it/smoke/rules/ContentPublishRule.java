@@ -289,10 +289,10 @@ public class ContentPublishRule extends ExternalResource {
     }
     
     private boolean doPreviewChecks(Agents agents) throws ReplicationException {
-        boolean previewAgentExists = replicationClient.checkDistributionAgentExists(agents, PREVIEW_DIST_AGENT);
+        boolean previewAgentExists = ReplicationClient.checkDistributionAgentExists(agents, PREVIEW_DIST_AGENT);
         if (previewAgentExists) {
             //throw if preview agent is blocked
-            boolean previewBlocked = replicationClient.isAgentQueueBlocked(agents, PREVIEW_DIST_AGENT);
+            boolean previewBlocked = ReplicationClient.isAgentQueueBlocked(agents, PREVIEW_DIST_AGENT);
             if (previewBlocked) {
                 throw replicationClient.getReplicationException(QUEUE_BLOCKED,
                     "Replication agent queue blocked - " + agents.getAgent(PREVIEW_DIST_AGENT), null); 

@@ -78,7 +78,7 @@ public class CFSmokeIT {
     /**
      * As we creating content fragments in certain folders, the InstallPackageRule sometimes does not
      * remove the parent content fragment folder.
-     *
+     * <p>
      * Through this after method, we make sure that the clean up is done properly.
      */
     @AfterClass

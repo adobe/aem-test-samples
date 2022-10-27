@@ -25,7 +25,6 @@ import org.slf4j.LoggerFactory;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.concurrent.Callable;
 import java.util.concurrent.TimeoutException;
 
 public class CleanUpRule extends ExternalResource {
@@ -59,7 +58,7 @@ public class CleanUpRule extends ExternalResource {
 
     @Override
     protected void after() {
-        toDelete.get().stream().forEach((path) -> {
+        toDelete.get().forEach((path) -> {
             try {
                 new Polling(() -> {
                     rule.getAdminClient().deletePath(path);
@@ -81,13 +80,10 @@ public class CleanUpRule extends ExternalResource {
      * @throws InterruptedException to mark this method as "waiting"
      */
     public static void cleanUp(Instance rule, String path, long timeout, long delay) throws TimeoutException, InterruptedException {
-        new Polling(new Callable<Boolean>() {
-            @Override
-            public Boolean call() throws Exception {
-                LOG.debug("Specifically cleaning up the path: " + path);
-                rule.getAdminClient(CQClient.class).deletePath(path);
-                return rule.getAdminClient(CQClient.class).exists(path);
-            }
+        new Polling(() -> {
+            LOG.debug("Specifically cleaning up the path: " + path);
+            rule.getAdminClient(CQClient.class).deletePath(path);
+            return rule.getAdminClient(CQClient.class).exists(path);
         }).poll(timeout, delay);
     }
 }
