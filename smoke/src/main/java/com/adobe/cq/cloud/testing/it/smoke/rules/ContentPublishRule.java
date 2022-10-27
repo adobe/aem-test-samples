@@ -61,6 +61,9 @@ import static org.apache.http.HttpStatus.SC_UNAUTHORIZED;
 /**
  * Junit test rule to check content distribution functionality
  */
+// Suppress logging Sonar warnings, since logging and throwing is acceptable in testing
+@SuppressWarnings({"CQRules:CQBP-44---ConsecutivelyLogAndThrow", "CQRules:CQBP-44---CatchAndEitherLogOrThrow"})
+
 public class ContentPublishRule extends ExternalResource {
     private static final Logger log = LoggerFactory.getLogger(ContentPublishRule.class);
     
@@ -323,8 +326,8 @@ public class ContentPublishRule extends ExternalResource {
             });
             polling.poll(TIMEOUT, 2000);
         } catch (TimeoutException e) {
-            log.info("Agent not empty of item {}", ((agentsRef.get() != null) ? agentsRef.get().getAgent(agent) : ""));
-            throw replicationClient.getReplicationException(ACTION_NOT_REPLICATED, 
+            log.warn("Agent not empty of item {}", ((agentsRef.get() != null) ? agentsRef.get().getAgent(agent) : ""));
+            throw replicationClient.getReplicationException(ACTION_NOT_REPLICATED,
                 String.format("Item not activated within %s ms", TIMEOUT),
                 polling.getLastException());
         } catch (InterruptedException | RuntimeException e) {

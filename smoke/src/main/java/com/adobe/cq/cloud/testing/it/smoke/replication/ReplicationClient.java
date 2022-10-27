@@ -54,8 +54,8 @@ import static org.apache.commons.lang3.StringUtils.isNotEmpty;
 public class ReplicationClient extends CQClient {
     private static final Logger log = LoggerFactory.getLogger(ContentPublishRule.class);
 
-    protected static final String DIST_AGENTS_PATH = "/libs/sling/distribution/services/agents";
-    protected static final String PUBLISH_DIST_AGENT = "publish";
+    // uses "NOSONAR" because CQRules:CQBP-71 is triggering, but can be ignored for this test case
+    protected static final String DIST_AGENTS_PATH = "/libs/sling/distribution/services/agents"; //NOSONAR
 
     protected static final String PUB_QUEUES_PATH = DIST_AGENTS_PATH + "/" + PUBLISH_DIST_AGENT;
 

@@ -126,12 +126,10 @@ public class ContentFragmentRule extends ExternalResource {
     public String createContentFragment(String parentPath, String templatePath, String title, String name, String description) throws ClientException {
 
         if(parentPath == null || parentPath.equals("")) {
-            LOG.error("Could not create Content Fragment due to invalid parent path.");
             throw new ClientException("Invalid parent path for Content Fragment creation.");
         }
         
         if(templatePath == null || templatePath.equals("")) {
-            LOG.error("Could not create Content Fragment due to invalid template path");
             throw new ClientException("Invalid template path for Content Fragment creation.");
         }
 
@@ -158,8 +156,9 @@ public class ContentFragmentRule extends ExternalResource {
         createParams.addParameter("tags@Delete", "");
         createParams.addParameter("name", name);
 
-        SlingHttpResponse response = client.doPost("/libs/dam/cfm/admin/content/v2/createfragment/submit/_jcr_content.html",
-                createParams.build(), null, 201);
+        // uses "NOSONAR" because CQRules:CQBP-71 is triggering, but can be ignored for this test case
+        final String CREATE_FRAGMENT_PATH = "/libs/dam/cfm/admin/content/v2/createfragment/submit/_jcr_content.html"; //NOSONAR
+        SlingHttpResponse response = client.doPost(CREATE_FRAGMENT_PATH, createParams.build(), null, 201);
 
         return extractContentFragmentPathFromResponse(response.getContent());
     }
@@ -177,7 +176,6 @@ public class ContentFragmentRule extends ExternalResource {
     public String createContentFragmentModel(String parentPath, String title, String description) throws ClientException {
 
         if(parentPath == null || parentPath.equals("")) {
-            LOG.error("Could not create Content Fragment Model due to invalid parent path.");
             throw new ClientException("Invalid parent path for Content Fragment Model creation.");
         }
 
@@ -189,11 +187,14 @@ public class ContentFragmentRule extends ExternalResource {
             description = "";
         }
 
+        // uses "NOSONAR" because CQRules:CQBP-71 is triggering, but can be ignored for this test case
+        final String FRAGMENT_PATH = "/libs/settings/dam/cfm/model-types/fragment"; //NOSONAR
+
         FormEntityBuilder createParams = FormEntityBuilder.create();
         createParams.addParameter("_charset_", "UTF-8");
         createParams.addParameter(":operation", "cfm:createModel");
         createParams.addParameter("_parentPath_", parentPath);
-        createParams.addParameter("modelType", "/libs/settings/dam/cfm/model-types/fragment");
+        createParams.addParameter("modelType", FRAGMENT_PATH);
         createParams.addParameter("./jcr:title", title);
         createParams.addParameter("./jcr:description", description);
 

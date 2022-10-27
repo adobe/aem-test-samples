@@ -25,7 +25,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.SerializationFeature;
+import org.apache.sling.api.SlingConstants;
 
 @JsonInclude(JsonInclude.Include.NON_EMPTY)
 public class Package {
@@ -56,7 +56,7 @@ public class Package {
     @JsonProperty("state")
     private String state;
    
-    @JsonProperty("userid")
+    @JsonProperty(SlingConstants.PROPERTY_USERID)
     private String userid;
    
     @JsonProperty("attempts")
