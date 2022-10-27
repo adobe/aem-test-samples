@@ -32,7 +32,7 @@ public class SearchIT {
     private static final long TIMEOUT = SECONDS.toMillis(30);
 
     @ClassRule
-    public static CQAuthorClassRule cqBaseClassRule = new CQAuthorClassRule();
+    public static final CQAuthorClassRule cqBaseClassRule = new CQAuthorClassRule();
 
     @Rule
     public CQRule cqBaseRule = new CQRule(cqBaseClassRule.authorRule);

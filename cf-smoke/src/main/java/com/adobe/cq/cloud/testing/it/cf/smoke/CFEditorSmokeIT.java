@@ -56,7 +56,7 @@ public class CFEditorSmokeIT {
     private static final String TEST_CONTENT_FRAGMENT_PATH = "/content/dam/cf-sanity-test-20191029/en/sample-content-fragment-20191029";
     private static final String TEST_CONTENT_FRAGMENT_MODEL_PATH = "/conf/cf-sanity-test-20191029/settings/dam/cf/models/simple-structure-20191029";
     
-    public static CQAuthorClassRule cqBaseClassRule = new CQAuthorClassRule();
+    private static final CQAuthorClassRule cqBaseClassRule = new CQAuthorClassRule();
 
     @Rule
     public CQRule cqBaseRule = new CQRule(cqBaseClassRule.authorRule);
@@ -64,10 +64,10 @@ public class CFEditorSmokeIT {
     @Rule
     public ContentFragmentRule contentFragmentRule = new ContentFragmentRule(cqBaseClassRule.authorRule);
 
-    public static InstallPackageRule installPackageRule = new InstallPackageRule(cqBaseClassRule.authorRule, "/test-content", PACKAGE_NAME, PACKAGE_VERSION, PACKAGE_GROUP);
+    private static final InstallPackageRule installPackageRule = new InstallPackageRule(cqBaseClassRule.authorRule, "/test-content", PACKAGE_NAME, PACKAGE_VERSION, PACKAGE_GROUP);
 
     @ClassRule
-    public static TestRule ruleChain = RuleChain.outerRule(cqBaseClassRule).around(installPackageRule);
+    public static final TestRule ruleChain = RuleChain.outerRule(cqBaseClassRule).around(installPackageRule);
 
     /**
      * After class in order to make sure that the folders in /content/dam and /conf

@@ -61,16 +61,16 @@ public class CFSmokeIT {
     private static final String TEST_VARIATION_DESCRIPTION = "Content Fragment Test Variation.";
 
     // Class rules that install packages
-    public static CQAuthorClassRule cqBaseClassRule = new CQAuthorClassRule();
-    public static InstallPackageRule installPackageRule = new InstallPackageRule(cqBaseClassRule.authorRule, "/test-content", PACKAGE_NAME, PACKAGE_VERSION, PACKAGE_GROUP);
+    private static final CQAuthorClassRule cqBaseClassRule = new CQAuthorClassRule();
+    private static final InstallPackageRule installPackageRule = new InstallPackageRule(cqBaseClassRule.authorRule, "/test-content", PACKAGE_NAME, PACKAGE_VERSION, PACKAGE_GROUP);
 
     @ClassRule
-    public static TestRule ruleChain = RuleChain.outerRule(cqBaseClassRule).around(installPackageRule);
+    public static final TestRule ruleChain = RuleChain.outerRule(cqBaseClassRule).around(installPackageRule);
 
     // Rule chain for clean up and content fragment utilities
-    public CQRule cqRule = new CQRule();
-    public ContentFragmentRule contentFragmentRule = new ContentFragmentRule(cqBaseClassRule.authorRule);
-    public CleanUpRule cleanUpRule = new CleanUpRule(cqBaseClassRule.authorRule, TIMEOUT, RETRY_DELAY);
+    private static final CQRule cqRule = new CQRule();
+    private static final ContentFragmentRule contentFragmentRule = new ContentFragmentRule(cqBaseClassRule.authorRule);
+    private static final CleanUpRule cleanUpRule = new CleanUpRule(cqBaseClassRule.authorRule, TIMEOUT, RETRY_DELAY);
 
     @Rule
     public TestRule rules = RuleChain.outerRule(cqRule).around(cleanUpRule).around(contentFragmentRule);

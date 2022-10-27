@@ -25,7 +25,7 @@ import org.junit.*;
 public class GetPageIT {
 
     @ClassRule
-    public static CQAuthorPublishClassRule cqBaseClassRule = new CQAuthorPublishClassRule();
+    public static final CQAuthorPublishClassRule cqBaseClassRule = new CQAuthorPublishClassRule();
 
     @Rule
     public CQRule cqBaseRule = new CQRule(cqBaseClassRule.authorRule, cqBaseClassRule.publishRule);

@@ -40,12 +40,13 @@ public class PublishEndToEndIT {
     protected static final long TIMEOUT = TimeUnit.MINUTES.toMillis(1);
     
     @ClassRule
-    public static CQAuthorPublishClassRule cqBaseClassRule = new CQAuthorPublishClassRule();
+    public static final CQAuthorPublishClassRule cqBaseClassRule = new CQAuthorPublishClassRule();
 
     @Rule
     public CQRule cqBaseRule = new CQRule(cqBaseClassRule.authorRule, cqBaseClassRule.publishRule);
     
-    public Page root = new Page(cqBaseClassRule.authorRule);
+    private static final Page root = new Page(cqBaseClassRule.authorRule);
+
     @Rule
     public RuleChain ruleChain = RuleChain.outerRule(new ServiceAccessibleRule(cqBaseClassRule.authorRule))
         .around(new ServiceAccessibleRule(cqBaseClassRule.publishRule))

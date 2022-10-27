@@ -49,19 +49,19 @@ public class CreatePageAsAuthorUserIT {
     private static final int TIMEOUT = (int) MINUTES.toMillis(2);
 
     @ClassRule
-    public static CQAuthorClassRule cqBaseClassRule = new CQAuthorClassRule();
+    public static final CQAuthorClassRule cqBaseClassRule = new CQAuthorClassRule();
 
-    public CQRule cqBaseRule = new CQRule(cqBaseClassRule.authorRule);
+    private static final CQRule cqBaseRule = new CQRule(cqBaseClassRule.authorRule);
 
     // Create a random page so the test site is initialized properly.
     private final Page temporaryPage = new Page(cqBaseClassRule.authorRule);
     
-    public TemporaryContentAuthorGroup groupRule = new TemporaryContentAuthorGroup(() -> cqBaseClassRule.authorRule.getAdminClient());
+    private static final TemporaryContentAuthorGroup groupRule = new TemporaryContentAuthorGroup(cqBaseClassRule.authorRule::getAdminClient);
 
     @Rule
     public TestRule cqRuleChainGroup = RuleChain.outerRule(cqBaseRule).around(groupRule);
 
-    public TemporaryUser userRule = new TemporaryUser(() -> cqBaseClassRule.authorRule.getAdminClient(), groupRule.getGroupName());
+    private static final TemporaryUser userRule = new TemporaryUser(cqBaseClassRule.authorRule::getAdminClient, groupRule.getGroupName());
 
     @Rule
     public TestRule cqRuleChain = RuleChain.outerRule(cqBaseRule).around(temporaryPage).around(userRule);

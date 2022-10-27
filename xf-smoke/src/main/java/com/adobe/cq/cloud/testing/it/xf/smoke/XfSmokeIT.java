@@ -47,10 +47,10 @@ public class XfSmokeIT {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(XfSmokeIT.class);
 
-    private static CQAuthorPublishClassRule cqAuthorPublishClassRule = new CQAuthorPublishClassRule();
+    private static final CQAuthorPublishClassRule cqAuthorPublishClassRule = new CQAuthorPublishClassRule();
 
     @ClassRule
-    public static TestRule ruleChain = RuleChain.outerRule(cqAuthorPublishClassRule);
+    public static final TestRule ruleChain = RuleChain.outerRule(cqAuthorPublishClassRule);
 
     @Rule
     public CQRule cqRule = new CQRule();

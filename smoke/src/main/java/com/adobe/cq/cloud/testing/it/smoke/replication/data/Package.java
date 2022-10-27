@@ -76,11 +76,11 @@ public class Package {
     }
     
     public List<String> getPaths() {
-        return paths;
+        return new ArrayList<>(paths);
     }
 
     public void setPaths(List<String> paths) {
-        this.paths = paths;
+        this.paths = new ArrayList<>(paths);
     }
 
     public String getErrorMessage() {

@@ -29,7 +29,7 @@ public class ValidateAntiSamyConfigurationIT {
     private static final long DELAY = TimeUnit.SECONDS.toMillis(1);
 
     @ClassRule
-    public static CQAuthorClassRule cqAuthorClassRule = new CQAuthorClassRule();
+    public static final CQAuthorClassRule cqAuthorClassRule = new CQAuthorClassRule();
 
     private static CQClient adminAuthor;
 

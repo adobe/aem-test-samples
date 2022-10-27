@@ -41,7 +41,7 @@ import javax.xml.parsers.ParserConfigurationException;
 public class GetTogglesIT {
 
     @ClassRule
-    public static CQAuthorPublishClassRule cqBaseClassRule = new CQAuthorPublishClassRule();
+    public static final CQAuthorPublishClassRule cqBaseClassRule = new CQAuthorPublishClassRule();
     static CQClient adminAuthor;
     static CQClient adminPublish;
     @Rule
@@ -67,7 +67,7 @@ public class GetTogglesIT {
         String responseContent = response.getContent();
         try {
             ToggleResponse tr = mapper.readValue(responseContent, ToggleResponse.class);
-            Assert.assertTrue(Arrays.asList(tr.enabled).contains("ENABLED"));
+            Assert.assertTrue(Arrays.asList(tr.getEnabled()).contains("ENABLED"));
 
         } catch (IOException e) {
             Assert.fail("Couldn't read response from ClientLibs toggle endpoint. \nError: " + e.getMessage() + "\nContents: " + responseContent);
@@ -123,8 +123,17 @@ public class GetTogglesIT {
         return match;
     }
 
-    public static final class ToggleResponse {
+    protected static final class ToggleResponse {
 
-        public String[] enabled;
+        private String[] enabled;
+
+        public String[] getEnabled() {
+            return enabled.clone();
+        }
+
+        @SuppressWarnings("unused")
+        public void setEnabled(String[] enabled) {
+            this.enabled = enabled.clone();
+        }
     }
 }

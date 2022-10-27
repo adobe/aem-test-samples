@@ -54,7 +54,7 @@ public class PageActionIT {
     private static final long RETRY_DELAY = 500;
 
     @ClassRule
-    public static CQAuthorPublishClassRule cqBaseClassRule = new CQAuthorPublishClassRule();
+    public static final CQAuthorPublishClassRule cqBaseClassRule = new CQAuthorPublishClassRule();
 
     @Rule
     public CQRule cqBaseRule = new CQRule(cqBaseClassRule.authorRule);

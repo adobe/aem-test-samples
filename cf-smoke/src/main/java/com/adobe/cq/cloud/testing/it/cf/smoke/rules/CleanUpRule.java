@@ -32,7 +32,7 @@ public class CleanUpRule extends ExternalResource {
 
     private static final Logger LOG = LoggerFactory.getLogger(CleanUpRule.class);
 
-    public ThreadLocal<List<String>> toDelete = ThreadLocal.withInitial(() -> new ArrayList<>(15));
+    private static final ThreadLocal<List<String>> toDelete = ThreadLocal.withInitial(() -> new ArrayList<>(15));
     private final Instance rule;
     private final long timeout;
     private final long delay;
