@@ -81,7 +81,7 @@ public class GetTogglesIT {
      * @throws IOException if an error occurred
      * @throws SAXException if an error occurred
      */
-    @Test
+    @Ignore
     public void testAboutPageVersionFormatWithToggleQualifier() throws ClientException, ParserConfigurationException, IOException, SAXException {
         SlingHttpResponse response = adminAuthor.doGet("mnt/overlay/granite/ui/content/shell/about.html", 200);
         final String regex = "^Adobe Experience Manager [\\d]{4}.[\\d]{1,2}.[\\d]+.[\\d]{8}T[\\d]{6}Z-[\\d]{6}(-[\\w]+)?$";
