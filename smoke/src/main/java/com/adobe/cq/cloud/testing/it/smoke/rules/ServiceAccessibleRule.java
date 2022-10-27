@@ -18,12 +18,14 @@ package com.adobe.cq.cloud.testing.it.smoke.rules;
 
 import java.io.IOException;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.TimeoutException;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import com.adobe.cq.cloud.testing.it.smoke.exception.ServiceException;
 import com.adobe.cq.testing.client.CQClient;
 import org.apache.http.HttpResponse;
 import org.apache.http.client.HttpClient;
+import org.apache.http.client.config.RequestConfig;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.impl.client.HttpClientBuilder;
 import org.apache.http.util.EntityUtils;
@@ -61,7 +63,11 @@ public class ServiceAccessibleRule implements TestRule {
         Polling polling;
 
         try {
-            HttpClient client = HttpClientBuilder.create().build();
+            RequestConfig requestConfig = RequestConfig.custom()
+                    .setConnectTimeout(10000)
+                    .setSocketTimeout(10000)
+                    .build();
+            HttpClient client = HttpClientBuilder.create().setDefaultRequestConfig(requestConfig).build();
             AtomicInteger counter = new AtomicInteger();
             polling = new Polling(() -> {
                 counter.incrementAndGet();

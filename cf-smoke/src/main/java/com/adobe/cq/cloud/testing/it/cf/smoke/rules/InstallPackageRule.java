@@ -30,16 +30,14 @@ import org.junit.runners.model.Statement;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
-import java.io.IOException;
+import java.io.*;
 import java.lang.management.ManagementFactory;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.nio.file.*;
 import java.util.Collections;
 import java.util.Iterator;
+import java.util.Objects;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.jar.Attributes;
 import java.util.jar.JarEntry;
@@ -117,17 +115,25 @@ public class InstallPackageRule implements TestRule {
     }
 
     private File generatePackage(String resourceFolder) throws IOException, URISyntaxException {
-        URI resourceUri = getClass().getResource(resourceFolder).toURI();
+        URI resourceUri = Objects.requireNonNull(getClass().getResource(resourceFolder)).toURI();
         Path resourcePath;
-        if (resourceUri.getScheme().equals("jar")) {
-            FileSystem fs = FileSystems.newFileSystem(resourceUri, Collections.emptyMap());
-            resourcePath = fs.getPath(resourceFolder);
-        } else {
-            resourcePath = Paths.get(resourceUri);
-        }
 
-        LOG.info("Creating package from resources folder {}", resourcePath);
-        return buildJarFromFolder(resourcePath);
+        FileSystem fs = null;
+        try {
+            if (resourceUri.getScheme().equals("jar")) {
+                fs = FileSystems.newFileSystem(resourceUri, Collections.emptyMap());
+                resourcePath = fs.getPath(resourceFolder);
+            } else {
+                resourcePath = Paths.get(resourceUri);
+            }
+
+            LOG.info("Creating package from resources folder {}", resourcePath);
+            return buildJarFromFolder(resourcePath);
+        } finally {
+            if (fs != null) {
+                fs.close();
+            }
+        }
     }
 
     private File buildJarFromFolder(Path srcPath) throws IOException {
@@ -140,22 +146,23 @@ public class InstallPackageRule implements TestRule {
         attributes.put(Attributes.Name.MANIFEST_VERSION, "1.0");
         attributes.putValue("Build-Jdk", ManagementFactory.getRuntimeMXBean().getVmVersion());
 
-        JarOutputStream outJar = new JarOutputStream(new FileOutputStream(generatedPackage), man);
-
-        Stream<Path> walk = Files.walk(srcPath, MAX_VALUE);
-        for (Iterator<Path> it = walk.iterator(); it.hasNext(); ) {
-            Path path = it.next();
-            if (Files.isDirectory(path)) continue;
-            String entryName = path.toString().substring(srcPath.toString().length()+1);
-            JarEntry je = new JarEntry(entryName);
-            je.setTime(Files.getLastModifiedTime(path).toMillis());
-            je.setSize(Files.size(path));
-            outJar.putNextEntry(je);
-            IOUtils.copy(Files.newInputStream(path), outJar);
-            outJar.closeEntry();
+        try (
+                JarOutputStream outJar = new JarOutputStream(Files.newOutputStream(generatedPackage.toPath()), man);
+                Stream<Path> walk = Files.walk(srcPath, MAX_VALUE)
+        ) {
+            for (Iterator<Path> it = walk.iterator(); it.hasNext(); ) {
+                Path path = it.next();
+                if (Files.isDirectory(path)) continue;
+                String entryName = path.toString().substring(srcPath.toString().length() + 1);
+                JarEntry je = new JarEntry(entryName);
+                je.setTime(Files.getLastModifiedTime(path).toMillis());
+                je.setSize(Files.size(path));
+                outJar.putNextEntry(je);
+                IOUtils.copy(Files.newInputStream(path), outJar);
+                outJar.closeEntry();
+            }
         }
 
-        outJar.close();
         return generatedPackage;
     }
 
