@@ -77,8 +77,10 @@ public class CreatePageAsAuthorUserIT {
         String pageName = "testpage_" +  UUID.randomUUID();
         String pagePathExpected = temporaryPage.getParentPath() + "/" + pageName;
         String pagePath = pagePathExpected;
-        try (SlingHttpResponse response = userRule.getClient().createPageWithRetry(pageName, "Page created by CreatePageAsAuthorUserIT",
-                temporaryPage.getParentPath(), "", MINUTES.toMillis(1), 500, HttpStatus.SC_OK, HttpStatus.SC_UNAUTHORIZED)) {
+        try (
+                SlingHttpResponse response = userRule.getClient().createPageWithRetry(pageName, "Page created by CreatePageAsAuthorUserIT",
+                temporaryPage.getParentPath(), "", MINUTES.toMillis(1), 500, HttpStatus.SC_OK, HttpStatus.SC_UNAUTHORIZED)
+        ) {
             assert response != null;
             if (response.getStatusLine().getStatusCode() == HttpStatus.SC_UNAUTHORIZED) {
                 throw new AssumptionViolatedException("Author User " + userRule.getClient().getUser() + " not authorized to create page. Skipping...");

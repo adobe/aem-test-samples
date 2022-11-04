@@ -118,10 +118,8 @@ public class InstallPackageRule implements TestRule {
         URI resourceUri = Objects.requireNonNull(getClass().getResource(resourceFolder)).toURI();
         Path resourcePath;
 
-        FileSystem fs = null;
-        try {
+        try (FileSystem fs = FileSystems.newFileSystem(resourceUri, Collections.emptyMap())) {
             if (resourceUri.getScheme().equals("jar")) {
-                fs = FileSystems.newFileSystem(resourceUri, Collections.emptyMap());
                 resourcePath = fs.getPath(resourceFolder);
             } else {
                 resourcePath = Paths.get(resourceUri);
@@ -129,10 +127,6 @@ public class InstallPackageRule implements TestRule {
 
             LOG.info("Creating package from resources folder {}", resourcePath);
             return buildJarFromFolder(resourcePath);
-        } finally {
-            if (fs != null) {
-                fs.close();
-            }
         }
     }
 

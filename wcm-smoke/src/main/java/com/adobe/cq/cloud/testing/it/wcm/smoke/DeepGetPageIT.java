@@ -169,7 +169,8 @@ public class DeepGetPageIT {
     private static boolean isSameOrigin(URI uri1, URI uri2) {
         if (!uri1.getScheme().equals(uri2.getScheme())) {
             return false;
-        } else return uri1.getAuthority().equals(uri2.getAuthority());
+        }
+        return uri1.getAuthority().equals(uri2.getAuthority());
     }
 
 }
