@@ -44,10 +44,12 @@ public class Queue {
     @JsonProperty("packages")
     private Map<String, Package> packageMap = new HashMap<>();
 
+    @SuppressWarnings("unused")
     public void setName(String name) {
         this.name = name;
     }
 
+    @SuppressWarnings("unused")
     public String getName() {
         return name;
     }
@@ -59,7 +61,8 @@ public class Queue {
     public Map<String, Package> getPackageMap() {
         return packageMap;
     }
-    
+
+    @SuppressWarnings("unused")
     public String getState() {
         return state;
     }
@@ -68,6 +71,7 @@ public class Queue {
         this.state = state;
     }
 
+    @SuppressWarnings("unused")
     public int getItemsCount() {
         return itemsCount;
     }

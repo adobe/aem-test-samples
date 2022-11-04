@@ -17,6 +17,7 @@
 package com.adobe.cq.cloud.testing.it.smoke.rules;
 
 import java.net.URI;
+import java.net.URISyntaxException;
 import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
@@ -34,8 +35,8 @@ import com.adobe.cq.testing.junit.rules.Page;
 import org.apache.http.NameValuePair;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpUriRequest;
+import org.apache.http.client.utils.URIBuilder;
 import org.apache.http.message.BasicNameValuePair;
-import org.apache.http.params.BasicHttpParams;
 import org.apache.sling.testing.clients.ClientException;
 import org.apache.sling.testing.clients.SlingHttpResponse;
 import org.apache.sling.testing.clients.util.poller.Polling;
@@ -56,11 +57,13 @@ import static org.apache.http.HttpStatus.SC_MOVED_TEMPORARILY;
 import static org.apache.http.HttpStatus.SC_NOT_FOUND;
 import static org.apache.http.HttpStatus.SC_OK;
 import static org.apache.http.HttpStatus.SC_UNAUTHORIZED;
-import static org.apache.http.client.params.ClientPNames.HANDLE_REDIRECTS;
 
 /**
  * Junit test rule to check content distribution functionality
  */
+// Suppress logging Sonar warnings, since logging and throwing is acceptable in testing
+@SuppressWarnings({"CQRules:CQBP-44---ConsecutivelyLogAndThrow", "CQRules:CQBP-44---CatchAndEitherLogOrThrow"})
+
 public class ContentPublishRule extends ExternalResource {
     private static final Logger log = LoggerFactory.getLogger(ContentPublishRule.class);
     
@@ -127,15 +130,14 @@ public class ContentPublishRule extends ExternalResource {
         return authorClient;
     }
 
-    private void checkPage(final int expectedStatus) throws Exception {
+    private void checkPage(final int expectedStatus) throws PublishException {
         checkPage(true, expectedStatus);
     }
     
     /**
      * Checks that a GET on the page on publish has the {{expectedStatus}} in the response
      *
-     * @throws Exception if an error occurred
-     * @return
+     * @throws PublishException if an error occurred
      */
     private void checkPage(boolean skipDispatcherCache, final int expectedStatus) throws PublishException {
         final String path = root.getPath() + ".html";
@@ -144,17 +146,18 @@ public class ContentPublishRule extends ExternalResource {
             + "Please ensure that the CDN and Dispatcher configurations allow fetching the page.", path, expectedStatus);
 
         try {
-            SlingHttpResponse res = null;
+            SlingHttpResponse res;
             final List<NameValuePair> queryParams = skipDispatcherCache
                 ? Collections.singletonList(
                 new BasicNameValuePair("timestamp", String.valueOf(System.currentTimeMillis())))
                 : Collections.emptyList();
             
             URI uri = getPublishClient().getUrl(path, queryParams);
-            HttpUriRequest request = new HttpGet(uri);
+            URIBuilder builder = new URIBuilder(uri);
             // Disable following redirects
-            request.setParams(new BasicHttpParams().setParameter(HANDLE_REDIRECTS, false));
-            
+            builder.setParameter("http.protocol.handle-redirects", "false");
+            HttpUriRequest request = new HttpGet(builder.build());
+
             res  = getPublishClient().doStreamRequest(request, null);
             
             // Special handling for 401,403, logging for 301,302
@@ -190,7 +193,7 @@ public class ContentPublishRule extends ExternalResource {
             } catch (InterruptedException e) {
                 throw getPublishException(getPageErrorCode(expectedStatus), errorMessage, e);
             }
-        } catch (ClientException e) {
+        } catch (ClientException | URISyntaxException e) {
             throw getPublishException(getPageErrorCode(expectedStatus), errorMessage, e);
         }
     }
@@ -201,7 +204,7 @@ public class ContentPublishRule extends ExternalResource {
         return exception;
     }
     
-    public void activateAssertPublish() throws Exception {
+    public void activateAssertPublish() throws SmokeTestException {
         // Activate Page
         ReplicationResponse replicationResponse = replicationClient.activate(PUBLISH_DIST_AGENT, root.getPath());
 
@@ -212,7 +215,7 @@ public class ContentPublishRule extends ExternalResource {
         checkPage(SC_OK);
     }
 
-    public void activateAssertPreview() throws Exception {
+    public void activateAssertPreview() throws SmokeTestException {
         if (previewAvailable) {
             // Activate Page
             ReplicationResponse replicationResponse = replicationClient.activate(PREVIEW_DIST_AGENT, root.getPath());
@@ -222,7 +225,7 @@ public class ContentPublishRule extends ExternalResource {
         }
     }
 
-    public void deactivateAssertPublish() throws Exception {
+    public void deactivateAssertPublish() throws SmokeTestException {
         // Deactivate Page
         ReplicationResponse replicationResponse = replicationClient.deactivate(PUBLISH_DIST_AGENT, root.getPath());
 
@@ -233,7 +236,7 @@ public class ContentPublishRule extends ExternalResource {
         checkPage(SC_NOT_FOUND);
     }
 
-    public void deactivateAssertPreview() throws Exception {
+    public void deactivateAssertPreview() throws SmokeTestException {
         if (previewAvailable) {
             // Deactivate Page
             ReplicationResponse replicationResponse = replicationClient.deactivate(PREVIEW_DIST_AGENT, root.getPath());
@@ -266,9 +269,9 @@ public class ContentPublishRule extends ExternalResource {
             });
             polling.poll(TIMEOUT, 500);
         } catch (TimeoutException e) {
-            throw replicationClient.getReplicationException(REPLICATION_NOT_AVAILABLE, 
+            throw replicationClient.getReplicationException(REPLICATION_NOT_AVAILABLE,
                 String.format("Replication agent %s unavailable", PUBLISH_DIST_AGENT), polling.getLastException());
-        } catch (Exception e) {
+        } catch (InterruptedException | RuntimeException e) {
             throw replicationClient.getGenericException("Replication agent unavailable", e);
         }
 
@@ -277,7 +280,7 @@ public class ContentPublishRule extends ExternalResource {
         // throw if publish agent is blocked
         boolean agentQueueBlocked = ReplicationClient.isAgentQueueBlocked(agents, PUBLISH_DIST_AGENT);
         if (agentQueueBlocked) {
-            throw replicationClient.getReplicationException(QUEUE_BLOCKED, 
+            throw replicationClient.getReplicationException(QUEUE_BLOCKED,
                 "Replication agent queue blocked - " + agents.getAgent(PUBLISH_DIST_AGENT), null);
         }
         
@@ -286,10 +289,10 @@ public class ContentPublishRule extends ExternalResource {
     }
     
     private boolean doPreviewChecks(Agents agents) throws ReplicationException {
-        boolean previewAgentExists = replicationClient.checkDistributionAgentExists(agents, PREVIEW_DIST_AGENT);
+        boolean previewAgentExists = ReplicationClient.checkDistributionAgentExists(agents, PREVIEW_DIST_AGENT);
         if (previewAgentExists) {
             //throw if preview agent is blocked
-            boolean previewBlocked = replicationClient.isAgentQueueBlocked(agents, PREVIEW_DIST_AGENT);
+            boolean previewBlocked = ReplicationClient.isAgentQueueBlocked(agents, PREVIEW_DIST_AGENT);
             if (previewBlocked) {
                 throw replicationClient.getReplicationException(QUEUE_BLOCKED,
                     "Replication agent queue blocked - " + agents.getAgent(PREVIEW_DIST_AGENT), null); 
@@ -323,11 +326,11 @@ public class ContentPublishRule extends ExternalResource {
             });
             polling.poll(TIMEOUT, 2000);
         } catch (TimeoutException e) {
-            log.info("Agent not empty of item {}", ((agentsRef.get() != null) ? agentsRef.get().getAgent(agent) : ""));
-            throw replicationClient.getReplicationException(ACTION_NOT_REPLICATED, 
+            log.warn("Agent not empty of item {}", ((agentsRef.get() != null) ? agentsRef.get().getAgent(agent) : ""));
+            throw replicationClient.getReplicationException(ACTION_NOT_REPLICATED,
                 String.format("Item not activated within %s ms", TIMEOUT),
                 polling.getLastException());
-        } catch (Exception e) {
+        } catch (InterruptedException | RuntimeException e) {
             throw replicationClient.getGenericException(String.format("Item not activated within %s ms", TIMEOUT), e);
         }
     }

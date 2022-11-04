@@ -25,6 +25,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.apache.http.HttpStatus;
 import org.apache.sling.testing.clients.ClientException;
 import org.apache.sling.testing.clients.SlingHttpResponse;
+import org.apache.sling.testing.clients.exceptions.TestingIOException;
 import org.junit.Assert;
 import org.junit.AssumptionViolatedException;
 import org.junit.ClassRule;
@@ -35,6 +36,7 @@ import org.junit.rules.TestRule;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.io.IOException;
 import java.util.UUID;
 
 import static java.util.concurrent.TimeUnit.MINUTES;
@@ -47,19 +49,19 @@ public class CreatePageAsAuthorUserIT {
     private static final int TIMEOUT = (int) MINUTES.toMillis(2);
 
     @ClassRule
-    public static CQAuthorClassRule cqBaseClassRule = new CQAuthorClassRule();
+    public static final CQAuthorClassRule cqBaseClassRule = new CQAuthorClassRule();
 
-    public CQRule cqBaseRule = new CQRule(cqBaseClassRule.authorRule);
+    private static final CQRule cqBaseRule = new CQRule(cqBaseClassRule.authorRule);
 
     // Create a random page so the test site is initialized properly.
     private final Page temporaryPage = new Page(cqBaseClassRule.authorRule);
     
-    public TemporaryContentAuthorGroup groupRule = new TemporaryContentAuthorGroup(() -> cqBaseClassRule.authorRule.getAdminClient());
+    private static final TemporaryContentAuthorGroup groupRule = new TemporaryContentAuthorGroup(cqBaseClassRule.authorRule::getAdminClient);
 
     @Rule
     public TestRule cqRuleChainGroup = RuleChain.outerRule(cqBaseRule).around(groupRule);
 
-    public TemporaryUser userRule = new TemporaryUser(() -> cqBaseClassRule.authorRule.getAdminClient(), groupRule.getGroupName());
+    private static final TemporaryUser userRule = new TemporaryUser(cqBaseClassRule.authorRule::getAdminClient, groupRule.getGroupName());
 
     @Rule
     public TestRule cqRuleChain = RuleChain.outerRule(cqBaseRule).around(temporaryPage).around(userRule);
@@ -75,10 +77,12 @@ public class CreatePageAsAuthorUserIT {
         String pageName = "testpage_" +  UUID.randomUUID();
         String pagePathExpected = temporaryPage.getParentPath() + "/" + pageName;
         String pagePath = pagePathExpected;
-        try {
-            SlingHttpResponse response = userRule.getClient().createPageWithRetry(pageName, "Page created by CreatePageAsAuthorUserIT",
-                    temporaryPage.getParentPath(), "", MINUTES.toMillis(1), 500, HttpStatus.SC_OK, HttpStatus.SC_UNAUTHORIZED);
-            if (null != response && response.getStatusLine().getStatusCode() == HttpStatus.SC_UNAUTHORIZED) {
+        try (
+                SlingHttpResponse response = userRule.getClient().createPageWithRetry(pageName, "Page created by CreatePageAsAuthorUserIT",
+                temporaryPage.getParentPath(), "", MINUTES.toMillis(1), 500, HttpStatus.SC_OK, HttpStatus.SC_UNAUTHORIZED)
+        ) {
+            assert response != null;
+            if (response.getStatusLine().getStatusCode() == HttpStatus.SC_UNAUTHORIZED) {
                 throw new AssumptionViolatedException("Author User " + userRule.getClient().getUser() + " not authorized to create page. Skipping...");
             }
             pagePath = response.getSlingLocation();
@@ -92,6 +96,8 @@ public class CreatePageAsAuthorUserIT {
             // This shows that it exists for the author user
             Assert.assertTrue(String.format("Page %s not created within %s timeout", pagePath, TIMEOUT),
                     userRule.getClient().pageExistsWithRetry(pagePath, TIMEOUT));
+        } catch (IOException e) {
+            throw new TestingIOException("Exception while handling sling response (auto-closeable) of page creation", e);
         } finally {
             try {
                 cqBaseClassRule.authorRule.getAdminClient().adaptTo(CQClient.class)

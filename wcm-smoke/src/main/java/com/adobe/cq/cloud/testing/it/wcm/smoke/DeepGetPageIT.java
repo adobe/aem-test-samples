@@ -32,13 +32,12 @@ import org.junit.Ignore;
 import org.junit.Rule;
 import org.junit.Test;
 
-import static org.apache.commons.io.IOUtils.closeQuietly;
 import static org.junit.Assert.assertEquals;
 
 public class DeepGetPageIT {
 
     @ClassRule
-    public static CQAuthorPublishClassRule cqBaseClassRule = new CQAuthorPublishClassRule();
+    public static final CQAuthorPublishClassRule cqBaseClassRule = new CQAuthorPublishClassRule();
 
     @Rule
     public CQRule cqBaseRule = new CQRule(cqBaseClassRule.authorRule, cqBaseClassRule.publishRule);
@@ -56,58 +55,82 @@ public class DeepGetPageIT {
     }
 
     @AfterClass
-    public static void afterClass() throws IOException {
-        closeQuietly(adminAuthor);
-        closeQuietly(adminPublish);
+    public static void afterClass() {
+        closeClientQuietly(adminAuthor);
+        closeClientQuietly(adminPublish);
+    }
+
+    /**
+     * Closes a client resource if applicable without notice in case it fails.
+     * INFO: Used instead of org.apache.commons.io.IOUtils.closeQuietly since it is still marked as deprecated in
+     * AEM, although it was un-deprecated in recent versions of commons-io (see <a href="https://issues.apache.org/jira/browse/IO-504">IO-504</a>)
+     * @param client client resource.
+     */
+    private static void closeClientQuietly(HtmlUnitClient client) {
+        if (client != null) {
+            try {
+                client.close();
+            } catch (IOException ignored) {}
+        }
     }
 
     /**
      * Verifies that the homepage exists on author
      *
-     * @throws Exception if an error occurred
+     * @throws ClientException if an error occurred
+     * @throws IOException if an error occurred
+     * @throws URISyntaxException if an error occurred
      */
     @Test
-    public void testHomePageAuthor() throws Exception {
+    public void testHomePageAuthor() throws ClientException, IOException, URISyntaxException {
         verifyPageAndResources(adminAuthor, "/");
     }
 
     /**
      * Verifies that the sites console exists on author
      *
-     * @throws Exception if an error occurred
+     * @throws ClientException if an error occurred
+     * @throws IOException if an error occurred
+     * @throws URISyntaxException if an error occurred
      */
     @Test
-    public void testSitesAuthor() throws Exception {
+    public void testSitesAuthor() throws ClientException, IOException, URISyntaxException {
         verifyPageAndResources(adminAuthor, "/sites.html");
     }
 
     /**
      * Verifies that the assets console exists on author
      *
-     * @throws Exception if an error occurred
+     * @throws ClientException if an error occurred
+     * @throws IOException if an error occurred
+     * @throws URISyntaxException if an error occurred
      */
     @Test
-    public void testAssetsAuthor() throws Exception {
+    public void testAssetsAuthor() throws ClientException, IOException, URISyntaxException {
         verifyPageAndResources(adminAuthor, "/assets.html");
     }
 
     /**
      * Verifies that the projects console exists on author
      *
-     * @throws Exception if an error occurred
+     * @throws ClientException if an error occurred
+     * @throws IOException if an error occurred
+     * @throws URISyntaxException if an error occurred
      */
     @Test
-    public void testProjectsAuthor() throws Exception {
+    public void testProjectsAuthor() throws ClientException, IOException, URISyntaxException {
         verifyPageAndResources(adminAuthor, "/projects.html");
     }
 
     /**
      * Verifies that the homepage exists on publish
      *
-     * @throws Exception if an error occurred
+     * @throws ClientException if an error occurred
+     * @throws IOException if an error occurred
+     * @throws URISyntaxException if an error occurred
      */
     @Test @Ignore
-    public void testHomePagePublish() throws Exception {
+    public void testHomePagePublish() throws ClientException, IOException, URISyntaxException {
         verifyPageAndResources(adminPublish, "/");
     }
 
@@ -146,11 +169,8 @@ public class DeepGetPageIT {
     private static boolean isSameOrigin(URI uri1, URI uri2) {
         if (!uri1.getScheme().equals(uri2.getScheme())) {
             return false;
-        } else if (!uri1.getAuthority().equals(uri2.getAuthority())) {
-            return false;
-        } else {
-            return true;
         }
+        return uri1.getAuthority().equals(uri2.getAuthority());
     }
 
 }

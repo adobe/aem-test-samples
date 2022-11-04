@@ -20,7 +20,6 @@ import com.adobe.cq.testing.junit.assertion.CQAssert;
 import com.adobe.cq.testing.junit.rules.CQAuthorClassRule;
 import com.adobe.cq.testing.junit.rules.CQRule;
 import com.adobe.cq.testing.junit.rules.Page;
-import org.apache.sling.testing.clients.ClientException;
 import org.junit.BeforeClass;
 import org.junit.ClassRule;
 import org.junit.Rule;
@@ -33,7 +32,7 @@ public class CreatePageIT {
     private static final long TIMEOUT = MINUTES.toMillis(3);
 
     @ClassRule
-    public static CQAuthorClassRule cqBaseClassRule = new CQAuthorClassRule();
+    public static final CQAuthorClassRule cqBaseClassRule = new CQAuthorClassRule();
 
     @Rule
     public CQRule cqBaseRule = new CQRule(cqBaseClassRule.authorRule);
@@ -44,17 +43,17 @@ public class CreatePageIT {
     static CQClient adminAuthor;
 
     @BeforeClass
-    public static void beforeClass() throws ClientException {
+    public static void beforeClass() {
         adminAuthor = cqBaseClassRule.authorRule.getAdminClient(CQClient.class);
     }
 
     /**
      * Verifies that the page created by the {{Page}} rule is present
      *
-     * @throws Exception if an error occurred
+     * @throws InterruptedException if an error occurred
      */
     @Test
-    public void testCreatePage() throws Exception {
+    public void testCreatePage() throws InterruptedException {
         // verify that page is present on author
         CQAssert.assertCQPageExistsWithTimeout(adminAuthor, root.getPath(), TIMEOUT, 500);
     }

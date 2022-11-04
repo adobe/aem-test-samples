@@ -54,15 +54,15 @@ import static org.apache.commons.lang3.StringUtils.isNotEmpty;
 public class ReplicationClient extends CQClient {
     private static final Logger log = LoggerFactory.getLogger(ContentPublishRule.class);
 
-    protected static final String DIST_AGENTS_PATH = "/libs/sling/distribution/services/agents";
-    protected static final String PUBLISH_DIST_AGENT = "publish";
+    // uses "NOSONAR" because CQRules:CQBP-71 is triggering, but can be ignored for this test case
+    protected static final String DIST_AGENTS_PATH = "/libs/sling/distribution/services/agents"; //NOSONAR
 
-    protected static final String PUB_QUEUES_PATH = DIST_AGENTS_PATH + "/" + PUBLISH_DIST_AGENT;
-
+    @SuppressWarnings("unused")
     public ReplicationClient(CloseableHttpClient http, SlingClientConfig config) throws ClientException {
         super(http, config);
     }
 
+    @SuppressWarnings("unused")
     public ReplicationClient(URI serverUrl, String user, String password) throws ClientException {
         super(serverUrl, user, password);
     }
@@ -83,7 +83,7 @@ public class ReplicationClient extends CQClient {
             }
             log.info("Activation response received {}", response);
             return response;
-        } catch (Exception e) {
+        } catch (ClientException | RuntimeException e) {
             throw getGenericException("Exception during activation", e);
         }
     }
@@ -104,7 +104,7 @@ public class ReplicationClient extends CQClient {
             }
             log.info("De-Activation response received {}", response);
             return response;
-        } catch (Exception e) {
+        } catch (ClientException | RuntimeException e) {
             throw getGenericException("Exception during deactivation", e);
         }
     }

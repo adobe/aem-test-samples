@@ -18,12 +18,14 @@ package com.adobe.cq.cloud.testing.it.smoke.rules;
 
 import java.io.IOException;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.TimeoutException;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import com.adobe.cq.cloud.testing.it.smoke.exception.ServiceException;
 import com.adobe.cq.testing.client.CQClient;
 import org.apache.http.HttpResponse;
 import org.apache.http.client.HttpClient;
+import org.apache.http.client.config.RequestConfig;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.impl.client.HttpClientBuilder;
 import org.apache.http.util.EntityUtils;
@@ -46,7 +48,8 @@ public class ServiceAccessibleRule implements TestRule {
     protected static final long TIMEOUT = TimeUnit.MINUTES.toMillis(5);
 
     public static final String SYSTEM_READY = "systemready";
-    
+
+    @SuppressWarnings({"FieldCanBeLocal", "unused"})
     private final Instance instance;
     private final String runmode;
     private final CQClient adminClient;
@@ -61,7 +64,11 @@ public class ServiceAccessibleRule implements TestRule {
         Polling polling;
 
         try {
-            HttpClient client = HttpClientBuilder.create().build();
+            RequestConfig requestConfig = RequestConfig.custom()
+                    .setConnectTimeout(10000)
+                    .setSocketTimeout(10000)
+                    .build();
+            HttpClient client = HttpClientBuilder.create().setDefaultRequestConfig(requestConfig).build();
             AtomicInteger counter = new AtomicInteger();
             polling = new Polling(() -> {
                 counter.incrementAndGet();
@@ -79,9 +86,9 @@ public class ServiceAccessibleRule implements TestRule {
                 return true;
             });
             polling.poll(TIMEOUT, 2000);
-        } catch (Exception ce) {
+        } catch (TimeoutException | InterruptedException ce) {
             ServiceException serviceException = new ServiceException(runmode.toUpperCase() + SUFFIX, ce.getMessage());
-            log.info("Health check failure", serviceException);
+            log.warn("Health check failure", serviceException);
             // TODO throw exceptions once the instance health check URLs GA
             //throw serviceException;
         }

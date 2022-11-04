@@ -32,7 +32,7 @@ public class CreatePageAdminIT {
     private static final long TIMEOUT = MINUTES.toMillis(3);
 
     @ClassRule
-    public static CQAuthorClassRule cqBaseClassRule = new CQAuthorClassRule();
+    public static final CQAuthorClassRule cqBaseClassRule = new CQAuthorClassRule();
 
     @Rule
     public CQRule cqBaseRule = new CQRule(cqBaseClassRule.authorRule);

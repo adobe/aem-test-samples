@@ -41,6 +41,7 @@ import com.gargoylesoftware.htmlunit.WebRequest;
 import com.gargoylesoftware.htmlunit.WebResponse;
 import com.gargoylesoftware.htmlunit.html.DomNode;
 import com.gargoylesoftware.htmlunit.html.HtmlPage;
+import org.apache.sling.testing.clients.exceptions.TestingIOException;
 import org.w3c.dom.Node;
 
 import static org.junit.Assert.fail;
@@ -151,18 +152,18 @@ public class HtmlUnitClient extends CQClient {
     /**
      * Preemptively logins to the server
      * @param webClient web client to use for logging in.
-     * @throws ClientException if the request failed
+     * @throws TestingIOException if the request failed
      */
-    private void login(WebClient webClient) throws ClientException {
+    private void login(WebClient webClient) throws TestingIOException {
         URL loginUrl = null;
         try {
             loginUrl = getUrl("/bin/receive?sling:authRequestLogin=1").toURL();
             WebResponse response = webClient.loadWebResponse(new WebRequest(loginUrl));
             if (response.getStatusCode() != 200) {
-                throw new ClientException("Unable to login to server: [" + loginUrl + "]. Unexpected status: " + response.getStatusCode());
+                throw new TestingIOException("Unable to login to server: [" + loginUrl + "]. Unexpected status: " + response.getStatusCode());
             }
         } catch (IOException e) {
-            throw new ClientException("Unable to login to server: [" + loginUrl + "]", e);
+            throw new TestingIOException("Unable to login to server: [" + loginUrl + "]", e);
         }
     }
 

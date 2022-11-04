@@ -23,6 +23,8 @@ import org.apache.sling.testing.clients.util.poller.Polling;
 import org.junit.*;
 
 
+import java.util.concurrent.TimeoutException;
+
 import static java.util.concurrent.TimeUnit.SECONDS;
 
 public class SearchIT {
@@ -30,7 +32,7 @@ public class SearchIT {
     private static final long TIMEOUT = SECONDS.toMillis(30);
 
     @ClassRule
-    public static CQAuthorClassRule cqBaseClassRule = new CQAuthorClassRule();
+    public static final CQAuthorClassRule cqBaseClassRule = new CQAuthorClassRule();
 
     @Rule
     public CQRule cqBaseRule = new CQRule(cqBaseClassRule.authorRule);
@@ -50,10 +52,11 @@ public class SearchIT {
      * Verifies that searching for the text inside the page created by the Page rule
      * returns the page containing it
      *
-     * @throws Exception if an error occurred
+     * @throws InterruptedException if an error occurred
+     * @throws TimeoutException if an error occurred
      */
     @Test
-    public void searchInPages() throws Exception {
+    public void searchInPages() throws InterruptedException, TimeoutException {
 
         new Polling() {
             @Override

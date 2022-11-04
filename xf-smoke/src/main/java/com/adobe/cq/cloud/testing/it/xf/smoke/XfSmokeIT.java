@@ -22,6 +22,8 @@ import com.adobe.cq.testing.junit.rules.CQAuthorPublishClassRule;
 import com.adobe.cq.testing.junit.rules.CQRule;
 import org.apache.http.HttpStatus;
 import org.apache.sling.testing.clients.ClientException;
+import org.apache.sling.testing.clients.SlingHttpResponse;
+import org.apache.sling.testing.clients.exceptions.TestingIOException;
 import org.apache.sling.testing.clients.util.poller.Polling;
 import org.junit.*;
 import org.junit.rules.RuleChain;
@@ -29,6 +31,7 @@ import org.junit.rules.TestRule;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.io.IOException;
 import java.util.UUID;
 import java.util.concurrent.TimeoutException;
 
@@ -44,10 +47,10 @@ public class XfSmokeIT {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(XfSmokeIT.class);
 
-    private static CQAuthorPublishClassRule cqAuthorPublishClassRule = new CQAuthorPublishClassRule();
+    private static final CQAuthorPublishClassRule cqAuthorPublishClassRule = new CQAuthorPublishClassRule();
 
     @ClassRule
-    public static TestRule ruleChain = RuleChain.outerRule(cqAuthorPublishClassRule);
+    public static final TestRule ruleChain = RuleChain.outerRule(cqAuthorPublishClassRule);
 
     @Rule
     public CQRule cqRule = new CQRule();
@@ -84,9 +87,13 @@ public class XfSmokeIT {
 
     @Test
     public void testCreateXFInFolder() throws ClientException, TimeoutException, InterruptedException {
-        String folderLocation = cqAuthorPublishClassRule.authorRule.getAdminClient()
-                .createFolder(CREATE_FOLDER, CREATE_FOLDER, CREATE_XF_PARENT_PATH)
-                .getSlingPath();
+        String folderLocation;
+        try (SlingHttpResponse response = cqAuthorPublishClassRule.authorRule.getAdminClient()
+                .createFolder(CREATE_FOLDER, CREATE_FOLDER, CREATE_XF_PARENT_PATH)) {
+            folderLocation = response.getSlingPath();
+        } catch (IOException e) {
+            throw new TestingIOException("Exception while handling sling response (auto-closeable) of folder creation", e);
+        }
         cleanupRule.addPath(folderLocation);
         createExperienceFragments(folderLocation);
     }
@@ -101,14 +108,18 @@ public class XfSmokeIT {
             if (predefinedTemplate == XF_TEMPLATE.CUSTOM)
                 continue;
 
-            String xfPath = xfClient
+            String xfPath;
+            try (SlingHttpResponse response = xfClient
                     .experienceFragmentBuilder(CREATE_XF_TITLE, CREATE_VARIANT_TITLE, predefinedTemplate)
                     .withParentPath(parentPath)
                     .withXFName(CREATE_XF_NAME)
                     .withVariantName(CREATE_VARIANT_NAME)
                     .withXFDescription(TEST_DESCRIPTION)
-                    .create(HttpStatus.SC_CREATED)
-                    .getSlingParentLocation();
+                    .create(HttpStatus.SC_CREATED)) {
+                xfPath = response.getSlingParentLocation();
+            } catch (IOException e) {
+                throw new TestingIOException("Exception while handling sling response (auto-closeable) of fragment creation", e);
+            }
             Assert.assertTrue("Parent path is incorrect", xfPath.startsWith(parentPath));
             cleanupRule.addPath(xfPath);
 
@@ -119,11 +130,13 @@ public class XfSmokeIT {
             ExperienceFragmentsClient.ExperienceFragment experienceFragment = xfClient.getExperienceFragment(xfPath);
             Assert.assertEquals("Description is incorrect", TEST_DESCRIPTION, experienceFragment.getDescription());
             Assert.assertEquals("Child page is creation failed", experienceFragment.getVariants().size(), 1);
+            Assert.assertNotNull("XF tags should not be null", experienceFragment.getTags());
             Assert.assertEquals("XF tags should be empty", experienceFragment.getTags().size(), 0);
             ExperienceFragmentsClient.ExperienceFragmentVariant masterVariant = experienceFragment.getVariants().get(0);
             Assert.assertEquals("First variation template is incorrect", masterVariant.getTemplateType(), predefinedTemplate);
             Assert.assertEquals("First variation title is incorrect", CREATE_VARIANT_TITLE, masterVariant.getTitle());
             Assert.assertTrue("First variation is not marked as master", masterVariant.isMasterVariant());
+            Assert.assertNotNull("Variant tags should not be null", masterVariant.getTags());
             Assert.assertEquals("Variant tags should contain at least one tag from the initial content", 1, masterVariant.getTags().size());
         }
     }
@@ -135,9 +148,12 @@ public class XfSmokeIT {
             if (predefinedTemplate == XF_TEMPLATE.CUSTOM)
                 continue;
 
-            String xfLocation = client
-                    .createExperienceFragment(DELETE_XF_TITLE, DELETE_VARIANT_TITLE, predefinedTemplate)
-                    .getSlingParentLocation();
+            String xfLocation;
+            try (SlingHttpResponse response = client.createExperienceFragment(DELETE_XF_TITLE, DELETE_VARIANT_TITLE, predefinedTemplate)) {
+                xfLocation = response.getSlingParentLocation();
+            } catch (IOException e) {
+                throw new TestingIOException("Exception while handling sling response (auto-closeable) of fragment creation", e);
+            }
             cleanupRule.addPath(xfLocation);
 
             client.deleteExperienceFragment(xfLocation, false, HttpStatus.SC_PRECONDITION_FAILED);
@@ -152,19 +168,26 @@ public class XfSmokeIT {
     public void createXFVariantTest() throws ClientException {
         final CQClient adminAuthor = cqAuthorPublishClassRule.authorRule.getAdminClient(CQClient.class);
         final ExperienceFragmentsClient adminXFClient = adminAuthor.adaptTo(ExperienceFragmentsClient.class);
-        String xfPath = adminXFClient
-                .createExperienceFragment(VARCREA_XF_TITLE, VARCREA_MASTER_VARIANT_TITLE, XF_TEMPLATE.WEB)
-                .getSlingParentLocation();
+        String xfPath;
+        try (SlingHttpResponse response = adminXFClient.createExperienceFragment(VARCREA_XF_TITLE, VARCREA_MASTER_VARIANT_TITLE, XF_TEMPLATE.WEB)) {
+            xfPath = response.getSlingParentLocation();
+        } catch (IOException e) {
+            throw new TestingIOException("Exception while handling sling response (auto-closeable) of fragment creation", e);
+        }
         cleanupRule.addPath(xfPath);
 
         for(XF_TEMPLATE template : XF_TEMPLATE.values()) {
             if (template == XF_TEMPLATE.CUSTOM) continue;
 
-            String variantPath = adminXFClient.xfVariantBuilder(xfPath, template, VARCREA_VARIANT_TITLE)
-                .withName(VARCREA_VARIANT_NAME)
-                .withDescription(TEST_DESCRIPTION)
-                .create()
-                .getSlingLocation();
+            String variantPath;
+            try (SlingHttpResponse response = adminXFClient.xfVariantBuilder(xfPath, template, VARCREA_VARIANT_TITLE)
+                    .withName(VARCREA_VARIANT_NAME)
+                    .withDescription(TEST_DESCRIPTION)
+                    .create()) {
+                variantPath = response.getSlingLocation();
+            } catch (IOException e) {
+                throw new TestingIOException("Exception while handling sling response (auto-closeable) of variant creation", e);
+            }
 
             ExperienceFragmentsClient.ExperienceFragmentVariant variant = adminXFClient.getXFVariant(variantPath);
 
@@ -178,7 +201,8 @@ public class XfSmokeIT {
             Assert.assertEquals("Variant name", VARCREA_VARIANT_NAME, variant.getName());
             Assert.assertEquals("Variant description", TEST_DESCRIPTION, variant.getDescription());
             Assert.assertEquals("Variant template", template, variant.getTemplateType());
-            Assert.assertTrue("Variant tags", variant.getTags().size() == 0);
+            Assert.assertNotNull("Variant tags should not be null", variant.getTags());
+            Assert.assertEquals("Variant tags", 0, variant.getTags().size());
 
             adminXFClient.deletePage(new String[] { variantPath }, true, false);
         }
@@ -192,11 +216,14 @@ public class XfSmokeIT {
         for(XF_TEMPLATE template : XF_TEMPLATE.values()) {
             if(template == XF_TEMPLATE.CUSTOM) continue;
 
-            String variantPath = authorXFClient
-                    .createExperienceFragment(VARDEL_XF_TITLE, VARDEL_MASTER_VARIANT_TITLE, template)
-                    .getSlingLocation();
+            String variantPath;
+            try (SlingHttpResponse response = authorXFClient.createExperienceFragment(VARDEL_XF_TITLE, VARDEL_MASTER_VARIANT_TITLE, template)) {
+                variantPath = response.getSlingLocation();
+            } catch (IOException e) {
+                throw new TestingIOException("Exception while handling sling response (auto-closeable) of fragment creation", e);
+            }
 
-            cleanupRule.addPath(authorXFClient.getParentXFPath(variantPath));
+            cleanupRule.addPath(ExperienceFragmentsClient.getParentXFPath(variantPath));
 
             authorXFClient.deleteXfVariant(variantPath, HttpStatus.SC_INTERNAL_SERVER_ERROR);
             Assert.assertTrue("Master variant should not be deleted", authorXFClient.exists(variantPath));
@@ -205,24 +232,28 @@ public class XfSmokeIT {
 
     @Test
     public void variantDelete() throws ClientException {
-        final CQClient authorAuthor = cqAuthorPublishClassRule.authorRule.getAdminClient(CQClient.class);
-        final ExperienceFragmentsClient authorXFClient = authorAuthor.adaptTo(ExperienceFragmentsClient.class);
-
-        String xfPath = authorXFClient
-                .createExperienceFragment(VARDEL_XF_TITLE, VARDEL_MASTER_VARIANT_TITLE, XF_TEMPLATE.WEB)
-                .getSlingParentLocation();
-
+        final CQClient adminAuthor = cqAuthorPublishClassRule.authorRule.getAdminClient(CQClient.class);
+        final ExperienceFragmentsClient adminXFClient = adminAuthor.adaptTo(ExperienceFragmentsClient.class);
+        String xfPath;
+        try (SlingHttpResponse response = adminXFClient.createExperienceFragment(VARDEL_XF_TITLE, VARDEL_MASTER_VARIANT_TITLE, XF_TEMPLATE.WEB)) {
+            xfPath = response.getSlingParentLocation();
+        } catch (IOException e) {
+            throw new TestingIOException("Exception while handling sling response (auto-closeable) of fragment creation", e);
+        }
         cleanupRule.addPath(xfPath);
 
         for(XF_TEMPLATE template : XF_TEMPLATE.values()) {
             if (template == XF_TEMPLATE.CUSTOM) continue;
 
-            String variantPath = authorXFClient.createXfVariant(xfPath, template, VARDEL_VARIANT_TITLE)
-                                               .getSlingLocation();
+            String variantPath;
+            try (SlingHttpResponse response = adminXFClient.createXfVariant(xfPath, template, VARDEL_VARIANT_TITLE)) {
+                variantPath = response.getSlingLocation();
+            } catch (IOException e) {
+                throw new TestingIOException("Exception while handling sling response (auto-closeable) of variant creation", e);
+            }
 
-            authorXFClient.deleteXfVariant(variantPath, HttpStatus.SC_OK);
-            Assert.assertFalse("Variant should be deleted", authorXFClient.exists(variantPath));
+            adminXFClient.deleteXfVariant(variantPath, HttpStatus.SC_OK);
+            Assert.assertFalse("Variant should be deleted", adminXFClient.exists(variantPath));
         }
     }
-
 }

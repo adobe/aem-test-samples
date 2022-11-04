@@ -21,9 +21,10 @@ import org.junit.rules.ExternalResource;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.TimeoutException;
 
 public class CleanupRule extends ExternalResource {
-    public ThreadLocal<List<String>> toDelete = ThreadLocal.withInitial(() -> new ArrayList<>(15));
+    private static final ThreadLocal<List<String>> toDelete = ThreadLocal.withInitial(() -> new ArrayList<>(15));
     private final Instance rule;
     private final long timeout;
     private final long delay;
@@ -50,14 +51,13 @@ public class CleanupRule extends ExternalResource {
 
     @Override
     protected void after() {
-        toDelete.get().stream().forEach((path) -> {
+        toDelete.get().forEach((path) -> {
             try {
                 new Polling(() -> {
                     rule.getAdminClient().deletePath(path);
                     return rule.getAdminClient().exists(path);
                 }).poll(timeout, delay);
-            } catch (Throwable t) {
-            }
+            } catch (InterruptedException | TimeoutException | RuntimeException ignored) {}
         });
     }
 }

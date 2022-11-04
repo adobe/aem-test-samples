@@ -18,7 +18,6 @@ package com.adobe.cq.cloud.testing.it.smoke;
 import com.adobe.cq.testing.client.CQClient;
 import com.adobe.cq.testing.junit.rules.CQAuthorPublishClassRule;
 import com.adobe.cq.testing.junit.rules.CQRule;
-import com.adobe.cq.testing.junit.rules.Page;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.apache.sling.testing.clients.ClientException;
@@ -29,17 +28,19 @@ import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 import org.xml.sax.InputSource;
+import org.xml.sax.SAXException;
 
 import java.io.IOException;
 import java.io.StringReader;
 import java.util.Arrays;
 
 import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.parsers.ParserConfigurationException;
 
 public class GetTogglesIT {
 
     @ClassRule
-    public static CQAuthorPublishClassRule cqBaseClassRule = new CQAuthorPublishClassRule();
+    public static final CQAuthorPublishClassRule cqBaseClassRule = new CQAuthorPublishClassRule();
     static CQClient adminAuthor;
     static CQClient adminPublish;
     @Rule
@@ -65,7 +66,7 @@ public class GetTogglesIT {
         String responseContent = response.getContent();
         try {
             ToggleResponse tr = mapper.readValue(responseContent, ToggleResponse.class);
-            Assert.assertTrue(Arrays.asList(tr.enabled).contains("ENABLED"));
+            Assert.assertTrue(Arrays.asList(tr.getEnabled()).contains("ENABLED"));
 
         } catch (IOException e) {
             Assert.fail("Couldn't read response from ClientLibs toggle endpoint. \nError: " + e.getMessage() + "\nContents: " + responseContent);
@@ -75,11 +76,13 @@ public class GetTogglesIT {
     /**
      * Validate format of AEM version containing state qualifier using six digits
      *
-     * @throws Exception if an error occurred
+     * @throws ClientException if an error occurred
+     * @throws ParserConfigurationException if an error occurred
+     * @throws IOException if an error occurred
+     * @throws SAXException if an error occurred
      */
-    @Test
     @Ignore
-    public void testAboutPageVersionFormatWithToggleQualifier() throws Exception {
+    public void testAboutPageVersionFormatWithToggleQualifier() throws ClientException, ParserConfigurationException, IOException, SAXException {
         SlingHttpResponse response = adminAuthor.doGet("mnt/overlay/granite/ui/content/shell/about.html", 200);
         final String regex = "^Adobe Experience Manager [\\d]{4}.[\\d]{1,2}.[\\d]+.[\\d]{8}T[\\d]{6}Z-[\\d]{6}(-[\\w]+)?$";
 
@@ -109,7 +112,7 @@ public class GetTogglesIT {
                     match = true;
                     break;
                 } else {
-                    match = match || checkElementMatchesRegex(regex, item);
+                    match = checkElementMatchesRegex(regex, item);
                     if (match) {
                         break;
                     }
@@ -119,8 +122,17 @@ public class GetTogglesIT {
         return match;
     }
 
-    public static final class ToggleResponse {
+    protected static final class ToggleResponse {
 
-        public String[] enabled;
+        private String[] enabled;
+
+        public String[] getEnabled() {
+            return enabled.clone();
+        }
+
+        @SuppressWarnings("unused")
+        public void setEnabled(String[] enabled) {
+            this.enabled = enabled.clone();
+        }
     }
 }

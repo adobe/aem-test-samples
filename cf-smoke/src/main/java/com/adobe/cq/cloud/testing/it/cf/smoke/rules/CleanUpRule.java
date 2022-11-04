@@ -25,14 +25,13 @@ import org.slf4j.LoggerFactory;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.concurrent.Callable;
 import java.util.concurrent.TimeoutException;
 
 public class CleanUpRule extends ExternalResource {
 
     private static final Logger LOG = LoggerFactory.getLogger(CleanUpRule.class);
 
-    public ThreadLocal<List<String>> toDelete = ThreadLocal.withInitial(() -> new ArrayList<>(15));
+    private static final ThreadLocal<List<String>> toDelete = ThreadLocal.withInitial(() -> new ArrayList<>(15));
     private final Instance rule;
     private final long timeout;
     private final long delay;
@@ -59,14 +58,13 @@ public class CleanUpRule extends ExternalResource {
 
     @Override
     protected void after() {
-        toDelete.get().stream().forEach((path) -> {
+        toDelete.get().forEach((path) -> {
             try {
                 new Polling(() -> {
                     rule.getAdminClient().deletePath(path);
                     return rule.getAdminClient().exists(path);
                 }).poll(timeout, delay);
-            } catch (Throwable t) {
-            }
+            } catch (InterruptedException | TimeoutException | RuntimeException ignored) {}
         });
     }
 
@@ -82,13 +80,10 @@ public class CleanUpRule extends ExternalResource {
      * @throws InterruptedException to mark this method as "waiting"
      */
     public static void cleanUp(Instance rule, String path, long timeout, long delay) throws TimeoutException, InterruptedException {
-        new Polling(new Callable<Boolean>() {
-            @Override
-            public Boolean call() throws Exception {
-                LOG.debug("Specifically cleaning up the path: " + path);
-                rule.getAdminClient(CQClient.class).deletePath(path);
-                return rule.getAdminClient(CQClient.class).exists(path);
-            }
+        new Polling(() -> {
+            LOG.debug("Specifically cleaning up the path: " + path);
+            rule.getAdminClient(CQClient.class).deletePath(path);
+            return rule.getAdminClient(CQClient.class).exists(path);
         }).poll(timeout, delay);
     }
 }

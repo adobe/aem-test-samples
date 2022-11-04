@@ -24,12 +24,13 @@ import static org.junit.Assert.fail;
 public class ValidateAntiSamyConfigurationIT {
 
     private static final String AUTHOR_VALIDATION_URLS = "/com/adobe/cq/cloud/testing/it/smoke/xss/author_validation_urls.json";
-    private static final String TEST_REQUEST_PATH = "/libs/cq/xssprotection.json";
+    // uses "NOSONAR" because CQRules:CQBP-71 is triggering, but can be ignored for this test case
+    private static final String TEST_REQUEST_PATH = "/libs/cq/xssprotection.json"; //NOSONAR
     private static final long TIMEOUT = TimeUnit.SECONDS.toMillis(30);
     private static final long DELAY = TimeUnit.SECONDS.toMillis(1);
 
     @ClassRule
-    public static CQAuthorClassRule cqAuthorClassRule = new CQAuthorClassRule();
+    public static final CQAuthorClassRule cqAuthorClassRule = new CQAuthorClassRule();
 
     private static CQClient adminAuthor;
 
@@ -51,8 +52,7 @@ public class ValidateAntiSamyConfigurationIT {
                     }
                     HttpEntity httpEntity = new InputStreamEntity(inputStream, ContentType.APPLICATION_JSON);
                     SlingHttpResponse response = adminAuthor.doPost(TEST_REQUEST_PATH, httpEntity, 200);
-                    JsonParser jsonParser = new JsonParser();
-                    JsonElement jsonElement = jsonParser.parse(response.getContent());
+                    JsonElement jsonElement = JsonParser.parseString(response.getContent().trim());
                     JsonObject result = jsonElement.getAsJsonObject();
                     if (!"ok".equalsIgnoreCase(result.get("status").getAsString())) {
                         fail(String.format("Invalid AntiSamy configuration detected. The following URLs were not validated as expected:\n%s",

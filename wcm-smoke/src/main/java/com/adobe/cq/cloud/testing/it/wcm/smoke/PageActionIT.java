@@ -23,12 +23,15 @@ import com.adobe.cq.testing.junit.rules.Page;
 import org.apache.commons.lang3.RandomStringUtils;
 import org.apache.http.HttpStatus;
 import org.apache.sling.testing.clients.ClientException;
+import org.apache.sling.testing.clients.SlingHttpResponse;
+import org.apache.sling.testing.clients.exceptions.TestingIOException;
 import org.junit.ClassRule;
 import org.junit.Rule;
 import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.io.IOException;
 import java.util.concurrent.TimeoutException;
 
 import static org.junit.Assert.assertEquals;
@@ -51,7 +54,7 @@ public class PageActionIT {
     private static final long RETRY_DELAY = 500;
 
     @ClassRule
-    public static CQAuthorPublishClassRule cqBaseClassRule = new CQAuthorPublishClassRule();
+    public static final CQAuthorPublishClassRule cqBaseClassRule = new CQAuthorPublishClassRule();
 
     @Rule
     public CQRule cqBaseRule = new CQRule(cqBaseClassRule.authorRule);
@@ -67,10 +70,12 @@ public class PageActionIT {
      *     <li>Verifies that the page got deleted using {@link CQClient#exists(String)}</li>
      * </ul>
      *
-     * @throws Exception if an error occurred
+     * @throws ClientException if an error occurred
+     * @throws InterruptedException if an error occurred
+     * @throws TimeoutException if an error occurred
      */
     @Test
-    public void testDeletePageAsAdmin() throws Exception {
+    public void testDeletePageAsAdmin() throws ClientException, InterruptedException, TimeoutException {
         LOGGER.info("Test to check that a page gets deleted properly.");
         final CQClient client = cqBaseClassRule.authorRule.getAdminClient(CQClient.class);
 
@@ -80,7 +85,12 @@ public class PageActionIT {
         // first create a page to be deleted
         LOGGER.info("Creating a page to delete.");
         client.waitExists(root.getPath(), TIMEOUT, RETRY_DELAY);
-        final String newPath = client.createPage("qatestdeletepage", pageTitle, root.getPath(), root.getTemplatePath()).getSlingPath();
+        String newPath;
+        try (SlingHttpResponse response = client.createPage("qatestdeletepage", pageTitle, root.getPath(), root.getTemplatePath())) {
+            newPath = response.getSlingPath();
+        } catch (IOException e) {
+            throw new TestingIOException("Exception while handling sling response (auto-closeable) of page creation", e);
+        }
 
         // make sure the page is created with'admin' account
         client.waitExists(newPath, TIMEOUT, RETRY_DELAY);
@@ -104,10 +114,12 @@ public class PageActionIT {
      *     <li>Checks if the original page is still intact with {@link CQClient#waitExists(String, long, long)}</li>
      * </ul>
      *
-     * @throws Exception if an error occurred
+     * @throws ClientException if an error occurred
+     * @throws InterruptedException if an error occurred
+     * @throws TimeoutException if an error occurred
      */
     @Test
-    public void testCopyPageToSameFolderAsAdmin() throws Exception {
+    public void testCopyPageToSameFolderAsAdmin() throws ClientException, InterruptedException, TimeoutException {
         LOGGER.info("Test to check that a page gets copied properly.");
         CQClient client = cqBaseClassRule.authorRule.getAdminClient(CQClient.class);
 
@@ -117,7 +129,12 @@ public class PageActionIT {
         // first create a page to copy
         LOGGER.info("Creating a page to copy.");
         String srcName = "qatestcopypage" + RandomStringUtils.random(10, true, true);
-        String originalPath = client.createPage(srcName, pageTitle, root.getPath(), root.getTemplatePath()).getSlingPath();
+        String originalPath;
+        try (SlingHttpResponse response = client.createPage(srcName, pageTitle, root.getPath(), root.getTemplatePath())) {
+            originalPath = response.getSlingPath();
+        } catch (IOException e) {
+            throw new TestingIOException("Exception while handling sling response (auto-closeable) of page creation", e);
+        }
 
         // make sure the page is created
         client.waitExists(originalPath, TIMEOUT, RETRY_DELAY);
@@ -153,10 +170,12 @@ public class PageActionIT {
      *     <li>Checks if the original page is no longer available with {@link CQAssert#assertCQPageExistsWithTimeout}</li>
      * </ul>
      *
-     * @throws Exception if an error occurred
+     * @throws ClientException if an error occurred
+     * @throws InterruptedException if an error occurred
+     * @throws TimeoutException if an error occurred
      */
     @Test
-    public void testMovePageToSameFolderAsAdmin() throws Exception {
+    public void testMovePageToSameFolderAsAdmin() throws ClientException, InterruptedException, TimeoutException {
         LOGGER.info("Test to check that a page was moved successfully.");
         CQClient client = cqBaseClassRule.authorRule.getAdminClient(CQClient.class);
 
@@ -164,7 +183,12 @@ public class PageActionIT {
         LOGGER.info("Creating a child page of root to act as our source folder.");
         String subFolderTitle = "QA Test Sub Folder" + RandomStringUtils.random(10, true, true);
         String subFolderName = "qatestsubfolder" + RandomStringUtils.random(10, true, true);
-        String subPage = client.createPage(subFolderName, subFolderTitle, root.getPath(),  root.getPath()).getSlingPath();
+        String subPage;
+        try (SlingHttpResponse response = client.createPage(subFolderName, subFolderTitle, root.getPath(),  root.getPath())) {
+            subPage = response.getSlingPath();
+        } catch (IOException e) {
+            throw new TestingIOException("Exception while handling sling response (auto-closeable) of page creation", e);
+        }
 
         // make sure sub folder exists
         client.waitExists(subPage, TIMEOUT, RETRY_DELAY);
@@ -173,7 +197,12 @@ public class PageActionIT {
         LOGGER.info("Creating the test page beneath the folder.");
         String pageTitle = "QA Test Move Page " + RandomStringUtils.random(10, true, true);
         String srcName = "qatestmovepage" + RandomStringUtils.random(10, true, true);
-        String originalPath = client.createPage(srcName, pageTitle, subPage, root.getTemplatePath()).getSlingPath();
+        String originalPath;
+        try (SlingHttpResponse response = client.createPage(srcName, pageTitle, subPage, root.getTemplatePath())) {
+            originalPath = response.getSlingPath();
+        } catch (IOException e) {
+            throw new TestingIOException("Exception while handling sling response (auto-closeable) of page creation", e);
+        }
 
         // make sure the page is created
         client.waitExists(originalPath, TIMEOUT, RETRY_DELAY);

@@ -23,6 +23,7 @@ public class PublishException extends SmokeTestException {
     public static final String PAGE_NOT_AVAILABLE = "PAGE_NOT_AVAILABLE";
     public static final String PAGE_AVAILABLE = "PAGE_AVAILABLE";
 
+    @SuppressWarnings("unused")
     public PublishException(String errorCode, String message) {
         super(errorCode, message);
     }
