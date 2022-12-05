@@ -257,7 +257,7 @@ public class XfSmokeIT {
             }
 
             await().untilAsserted(() -> {
-                Assert.assertTrue("Master variant should exit", authorXFClient.exists(variantPath));
+                Assert.assertTrue("Master variant should exist", authorXFClient.exists(variantPath));
             });
 
             cleanupRule.addPath(ExperienceFragmentsClient.getParentXFPath(variantPath));
