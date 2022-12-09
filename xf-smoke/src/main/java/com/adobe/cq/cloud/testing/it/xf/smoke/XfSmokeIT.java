@@ -141,10 +141,10 @@ public class XfSmokeIT {
             Assert.assertTrue("Parent path is incorrect", xfPath.startsWith(parentPath));
             cleanupRule.addPath(xfPath);
 
-            await().ignoreException(ClientException.class)
+            await().ignoreExceptionsInstanceOf(ClientException.class)
                     .untilAsserted(() -> Assert.assertTrue("Experience Fragment is created", xfClient.exists(xfPath)));
             ExperienceFragment experienceFragment =
-                    await().ignoreException(ClientException.class).until(() -> xfClient.getExperienceFragment(xfPath), Objects::nonNull);
+                    await().ignoreExceptionsInstanceOf(ClientException.class).until(() -> xfClient.getExperienceFragment(xfPath), Objects::nonNull);
             Assert.assertEquals("Description is incorrect", TEST_DESCRIPTION, experienceFragment.getDescription());
             Assert.assertEquals("Child page is creation failed", experienceFragment.getVariants().size(), 1);
             Assert.assertNotNull("XF tags should not be null", experienceFragment.getTags());
@@ -215,9 +215,9 @@ public class XfSmokeIT {
             }
 
             ExperienceFragmentVariant variant =
-                    await().ignoreException(ClientException.class).until(() -> adminXFClient.getXFVariant(variantPath), Objects::nonNull);
+                    await().ignoreExceptionsInstanceOf(ClientException.class).until(() -> adminXFClient.getXFVariant(variantPath), Objects::nonNull);
 
-            await().ignoreException(ClientException.class).untilAsserted(() -> {
+            await().ignoreExceptionsInstanceOf(ClientException.class).untilAsserted(() -> {
                 Assert.assertFalse("Variant should not be master", variant.isMasterVariant());
                 Assert.assertFalse("Variant should not be live copy", variant.isLiveCopy());
                 Assert.assertEquals("Is social variant", template.isSocialTemplate(), variant.isSocialVariant());
