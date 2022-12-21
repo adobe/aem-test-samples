@@ -45,6 +45,7 @@ public class GetTogglesIT {
     static CQClient adminPublish;
     @Rule
     public CQRule cqBaseRule = new CQRule(cqBaseClassRule.authorRule, cqBaseClassRule.publishRule);
+    static Integer retryTime = 100;
 
     @BeforeClass
     public static void beforeClass() {
@@ -57,13 +58,28 @@ public class GetTogglesIT {
      * Verifies if the "ENABLED" flag is always enabled on Author Instance
      * Considers the test failed if the answer can't be parsed.
      *
-     * @throws ClientException if an error occurred
+     * @throws InterruptedException if an error occurred
      */
     @Test
-    public void testTogglesEndpointReturnsStaticEnabledFlagInJsonResponseOnAuthor() throws ClientException {
+    public void testTogglesEndpointReturnsStaticEnabledFlagInJsonResponseOnAuthor() throws InterruptedException {
         ObjectMapper mapper = new ObjectMapper();
-        SlingHttpResponse response = adminAuthor.doGet("etc.clientlibs/toggles.json", 200);
-        String responseContent = response.getContent();
+        String responseContent = null;
+        int counter = 5;
+
+        while (counter > 0 && responseContent == null) {
+            try {
+                SlingHttpResponse response = adminAuthor.doGet("etc.clientlibs/toggles.json", 200);
+                responseContent = response.getContent();
+            } catch (ClientException e) {
+                Thread.sleep(retryTime);
+                counter -= 1;
+            }
+        }
+
+        if (responseContent == null) {
+            Assert.fail("Couldn't get response from ClientLibs toggle endpoint.");
+        }
+
         try {
             ToggleResponse tr = mapper.readValue(responseContent, ToggleResponse.class);
             Assert.assertTrue(Arrays.asList(tr.getEnabled()).contains("ENABLED"));
