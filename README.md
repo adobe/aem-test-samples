@@ -63,6 +63,13 @@ The system properties are as follows:
 * sling.it.instance.adminPassword.2 - should be set to the publish admin password
 * sling.it.configure.default.replication.agents - should be set to false
 
+## UI Tests
+
+Custom UI testing is an optional feature that enables you to create and automatically run UI tests for your applications. The [UI Testing](https://experienceleague.adobe.com/docs/experience-manager-cloud-service/content/implementing/using-cloud-manager/test-results/ui-testing.html) section of the documentation provides in-depth information of their structure and usage.
+
+- `/ui-selenium-webdriver` provides a sample Custom UI test module driven by Selenium Webdriver. 
+- The [aem-project-archetype](https://github.com/adobe/aem-project-archetype/tree/develop/src/main/archetype/ui.tests) can be used as reference for Custom UI test modules driver by Selenium + WebdriverIO
+
 
 ## Notable Examples
 
