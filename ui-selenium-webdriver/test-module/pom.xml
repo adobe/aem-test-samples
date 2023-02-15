@@ -1,0 +1,323 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+ |  Copyright 2020 Adobe Systems Incorporated
+ |
+ |  Licensed under the Apache License, Version 2.0 (the "License");
+ |  you may not use this file except in compliance with the License.
+ |  You may obtain a copy of the License at
+ |
+ |      http://www.apache.org/licenses/LICENSE-2.0
+ |
+ |  Unless required by applicable law or agreed to in writing, software
+ |  distributed under the License is distributed on an "AS IS" BASIS,
+ |  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ |  See the License for the specific language governing permissions and
+ |  limitations under the License.
+-->
+
+<!--
+ | DO NOT MODIFY
+-->
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
+    <groupId>com.adobe.cq.cloud</groupId>
+    <version>0.0.1-SNAPSHOT</version>
+    <artifactId>com.adobe.cq.cloud.testing.ui.java.ui.tests.java</artifactId>
+    <name>com.adobe.cq.cloud.testing.ui.java - UI Tests</name>
+    <description></description>
+
+    <properties>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <maven.compiler.source>1.8</maven.compiler.source>
+        <maven.compiler.target>1.8</maven.compiler.target>
+
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+
+        <HEADLESS_BROWSER>false</HEADLESS_BROWSER>
+        <REPORTS_PATH>${project.basedir}/target/reports</REPORTS_PATH>
+
+        <!-- AEMaaCS UI testing convention properties -->
+        <SELENIUM_BASE_URL>http://localhost:4444</SELENIUM_BASE_URL>
+        <SELENIUM_BROWSER>chrome</SELENIUM_BROWSER>
+
+        <AEM_AUTHOR_URL>http://localhost:4502</AEM_AUTHOR_URL>
+        <AEM_AUTHOR_USERNAME>admin</AEM_AUTHOR_USERNAME>
+        <AEM_AUTHOR_PASSWORD>admin</AEM_AUTHOR_PASSWORD>
+
+        <AEM_PUBLISH_URL/>
+        <AEM_PUBLISH_USERNAME>admin</AEM_PUBLISH_USERNAME>
+        <AEM_PUBLISH_PASSWORD>admin</AEM_PUBLISH_PASSWORD>
+
+        <REPORTS_PATH>target/reports/</REPORTS_PATH>
+        <SCREENSHOTS_PATH>target/screenshots</SCREENSHOTS_PATH>
+        <SHARED_FOLDER>/tmp/shared</SHARED_FOLDER>
+        <UPLOAD_URL></UPLOAD_URL>
+    </properties>
+
+    <build>
+        <pluginManagement>
+            <plugins>
+                <plugin>
+                    <artifactId>maven-clean-plugin</artifactId>
+                    <version>3.1.0</version>
+                </plugin>
+                <plugin>
+                    <artifactId>maven-resources-plugin</artifactId>
+                    <version>3.0.2</version>
+                </plugin>
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-jar-plugin</artifactId>
+                    <version>3.2.0</version>
+                </plugin>
+            </plugins>
+        </pluginManagement>
+        <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-assembly-plugin</artifactId>
+                <configuration>
+                    <descriptorRefs>
+                        <descriptorRef>jar-with-dependencies</descriptorRef>
+                    </descriptorRefs>
+                </configuration>
+                <executions>
+                    <execution>
+                        <id>make-assembly</id>
+                        <phase>package</phase>
+                        <goals>
+                            <goal>single</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+        </plugins>
+    </build>
+    <profiles>
+        <!-- Profile to run UI tests locally -->
+        <profile>
+            <id>ui-tests-local-execution</id>
+            <build>
+                <plugins>
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-assembly-plugin</artifactId>
+                        <configuration>
+                            <skipAssembly>true</skipAssembly>
+                        </configuration>
+                    </plugin>
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-surefire-plugin</artifactId>
+                        <version>2.21.0</version>
+                        <configuration>
+                            <skip>true</skip>
+                        </configuration>
+                    </plugin>
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-failsafe-plugin</artifactId>
+                        <version>2.22.1</version>
+                        <configuration>
+                            <redirectTestOutputToFile>true</redirectTestOutputToFile>
+                            <reportsDirectory>${REPORTS_PATH}</reportsDirectory>
+                            <testSourceDirectory>${basedir}/src/main/java/</testSourceDirectory>
+                            <testClassesDirectory>${project.build.directory}/classes/</testClassesDirectory>
+                            <systemPropertyVariables>
+                                <log4j.configurationFile>src/main/resources/log4j2.xml</log4j.configurationFile>
+                                <SELENIUM_BROWSER>${SELENIUM_BROWSER}</SELENIUM_BROWSER>
+                                <SELENIUM_BASE_URL>${SELENIUM_BASE_URL}</SELENIUM_BASE_URL>
+
+                                <AEM_AUTHOR_URL>${AEM_AUTHOR_URL}</AEM_AUTHOR_URL>
+                                <AEM_AUTHOR_USERNAME>${AEM_AUTHOR_USERNAME}</AEM_AUTHOR_USERNAME>
+                                <AEM_AUTHOR_PASSWORD>${AEM_AUTHOR_PASSWORD}</AEM_AUTHOR_PASSWORD>
+
+                                <AEM_PUBLISH_URL>${AEM_PUBLISH_URL}</AEM_PUBLISH_URL>
+                                <AEM_PUBLISH_USERNAME>${AEM_PUBLISH_USERNAME}</AEM_PUBLISH_USERNAME>
+                                <AEM_PUBLISH_PASSWORD>${AEM_PUBLISH_PASSWORD}</AEM_PUBLISH_PASSWORD>
+                                <SHARED_FOLDER>${SHARED_FOLDER}</SHARED_FOLDER>
+                            </systemPropertyVariables>
+                        </configuration>
+                        <executions>
+                            <execution>
+                                <id>default-integration-test</id>
+                                <goals>
+                                    <goal>integration-test</goal>
+                                </goals>
+                                <configuration>
+                                    <includes>
+                                        <include>**/*UI.java</include>
+                                    </includes>
+                                </configuration>
+                            </execution>
+                            <execution>
+                                <id>default-verify</id>
+                                <goals>
+                                    <goal>verify</goal>
+                                </goals>
+                            </execution>
+                        </executions>
+                    </plugin>
+                    <!-- copy the screenshots from their temporary location into the REPORTS_PATH/screenshots directory
+                         after integration/failsafe tests are executed-->
+                    <plugin>
+                        <artifactId>maven-resources-plugin</artifactId>
+                        <version>3.3.0</version>
+                        <executions>
+                            <execution>
+                                <id>copy-resources</id>
+                                <phase>post-integration-test</phase>
+                                <goals>
+                                    <goal>copy-resources</goal>
+                                </goals>
+                                <configuration>
+                                    <outputDirectory>${REPORTS_PATH}/screenshots/</outputDirectory>
+                                    <resources>
+                                        <resource>
+                                            <directory>${SCREENSHOTS_PATH}</directory>
+                                            <filtering>true</filtering>
+                                        </resource>
+                                    </resources>
+                                </configuration>
+                            </execution>
+                        </executions>
+                    </plugin>
+                    <!-- generate html report and store it in REPORTS_PATH -->
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-surefire-report-plugin</artifactId>
+                        <version>3.0.0-M8</version>
+                        <configuration>
+                            <outputDirectory>${REPORTS_PATH}/html_report</outputDirectory>
+                            <reportsDirectory>${REPORTS_PATH}</reportsDirectory>
+                        </configuration>
+                        <executions>
+                            <execution>
+                                <id>failsafe-report</id>
+                                <phase>post-integration-test</phase>
+                                <goals>
+                                    <goal>report</goal>
+                                </goals>
+                            </execution>
+                        </executions>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
+        <!-- Profile to run UI in the cloud taking values from environment variables -->
+        <profile>
+            <id>ui-tests-cloud-execution</id>
+            <build>
+                <plugins>
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-assembly-plugin</artifactId>
+                        <configuration>
+                            <skipAssembly>true</skipAssembly>
+                        </configuration>
+                    </plugin>
+
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-surefire-plugin</artifactId>
+                        <version>2.21.0</version>
+                        <configuration>
+                            <skip>true</skip>
+                        </configuration>
+
+                    </plugin>
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-failsafe-plugin</artifactId>
+                        <version>2.22.1</version>
+                        <configuration>
+                            <redirectTestOutputToFile>true</redirectTestOutputToFile>
+                            <reportsDirectory>${env.REPORTS_PATH}</reportsDirectory>
+                            <testSourceDirectory>${basedir}/src/main/java/</testSourceDirectory>
+                            <testClassesDirectory>${project.build.directory}/classes/</testClassesDirectory>
+                            <systemPropertyVariables>
+                                <SELENIUM_BROWSER>${env.SELENIUM_BROWSER}</SELENIUM_BROWSER>
+                                <SELENIUM_BASE_URL>${env.SELENIUM_BASE_URL}</SELENIUM_BASE_URL>
+
+                                <AEM_AUTHOR_URL>${env.AEM_AUTHOR_URL}</AEM_AUTHOR_URL>
+                                <AEM_AUTHOR_USERNAME>${env.AEM_AUTHOR_USERNAME}</AEM_AUTHOR_USERNAME>
+                                <AEM_AUTHOR_PASSWORD>${env.AEM_AUTHOR_PASSWORD}</AEM_AUTHOR_PASSWORD>
+
+                                <AEM_PUBLISH_URL>${env.AEM_PUBLISH_URL}</AEM_PUBLISH_URL>
+                                <AEM_PUBLISH_USERNAME>${env.AEM_PUBLISH_USERNAME}</AEM_PUBLISH_USERNAME>
+                                <AEM_PUBLISH_PASSWORD>${env.AEM_PUBLISH_PASSWORD}</AEM_PUBLISH_PASSWORD>
+                                <REPORTS_PATH>${env.REPORTS_PATH}</REPORTS_PATH>
+                                <SHARED_FOLDER>${env.SHARED_FOLDER}</SHARED_FOLDER>
+                            </systemPropertyVariables>
+                        </configuration>
+                        <executions>
+                            <execution>
+                                <id>default-integration-test</id>
+                                <goals>
+                                    <goal>integration-test</goal>
+                                </goals>
+                                <configuration>
+                                    <includes>
+                                        <include>**/*UI.java</include>
+                                    </includes>
+                                </configuration>
+                            </execution>
+                            <execution>
+                                <id>default-verify</id>
+                                <goals>
+                                    <goal>verify</goal>
+                                </goals>
+                            </execution>
+                        </executions>
+                    </plugin>
+                    <!-- generate html report and store it in REPORTS_PATH -->
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-surefire-report-plugin</artifactId>
+                        <version>3.0.0-M8</version>
+                        <configuration>
+                            <outputDirectory>${env.REPORTS_PATH}/html_report</outputDirectory>
+                            <reportsDirectory>${env.REPORTS_PATH}</reportsDirectory>
+                        </configuration>
+                        <executions>
+                            <execution>
+                                <id>failsafe-report</id>
+                                <phase>post-integration-test</phase>
+                                <goals>
+                                    <goal>report</goal>
+                                </goals>
+                            </execution>
+                        </executions>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
+    </profiles>
+
+    <dependencies>
+        <dependency>
+            <groupId>org.seleniumhq.selenium</groupId>
+            <artifactId>selenium-java</artifactId>
+            <version>4.6.0</version>
+        </dependency>
+        <dependency>
+            <groupId>junit</groupId>
+            <artifactId>junit</artifactId>
+            <version>4.13.2</version>
+        </dependency>
+        <dependency>
+            <groupId>commons-io</groupId>
+            <artifactId>commons-io</artifactId>
+            <version>2.11.0</version>
+        </dependency>
+        <dependency>
+            <groupId>com.adobe.cq</groupId>
+            <artifactId>aem-cloud-testing-clients</artifactId>
+            <version>1.2.0</version>
+        </dependency>
+    </dependencies>
+
+</project>
