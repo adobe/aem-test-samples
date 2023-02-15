@@ -10,7 +10,7 @@ AEM provides an integrated suite of Cloud Manager quality gates to ensure smooth
 UI tests are executed as part of a specific quality gate for each Cloud Manager pipeline with a dedicated Custom UI Testing step.
 
 Within the project structure there is a [specific location](https://github.com/adobe/aem-project-archetype/tree/develop/src/main/archetype/ui.tests) 
-where the code CustomUI Tests is expected. The code in this folder is used as a Docker build context to produce a docker image
+where the code Custom UI Tests are expected. The code in this folder is used as a Docker build context to produce a docker image
 which will be executed during the Custom UI Testing step in the pipeline.
 
 The Cloud Manager UI test module convention defines the expected structure of the test module as well as the environment
