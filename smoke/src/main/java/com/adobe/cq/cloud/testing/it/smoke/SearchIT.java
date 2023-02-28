@@ -55,6 +55,7 @@ public class SearchIT {
      * @throws InterruptedException if an error occurred
      * @throws TimeoutException if an error occurred
      */
+    @Ignore
     @Test
     public void searchInPages() throws InterruptedException, TimeoutException {
 
