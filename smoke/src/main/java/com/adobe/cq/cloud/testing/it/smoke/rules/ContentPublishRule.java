@@ -70,8 +70,8 @@ public class ContentPublishRule extends ExternalResource {
     protected static final long TIMEOUT = TimeUnit.MINUTES.toMillis(5);
     protected static final long TIMEOUT_PER_TRY = TimeUnit.MINUTES.toMillis(1);
 
-    protected static final String PUBLISH_DIST_AGENT = "publish";
-    private static final String PREVIEW_DIST_AGENT = "preview";
+    protected static final String PUBLISH_DIST_AGENT = "publish-mutable-content";
+    private static final String PREVIEW_DIST_AGENT = "preview-mutable-content";
 
     private final Page root;
 
