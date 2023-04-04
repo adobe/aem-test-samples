@@ -272,6 +272,7 @@ public class ContentPublishRule extends ExternalResource {
                 log.info("Replication agents list: {}", agentsRef.get());
                 boolean internalPublishAgentExists = ReplicationClient.checkDistributionAgentExists(agentsRef.get(), INTERNAL_PUBLISH_DIST_AGENT);
                 if (internalPublishAgentExists) {
+                    log.info("Internal publish agent exists");
                     this.publishDistAgent = INTERNAL_PUBLISH_DIST_AGENT;
                     return internalPublishAgentExists;
                 } else {
@@ -309,6 +310,7 @@ public class ContentPublishRule extends ExternalResource {
         boolean internalPreviewAgentExists = ReplicationClient.checkDistributionAgentExists(agents, PREVIEW_DIST_AGENT);
         boolean previewAgentExists = ReplicationClient.checkDistributionAgentExists(agents, INTERNAL_PREVIEW_DIST_AGENT);
         if (internalPreviewAgentExists) {
+            log.info("Internal preview agent exists");
             this.previewDistAgent = INTERNAL_PREVIEW_DIST_AGENT;
         }
         if (previewAgentExists || internalPreviewAgentExists) {
