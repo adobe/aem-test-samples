@@ -292,7 +292,7 @@ public class ContentPublishRule extends ExternalResource {
         if (agentQueueBlocked) {
             Agent publishAgent = agents.getAgent(this.publishDistAgent);
             if (this.publishDistAgent.equals(INTERNAL_PUBLISH_DIST_AGENT)) {
-                log.warn("Replication agent queue blocked - " + agents.getAgent(this.publishDistAgent));
+                log.warn("Replication internal publish agent queue blocked - " + agents.getAgent(this.publishDistAgent));
                 replicationClient.clearQueue(publishAgent);
             } else {
                 // throw if publish agent is blocked
@@ -316,7 +316,7 @@ public class ContentPublishRule extends ExternalResource {
             if (previewBlocked) {
                 Agent previewAgent = agents.getAgent(this.previewDistAgent);
                 if (this.previewDistAgent.equals(INTERNAL_PREVIEW_DIST_AGENT)) {
-                    log.warn("Replication agent queue blocked - " + agents.getAgent(this.previewDistAgent));
+                    log.warn("Replication internal preview agent queue blocked - " + agents.getAgent(this.previewDistAgent));
                     replicationClient.clearQueue(previewAgent);
                 } else {
                     //throw if preview agent is blocked

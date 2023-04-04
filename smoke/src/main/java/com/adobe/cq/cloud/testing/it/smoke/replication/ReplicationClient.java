@@ -229,6 +229,7 @@ public class ReplicationClient extends CQClient {
     public void clearQueue(Agent agent) throws SmokeTestException {
         List<String> blockedQueues = this.getBlockedQueueNames(agent);
         for (String queueName: blockedQueues) {
+            log.info("Clearing blocked queue {} for agent {}", queueName, agent.getName());
             try {
                 FormEntityBuilder formEntityBuilder = FormEntityBuilder.create().addParameter("operation", "delete");
                 this.doPost(DIST_AGENTS_PATH + "/" + agent.getName() + "/queues/" + queueName, formEntityBuilder.build(), Collections.emptyList());
