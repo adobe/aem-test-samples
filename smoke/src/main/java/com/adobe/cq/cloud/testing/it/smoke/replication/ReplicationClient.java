@@ -18,7 +18,6 @@ package com.adobe.cq.cloud.testing.it.smoke.replication;
 
 import java.io.IOException;
 import java.net.URI;
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
@@ -33,10 +32,6 @@ import com.adobe.cq.cloud.testing.it.smoke.replication.data.ReplicationResponse;
 import com.adobe.cq.cloud.testing.it.smoke.rules.ContentPublishRule;
 import com.adobe.cq.testing.client.CQClient;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.google.gson.JsonArray;
-import com.google.gson.JsonElement;
-import com.google.gson.JsonObject;
-import com.google.gson.JsonParser;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.http.HttpStatus;
 import org.apache.http.impl.client.CloseableHttpClient;
@@ -58,8 +53,6 @@ import static org.apache.commons.lang3.StringUtils.isNotEmpty;
  */
 public class ReplicationClient extends CQClient {
     private static final Logger log = LoggerFactory.getLogger(ContentPublishRule.class);
-
-    private static final String BLOCKED = "BLOCKED";
 
     // uses "NOSONAR" because CQRules:CQBP-71 is triggering, but can be ignored for this test case
     protected static final String DIST_AGENTS_PATH = "/libs/sling/distribution/services/agents"; //NOSONAR
@@ -203,42 +196,7 @@ public class ReplicationClient extends CQClient {
             throw new SmokeTestException(GENERIC, "Exception getting agent queues", e);
         }
     }
-
-    public List<String> getBlockedQueueNames(Agent agent) throws SmokeTestException {
-        List<String> blockedQueues = new ArrayList<>();
-        try {
-            SlingHttpResponse response = this.doGet(DIST_AGENTS_PATH + "/" + agent.getName() + "/queues.1.json", HttpUtils.getExpectedStatus(200));
-            JsonElement jsonElement = JsonParser.parseString(response.getContent().trim());
-            JsonObject result = jsonElement.getAsJsonObject();
-            JsonArray items = result.getAsJsonArray("items");
-            for (int i = 0; i < items.size(); i++) {
-                JsonElement item = items.get(i);
-                String queueName = item.getAsString();
-                JsonObject queue = result.getAsJsonObject(queueName);
-                if (queue.get("state").getAsString().equalsIgnoreCase(BLOCKED)) {
-                    blockedQueues.add(queueName);
-                }
-            }
-        } catch(ClientException e) {
-            throw new SmokeTestException(GENERIC, "Exception getting blocked queues names", e);
-        } finally {
-            return blockedQueues;
-        }
-    }
-
-    public void clearQueue(Agent agent) throws SmokeTestException {
-        List<String> blockedQueues = this.getBlockedQueueNames(agent);
-        for (String queueName: blockedQueues) {
-            log.info("Clearing blocked queue {} for agent {}", queueName, agent.getName());
-            try {
-                FormEntityBuilder formEntityBuilder = FormEntityBuilder.create().addParameter("operation", "delete").addParameter("limit", "-1");
-                this.doPost(DIST_AGENTS_PATH + "/" + agent.getName() + "/queues/" + queueName, formEntityBuilder.build(), Collections.emptyList());
-            } catch(ClientException e) {
-                throw new SmokeTestException(GENERIC, "Exception clearing the blocked queues", e);
-            }
-        }
-    }
-
+    
     public ReplicationException getReplicationException(String code, String message, Throwable t) {
         ReplicationException exception = new ReplicationException(code, message, t);
         log.error(exception.getMessage(), t);
