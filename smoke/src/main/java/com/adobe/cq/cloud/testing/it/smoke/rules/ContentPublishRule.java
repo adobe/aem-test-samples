@@ -305,8 +305,8 @@ public class ContentPublishRule extends ExternalResource {
     }
     
     private boolean doPreviewChecks(Agents agents) throws SmokeTestException {
-        boolean internalPreviewAgentExists = ReplicationClient.checkDistributionAgentExists(agents, PREVIEW_DIST_AGENT);
-        boolean previewAgentExists = ReplicationClient.checkDistributionAgentExists(agents, INTERNAL_PREVIEW_DIST_AGENT);
+        boolean internalPreviewAgentExists = ReplicationClient.checkDistributionAgentExists(agents, INTERNAL_PREVIEW_DIST_AGENT);
+        boolean previewAgentExists = ReplicationClient.checkDistributionAgentExists(agents, PREVIEW_DIST_AGENT);
         if (!internalPreviewAgentExists) {
             log.info("Internal preview agent does not exist");
             this.previewDistAgent = PREVIEW_DIST_AGENT;
