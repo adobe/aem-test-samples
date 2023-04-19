@@ -197,7 +197,7 @@ public class ReplicationClient extends CQClient {
     public Agents getAgentQueueJson() throws SmokeTestException {
         ObjectMapper mapper = new ObjectMapper();
         try {
-            SlingHttpResponse response = this.doGet(DIST_AGENTS_PATH + ".infinity.json", HttpUtils.getExpectedStatus(200));
+            SlingHttpResponse response = this.doGet(DIST_AGENTS_PATH + ".3.json", HttpUtils.getExpectedStatus(200));
             return mapper.readValue(response.getContent(), Agents.class);
         } catch (IOException | ClientException e) {
             throw new SmokeTestException(GENERIC, "Exception getting agent queues", e);
