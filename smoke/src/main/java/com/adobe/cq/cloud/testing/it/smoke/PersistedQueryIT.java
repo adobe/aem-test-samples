@@ -25,7 +25,7 @@ import org.junit.ClassRule;
 import org.junit.Rule;
 import org.junit.Test;
 
-public class PersistedQueryServletIT {
+public class PersistedQueryIT {
 
     @ClassRule
     public static final CQPublishClassRule cqBaseClassRule = new CQPublishClassRule();
@@ -45,7 +45,7 @@ public class PersistedQueryServletIT {
      * @throws ClientException in case if error is occurred
      */
     @Test
-    public void testPersistedQueryListIT() throws ClientException {
+    public void testPersistedQueryEndpointAccessible() throws ClientException {
         adminPublish.doGet("/graphql/execute.json", 204);
     }
 }
