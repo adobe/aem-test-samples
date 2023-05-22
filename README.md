@@ -69,7 +69,7 @@ Custom UI testing is an optional feature that enables you to create and automati
 The [UI Testing](https://experienceleague.adobe.com/docs/experience-manager-cloud-service/content/implementing/using-cloud-manager/test-results/ui-testing.html) section of the documentation provides in-depth information of their structure and usage.
 
 - `/ui-cypress` provides a sample Custom UI test module driven by Cypress.
-- `/ui-selenium-webdriver` provides a sample Custom UI test module driven by Selenium Webdriver. 
+- `/ui-selenium-webdriver` provides a sample Custom UI test module driven by Selenium WebDriver. 
 - The [aem-project-archetype](https://github.com/adobe/aem-project-archetype/tree/develop/src/main/archetype/ui.tests) can be used as reference for Custom UI test modules driven by Selenium + WebdriverIO
 
 
