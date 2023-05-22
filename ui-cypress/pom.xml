@@ -24,7 +24,7 @@
 
     <groupId>com.adobe.cq.cloud</groupId>
     <version>0.0.1-SNAPSHOT</version>
-    <artifactId>com.adobe.cq.cloud.testing.ui.cypress.ui.tests</artifactId>
+    <artifactId>com.adobe.cq.cloud.testing.ui.cypress.tests</artifactId>
     <name>com.adobe.cq.cloud.testing.ui.cypress - UI Tests</name>
     <description></description>
 
