@@ -6,11 +6,7 @@ RUN apt -qqy update \
     # Generic dependencies
     && apt -qqy --no-install-recommends install \
     python \
-    build-essential \
-    # for wait_for_grid script
-    && apt -qqy --no-install-recommends install \
-    curl \
-    jq
+    build-essential
 # <<< End EAAS Convention \
 
 # Set Application Environment

@@ -40,7 +40,7 @@ Some examples of basic tasks like logging in-out of AEM instances, taking screen
 
 ### Reports
 
-in order to be able to interpret the results of the tests correctly, a summary in jUnit format needs to be
+In order to be able to interpret the results of the tests correctly, a summary in JUnit format needs to be
 provided. To achieve this, both the `spec` and `mocha-junit-reporter` reporter are configured:
 
 ```javascript
@@ -60,14 +60,15 @@ module.exports = {
   },
 }
 ```
-in order for the report to be found `reportPath` must be the value passed in the environment
+
+In order for the report to be found `reportPath` must be the value passed in the environment
 variable `REPORTS_PATH` as expected by EaaS. See [cypress.config.js](cypress.config.js)
 
 ### Screenshots / Videos
 
 Cypress will automatically record videos for all test executions and create screenshots for test failures.
 
-Additional screenshots can be captured during the test execution using following command.
+Additional screenshots can be captured during the test execution using following command:
 
 ```javascript
 cy.screenshot()

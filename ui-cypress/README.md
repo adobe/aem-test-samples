@@ -66,3 +66,17 @@ The following environment variables (AEM UI test convention) can be passed
    ```
    mvn verify -Pui-tests-docker-execution -DAEM_AUTHOR_URL=https://author.my-deployment.com -DAEM_AUTHOR_USERNAME=<PASS> -DAEM_AUTHOR_PASSWORD=<PASS>
    ```
+
+## Integrate into your Cloud Manager repository
+
+Follow these steps to use the Cypress tests:
+
+1. Remove all content in the `ui.tests` folder from your Cloud Manager repository.
+
+1. Copy all files located in this folder into the `ui.tests` folder.
+
+1. (Optionally) adjust the file `pom.xml` and set parent as well as artifact information to the desired naming.
+
+1. Commit and push the changes.
+
+During the next pipeline execution, Cloud Manager will use the Cypress tests.

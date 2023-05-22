@@ -36,9 +36,6 @@ describe('AEM Assets', () => {
         const localPath = `assets/${imageName}`;
         cy.get('dam-chunkfileupload.dam-ChunkFileUpload > input').first().selectFile(localPath, {force: true})
 
-        // Wait two seconds for the upload dialog to be interactive.
-        cy.wait(2000);
-
         // Press the upload button.
         cy.get('coral-dialog.is-open coral-dialog-footer [variant="primary"]').click();
 
