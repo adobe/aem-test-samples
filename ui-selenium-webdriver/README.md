@@ -38,6 +38,8 @@ section of the documentation.
   # Start selenium docker image with ARM (for Apple M1/M2 CPUs)
   docker run -d -p 4444:4444 seleniarm/standalone-chromium
   ```
+  
+* If you don't have docker installed, you can download and run [Selenium Server](https://www.selenium.dev/downloads/) on your machine.
 
 * Change to `test-module` directory and execute, overriding properties as needed
   ```
@@ -52,8 +54,7 @@ The image built from the Dockerfile can be used to execute tests locally against
 maven profile will start the docker-compose setup starting selenium and the test module, executing the tests against
 the AEM instance defined via environment variables. The test results will be stored in the `./target/reports` directory.
 
-The following
-environment variables (AEM UI test convention) can be passed
+The following environment variables (AEM UI test convention) can be passed
 
 | envvar | default               |
 | --- |-----------------------|
@@ -74,4 +75,18 @@ environment variables (AEM UI test convention) can be passed
    mvn verify -Pui-tests-docker-execution -DAEM_AUTHOR_URL=https://author.my-deployment.com
    ```
 
-   
+## Integrate into your Cloud Manager repository
+
+Follow these steps to use the Cypress tests:
+
+1. Remove all content in the `ui.tests` folder from your Cloud Manager repository.
+
+1. Copy all files located in this folder into the `ui.tests` folder.
+
+1. (Optionally) adjust the file `pom.xml` in the current folder and set parent as well as artifact information to the desired naming.
+
+   Note: Do not modify the pom.xml file located inside the `test-module` folder.
+
+1. Commit and push the changes.
+
+During the next pipeline execution, Cloud Manager will use the Cypress tests.

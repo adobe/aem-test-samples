@@ -20,6 +20,8 @@ Some examples of basic tasks like logging in-out of AEM instances, taking screen
   docker run -d -p 4444:4444 -v /tmp/shared:/tmp/shared seleniarm/standalone-chromium
   ```
 
+* If you don't have docker installed, you can download and run [Selenium Server](https://www.selenium.dev/downloads/) on your machine.
+
 Select a profile:
 - `ui-tests-local-execution`  provides some common default properties for running local that can be overriden on the command line, eg:
    ```
