@@ -77,7 +77,7 @@ The following environment variables (AEM UI test convention) can be passed
 
 ## Integrate into your Cloud Manager repository
 
-Follow these steps to use the Cypress tests:
+Follow these steps to use the Java Selenium tests:
 
 1. Remove all content in the `ui.tests` folder from your Cloud Manager repository.
 
