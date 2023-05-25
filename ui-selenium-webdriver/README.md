@@ -89,4 +89,4 @@ Follow these steps to use the Cypress tests:
 
 1. Commit and push the changes.
 
-During the next pipeline execution, Cloud Manager will use the Cypress tests.
+During the next pipeline execution, Cloud Manager will use the Java Selenium tests.
