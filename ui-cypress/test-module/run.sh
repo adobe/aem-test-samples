@@ -21,5 +21,7 @@ Xvfb :99 -screen 0 1280x1024x24 -ac -nolisten tcp -nolisten unix &
 export DISPLAY=:99
 echo 'checking Xvfb'
 ps aux | grep Xvfb
+# disable color output when running Cypress
+export NO_COLOR=1
 # execute tests
 npm test
