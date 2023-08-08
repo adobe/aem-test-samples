@@ -19,6 +19,7 @@ import com.adobe.cq.testing.client.CQClient;
 import com.adobe.cq.testing.junit.rules.CQAuthorClassRule;
 import com.adobe.cq.testing.junit.rules.CQRule;
 import com.adobe.cq.testing.junit.rules.Page;
+import com.adobe.cq.testing.junit.rules.TemporaryContentAuthorGroup;
 import com.adobe.cq.testing.junit.rules.TemporaryUser;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.http.HttpStatus;
@@ -54,11 +55,13 @@ public class CreatePageAsAuthorUserIT {
 
     // Create a random page so the test site is initialized properly.
     private final Page temporaryPage = new Page(cqBaseClassRule.authorRule);
+    
+    private static final TemporaryContentAuthorGroup groupRule = new TemporaryContentAuthorGroup(cqBaseClassRule.authorRule::getAdminClient);
 
-    private static final String CONTENT_AUTHORS_GROUP = "content-authors";
+    @Rule
+    public TestRule cqRuleChainGroup = RuleChain.outerRule(cqBaseRule).around(groupRule);
 
-    private static final TemporaryUser userRule = new TemporaryUser(cqBaseClassRule.authorRule::getAdminClient,
-            CONTENT_AUTHORS_GROUP);
+    private static final TemporaryUser userRule = new TemporaryUser(cqBaseClassRule.authorRule::getAdminClient, groupRule.getGroupName());
 
     @Rule
     public TestRule cqRuleChain = RuleChain.outerRule(cqBaseRule).around(temporaryPage).around(userRule);
