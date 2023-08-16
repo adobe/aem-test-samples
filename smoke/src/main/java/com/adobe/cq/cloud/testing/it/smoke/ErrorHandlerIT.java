@@ -15,12 +15,18 @@
  */
 package com.adobe.cq.cloud.testing.it.smoke;
 
+import com.adobe.cq.cloud.testing.it.smoke.rules.ServiceAccessibleRule;
 import com.adobe.cq.testing.client.CQClient;
 import com.adobe.cq.testing.junit.rules.CQAuthorPublishClassRule;
+import org.apache.http.HttpResponse;
 import org.apache.sling.testing.clients.ClientException;
 import org.junit.BeforeClass;
 import org.junit.ClassRule;
 import org.junit.Test;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import java.util.UUID;
 
 /**
  * This test class is protecting from flawed AEM error handler implementations that are not returning 404s in case
@@ -28,8 +34,21 @@ import org.junit.Test;
  */
 public class ErrorHandlerIT {
 
+    private static final Logger log = LoggerFactory.getLogger(ErrorHandlerIT.class);
+
     private static CQClient adminAuthor;
     private static CQClient adminPublish;
+
+
+    private static final String testErrorMessage = new StringBuilder()
+            .append("Error handler test on %s failed. Getting a %s response code when requesting the non-existing resource '%s'.")
+            .append(System.lineSeparator())
+            .append(System.lineSeparator())
+            .append("This test explicitly asserts that requesting non-existing resources respond with a 404. If this is not ")
+            .append("the case, this usually indicates to a flawed AEM error handler. If you use a custom error handler ")
+            .append("make sure it responds with a 404, see https://experienceleague.adobe.com/docs/experience-manager-cloud-service/content/implementing/developing/full-stack/custom-error-page.html?lang=en")
+            .append(System.lineSeparator())
+            .append(System.lineSeparator()).toString();
 
 
     /**
@@ -48,22 +67,34 @@ public class ErrorHandlerIT {
     }
 
     /**
-     * Ensure the author returns a 404 when requesting a non-exising page.
+     * Ensure the author returns a 404 when requesting a random non-exising page.
      *
      * @throws ClientException
      */
     @Test
     public void testAuthorResponseCode404() throws ClientException {
-        adminAuthor.doGet("/content/does/not/exist.html", 404);
+        String path = "/content/test-site/" + UUID.randomUUID();
+        try {
+            adminAuthor.doGet(path, 404);
+        } catch (ClientException e) {
+            log.error(String.format(testErrorMessage, "author", e.getHttpStatusCode(), path));
+            throw e;
+        }
     }
 
     /**
-     * Ensure the publish returns a 404 when requesting a non-existing page.
+     * Ensure the publish returns a 404 when requesting a random non-existing page.
      *
      * @throws ClientException
      */
     @Test
     public void testPublishResponseCode404() throws ClientException {
-        adminPublish.doGet("/content/does/not/exist.html", 404);
+        String path = "/content/test-site/" + UUID.randomUUID();
+        try {
+            adminPublish.doGet(path, 404);
+        } catch (ClientException e) {
+            log.error(String.format(testErrorMessage, "publish", e.getHttpStatusCode(), path));
+            throw e;
+        }
     }
 }
