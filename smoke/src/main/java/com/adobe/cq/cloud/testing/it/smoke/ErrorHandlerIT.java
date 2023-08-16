@@ -40,6 +40,7 @@ public class ErrorHandlerIT {
     private static CQClient adminPublish;
 
 
+    private static final String testPage = "/content/test-site/missingpage_%s";
     private static final String testErrorMessage = new StringBuilder()
             .append("Error handler test on %s failed. Getting a %s response code when requesting the non-existing resource '%s'.")
             .append(System.lineSeparator())
@@ -73,7 +74,7 @@ public class ErrorHandlerIT {
      */
     @Test
     public void testAuthorResponseCode404() throws ClientException {
-        String path = "/content/test-site/" + UUID.randomUUID();
+        String path = String.format(testPage, UUID.randomUUID());
         try {
             adminAuthor.doGet(path, 404);
         } catch (ClientException e) {
@@ -89,7 +90,7 @@ public class ErrorHandlerIT {
      */
     @Test
     public void testPublishResponseCode404() throws ClientException {
-        String path = "/content/test-site/" + UUID.randomUUID();
+        String path = String.format(testPage, UUID.randomUUID());
         try {
             adminPublish.doGet(path, 404);
         } catch (ClientException e) {
