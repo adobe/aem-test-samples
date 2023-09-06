@@ -15,11 +15,10 @@
  */
 package com.adobe.cq.cloud.testing.it.smoke;
 
-import com.adobe.cq.cloud.testing.it.smoke.rules.ServiceAccessibleRule;
 import com.adobe.cq.testing.client.CQClient;
 import com.adobe.cq.testing.junit.rules.CQAuthorPublishClassRule;
-import org.apache.http.HttpResponse;
 import org.apache.sling.testing.clients.ClientException;
+import org.junit.AssumptionViolatedException;
 import org.junit.BeforeClass;
 import org.junit.ClassRule;
 import org.junit.Test;
@@ -27,6 +26,9 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.UUID;
+
+import static org.apache.http.HttpStatus.SC_FORBIDDEN;
+import static org.apache.http.HttpStatus.SC_UNAUTHORIZED;
 
 /**
  * This test class is protecting from flawed AEM error handler implementations that are not returning 404s in case
@@ -40,7 +42,7 @@ public class ErrorHandlerIT {
     private static CQClient adminPublish;
 
 
-    private static final String testPage = "/content/test-site/missingpage_%s";
+    private static final String testPage = "/content/test-site/missingpage_%s.html";
     private static final String testErrorMessage = new StringBuilder()
             .append("Error handler test on %s failed. Getting a %s response code when requesting the non-existing resource '%s'.")
             .append(System.lineSeparator())
@@ -78,8 +80,7 @@ public class ErrorHandlerIT {
         try {
             adminAuthor.doGet(path, 404);
         } catch (ClientException e) {
-            log.error(String.format(testErrorMessage, "author", e.getHttpStatusCode(), path));
-            throw e;
+            handleAuthorClientException(e, path);
         }
     }
 
@@ -94,7 +95,26 @@ public class ErrorHandlerIT {
         try {
             adminPublish.doGet(path, 404);
         } catch (ClientException e) {
-            log.error(String.format(testErrorMessage, "publish", e.getHttpStatusCode(), path));
+            handlePublishClientException(e, path);
+        }
+    }
+
+    private void handlePublishClientException(ClientException e, String path) throws ClientException {
+        log.error(String.format(testErrorMessage, "publish", e.getHttpStatusCode(), path));
+        handleClientException(e);
+    }
+
+    private void handleAuthorClientException(ClientException e, String path) throws ClientException {
+        log.error(String.format(testErrorMessage, "author", e.getHttpStatusCode(), path));
+        handleClientException(e);
+    }
+
+    private void handleClientException(ClientException e) throws ClientException {
+        // Skip the test in case of 401 or 403, usually related to dispatcher customizations like custom authentication or
+        // restricted access to /content/test-site, to be removed once CQ-4345438 got addressed
+        if (e.getHttpStatusCode() == SC_UNAUTHORIZED || e.getHttpStatusCode() == SC_FORBIDDEN) {
+            throw new AssumptionViolatedException("Skipping test...");
+        } else {
             throw e;
         }
     }
