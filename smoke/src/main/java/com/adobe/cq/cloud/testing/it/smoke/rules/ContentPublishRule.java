@@ -194,8 +194,8 @@ public class ContentPublishRule extends ExternalResource {
                     log.info("Page check completed with status {}", slingHttpResponse.getStatusLine().getStatusCode());
                     return true;
                 });
-                // Changing the delay to be 1 minute so that the check page runs every minute
-                polling.poll(TIMEOUT_PER_TRY, 60000);
+                // Changing the delay to be 10 seconds so that the check page runs every 10 seconds
+                polling.poll(TIMEOUT_PER_TRY, 10000);
             } catch (TimeoutException te) {
                 throw getPublishException(getPageErrorCode(expectedStatus), errorMessage, polling.getLastException());
             } catch (InterruptedException e) {
