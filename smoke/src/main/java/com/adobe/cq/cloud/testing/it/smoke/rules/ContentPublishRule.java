@@ -69,8 +69,8 @@ public class ContentPublishRule extends ExternalResource {
     private static final Logger log = LoggerFactory.getLogger(ContentPublishRule.class);
     
     protected static final long TIMEOUT = TimeUnit.MINUTES.toMillis(5);
-    // Let the check page test run for 20 minutes
-    protected static final long TIMEOUT_PER_TRY = TimeUnit.MINUTES.toMillis(20);
+    // Let the check page test run for 10 minutes.
+    protected static final long TIMEOUT_PER_TRY = TimeUnit.MINUTES.toMillis(10);
 
     protected static final String PUBLISH_DIST_AGENT = "publish";
     private static final String PREVIEW_DIST_AGENT = "preview";
