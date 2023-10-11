@@ -20,23 +20,30 @@ import com.adobe.cq.testing.client.CQClient;
 import com.adobe.cq.testing.junit.rules.CQPublishClassRule;
 import com.adobe.cq.testing.junit.rules.CQRule;
 import org.apache.sling.testing.clients.ClientException;
+import org.apache.sling.testing.clients.util.poller.Polling;
 import org.junit.BeforeClass;
 import org.junit.ClassRule;
 import org.junit.Rule;
 import org.junit.Test;
 
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.TimeoutException;
+
 public class PersistedQueryIT {
+
+    private static final long TIMEOUT = TimeUnit.SECONDS.toMillis(30);
+    private static final long DELAY = TimeUnit.SECONDS.toMillis(1);
 
     @ClassRule
     public static final CQPublishClassRule cqBaseClassRule = new CQPublishClassRule();
-    static CQClient adminPublish;
+    static CQClient anonymous;
 
     @Rule
     public CQRule cqBaseRule = new CQRule(cqBaseClassRule.publishRule);
 
     @BeforeClass
     public static void beforeClass() {
-        adminPublish = cqBaseClassRule.publishRule.getAdminClient(CQClient.class);
+        anonymous = cqBaseClassRule.publishRule.getClient(CQClient.class, null, null);
     }
 
     /**
@@ -45,7 +52,18 @@ public class PersistedQueryIT {
      * @throws ClientException in case if error is occurred
      */
     @Test
-    public void testPersistedQueryEndpointAccessible() throws ClientException {
-        adminPublish.doGet("/graphql/execute.json", 204);
+    public void testPersistedQueryEndpointAccessible() throws ClientException, InterruptedException, TimeoutException {
+        new Polling() {
+            @Override
+            public Boolean call() throws Exception {
+                try {
+                    anonymous.doGet("/graphql/execute.json", 204);
+                    return true;
+                } catch (ClientException ce) {
+                    // do nothing
+                    return false;
+                }
+            }
+        }.poll(TIMEOUT, DELAY);
     }
 }
