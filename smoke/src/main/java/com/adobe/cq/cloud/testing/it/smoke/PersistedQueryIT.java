@@ -19,6 +19,7 @@ package com.adobe.cq.cloud.testing.it.smoke;
 import com.adobe.cq.testing.client.CQClient;
 import com.adobe.cq.testing.junit.rules.CQPublishClassRule;
 import com.adobe.cq.testing.junit.rules.CQRule;
+import org.apache.http.HttpStatus;
 import org.apache.sling.testing.clients.ClientException;
 import org.apache.sling.testing.clients.util.poller.Polling;
 import org.junit.BeforeClass;
@@ -49,20 +50,15 @@ public class PersistedQueryIT {
     /**
      * Verifies GET request to persisted query servlet is successful
      *
-     * @throws ClientException in case if error is occurred
+     * @throws InterruptedException in case if error is occurred
+     * @throws TimeoutException in case if error is occurred
      */
     @Test
-    public void testPersistedQueryEndpointAccessible() throws ClientException, InterruptedException, TimeoutException {
+    public void testPersistedQueryEndpointAccessible() throws InterruptedException, TimeoutException {
         new Polling() {
             @Override
             public Boolean call() throws Exception {
-                try {
-                    anonymous.doGet("/graphql/execute.json", 204);
-                    return true;
-                } catch (ClientException ce) {
-                    // do nothing
-                    return false;
-                }
+                return HttpStatus.SC_NO_CONTENT == anonymous.doGet("/graphql/execute.json").getStatusLine().getStatusCode();
             }
         }.poll(TIMEOUT, DELAY);
     }
