@@ -24,12 +24,13 @@ import java.util.concurrent.atomic.AtomicInteger;
 import com.adobe.cq.cloud.testing.it.smoke.exception.ServiceException;
 import com.adobe.cq.testing.client.CQClient;
 import org.apache.http.HttpResponse;
-import org.apache.http.client.HttpClient;
 import org.apache.http.client.config.RequestConfig;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.impl.client.HttpClientBuilder;
 import org.apache.http.util.EntityUtils;
 import org.apache.sling.testing.clients.util.poller.Polling;
+import org.apache.sling.testing.clients.ClientException;
+import org.apache.sling.testing.clients.SlingClient;
 import org.apache.sling.testing.junit.rules.instance.Instance;
 import org.junit.rules.TestRule;
 import org.junit.runner.Description;
@@ -64,11 +65,18 @@ public class ServiceAccessibleRule implements TestRule {
         Polling polling;
 
         try {
+            // Alternatively, rely on setting -Dsling.client.connection.timeout.seconds=10 from the outside
             RequestConfig requestConfig = RequestConfig.custom()
                     .setConnectTimeout(10000)
                     .setSocketTimeout(10000)
                     .build();
-            HttpClient client = HttpClientBuilder.create().setDefaultRequestConfig(requestConfig).build();
+
+            // See https://github.com/apache/sling-org-apache-sling-testing-clients#how-can-i-customize-the-underlying-httpclient
+            SlingClient.Builder builder = SlingClient.Builder.create(adminClient.getUrl(), null, null);
+            HttpClientBuilder httpBuilder = builder.httpClientBuilder();
+            httpBuilder.setDefaultRequestConfig(requestConfig);
+            SlingClient client = builder.build();
+
             AtomicInteger counter = new AtomicInteger();
             polling = new Polling(() -> {
                 counter.incrementAndGet();
@@ -91,6 +99,9 @@ public class ServiceAccessibleRule implements TestRule {
             log.warn("Health check failure", serviceException);
             // TODO throw exceptions once the instance health check URLs GA
             //throw serviceException;
+
+        } catch (ClientException e) {
+            throw new RuntimeException(e);
         }
         return base;
     }
