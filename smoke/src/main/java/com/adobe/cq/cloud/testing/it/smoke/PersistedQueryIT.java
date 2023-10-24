@@ -43,6 +43,7 @@ public class PersistedQueryIT {
 
     @BeforeClass
     public static void beforeClass() {
+        // todo: switch to anonymous client, once CQ-4355073 is addressed
         publishClient = cqBaseClassRule.publishRule.getAdminClient(CQClient.class);
     }
 
