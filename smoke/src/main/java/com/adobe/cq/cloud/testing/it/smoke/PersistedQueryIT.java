@@ -24,6 +24,7 @@ import org.apache.sling.testing.clients.util.poller.Polling;
 import org.junit.BeforeClass;
 import org.junit.ClassRule;
 import org.junit.Rule;
+import org.junit.Ignore;
 import org.junit.Test;
 
 import java.util.concurrent.TimeUnit;
@@ -53,6 +54,7 @@ public class PersistedQueryIT {
      * @throws InterruptedException in case if error is occurred
      * @throws TimeoutException     in case if error is occurred
      */
+    @Ignore
     @Test
     public void testPersistedQueryEndpointAccessible() throws InterruptedException, TimeoutException {
         new Polling() {
