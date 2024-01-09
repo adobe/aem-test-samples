@@ -172,11 +172,9 @@ public class HtmlUnitClient extends CQClient {
             loginUrl = getUrl("/bin/receive?sling:authRequestLogin=1").toURL();
             WebResponse response = webClient.loadWebResponse(new WebRequest(loginUrl));
             if (response.getStatusCode() != 200) {
-                System.err.println("Unable to login to server: [" + loginUrl + "]. Unexpected status: " + response.getStatusCode());
                 throw new TestingIOException("Unable to login to server: [" + loginUrl + "]. Unexpected status: " + response.getStatusCode());
             }
         } catch (IOException e) {
-            System.err.println(e);
             throw new TestingIOException("Unable to login to server: [" + loginUrl + "]", e);
         }
     }
