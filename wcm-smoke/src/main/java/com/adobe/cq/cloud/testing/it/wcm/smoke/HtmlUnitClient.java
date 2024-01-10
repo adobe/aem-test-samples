@@ -15,11 +15,13 @@
  */
 package com.adobe.cq.cloud.testing.it.wcm.smoke;
 
+import com.gargoylesoftware.htmlunit.*;
 import org.apache.http.auth.AuthScope;
 import org.apache.http.auth.Credentials;
 import org.apache.http.auth.UsernamePasswordCredentials;
 import org.apache.http.impl.client.BasicCredentialsProvider;
 import org.apache.http.impl.client.CloseableHttpClient;
+import org.apache.http.impl.client.HttpClientBuilder;
 import org.apache.sling.testing.clients.ClientException;
 import org.apache.sling.testing.clients.SlingClientConfig;
 
@@ -33,12 +35,6 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import com.adobe.cq.testing.client.CQClient;
-import com.gargoylesoftware.htmlunit.DefaultCredentialsProvider;
-import com.gargoylesoftware.htmlunit.DefaultCssErrorHandler;
-import com.gargoylesoftware.htmlunit.WebClient;
-import com.gargoylesoftware.htmlunit.WebClientOptions;
-import com.gargoylesoftware.htmlunit.WebRequest;
-import com.gargoylesoftware.htmlunit.WebResponse;
 import com.gargoylesoftware.htmlunit.html.DomNode;
 import com.gargoylesoftware.htmlunit.html.HtmlPage;
 import org.apache.sling.testing.clients.exceptions.TestingIOException;
@@ -92,6 +88,21 @@ public class HtmlUnitClient extends CQClient {
     // Creation
     //*********************************************
 
+    /**
+     * Custom HTTP Web Connection which enables usage of system properties for proxy usage for HtmlUnit
+     */
+    class SmokeTestHttpWebConnection extends HttpWebConnection {
+
+        public SmokeTestHttpWebConnection(WebClient webClient) {
+            super(webClient);
+        }
+
+        @Override
+        protected HttpClientBuilder createHttpClientBuilder() {
+            return super.createHttpClientBuilder().useSystemProperties();
+        }
+    }
+
     public HtmlUnitClient(CloseableHttpClient http, SlingClientConfig config) throws ClientException {
         super(http, config);
         URI baseUri = getUrl();
@@ -102,6 +113,7 @@ public class HtmlUnitClient extends CQClient {
         BasicCredentialsProvider credentialsProvider = new BasicCredentialsProvider();
         credentialsProvider.setCredentials(scope, creds);
         webClient.setCredentialsProvider(credentialsProvider);
+        webClient.setWebConnection(new SmokeTestHttpWebConnection(webClient));
         login(webClient);
     }
 
