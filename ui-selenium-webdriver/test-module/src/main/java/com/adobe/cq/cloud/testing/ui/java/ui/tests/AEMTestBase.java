@@ -22,10 +22,10 @@ import org.junit.BeforeClass;
 import org.openqa.selenium.Platform;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.chrome.ChromeOptions;
+import org.openqa.selenium.firefox.FirefoxDriverLogLevel;
 import org.openqa.selenium.firefox.FirefoxOptions;
 import org.openqa.selenium.logging.LogType;
 import org.openqa.selenium.logging.LoggingPreferences;
-import org.openqa.selenium.remote.CapabilityType;
 import org.openqa.selenium.remote.DesiredCapabilities;
 import org.openqa.selenium.remote.RemoteWebDriver;
 import org.slf4j.Logger;
@@ -60,8 +60,7 @@ public abstract class AEMTestBase {
         switch (browser) {
             case "chrome":
                 ChromeOptions options = new ChromeOptions();
-                options.setHeadless(true);
-                options.addArguments("--verbose", /*"--headless",*/ "--disable-gpu", "--no-sandbox", "--disable-dev-shm-usage");
+                options.addArguments("--verbose", "--headless", "--disable-gpu", "--no-sandbox", "--disable-dev-shm-usage");
                 dc.setCapability(ChromeOptions.CAPABILITY, options);
                 dc.setCapability("goog:loggingPrefs", logPrefs);
                 break;
@@ -69,7 +68,7 @@ public abstract class AEMTestBase {
                 FirefoxOptions ffOptions = new FirefoxOptions();
                 ffOptions.addArguments("-headless");
                 dc.setCapability(ChromeOptions.CAPABILITY, ffOptions);
-                dc.setCapability(CapabilityType.LOGGING_PREFS, logPrefs);
+                ffOptions.setLogLevel(FirefoxDriverLogLevel.INFO);
                 break;
         }
         URL webDriverUrl = new URL(Config.SELENIUM_BASE_URL + "/wd/hub");

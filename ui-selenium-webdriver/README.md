@@ -68,7 +68,7 @@ The following environment variables (AEM UI test convention) can be passed
 
 1. Build the Docker UI test image with below command
    ```
-   mvn clean install -Pui-tests-docker-build
+   mvn clean package -Pui-tests-docker-build
    ```
 2. Run the test
    ```
