@@ -28,15 +28,15 @@ export NO_COLOR=1
 # setup proxy environment variables
 if [ -n "${PROXY_HOST:-}" ]; then
   if [ -n "${PROXY_HTTPS_PORT:-}" ]; then
-      export HTTP_PROXY="https://${PROXY_HOST}:${PROXY_HTTPS_PORT}"
-      export NODE_EXTRA_CA_CERTS=${PROXY_CA_PATH}
+    export HTTP_PROXY="https://${PROXY_HOST}:${PROXY_HTTPS_PORT}"
+    export NODE_EXTRA_CA_CERTS=${PROXY_CA_PATH}
   elif [ -n "${PROXY_HTTP_PORT:-}" ]; then
     export HTTP_PROXY="http://${PROXY_HOST}:${PROXY_HTTP_PORT}"
   fi
-  if [ -n "${PROXY_OBSERVABILITY_PORT:-}" ]; then
+  if [ -n "${PROXY_OBSERVABILITY_PORT:-}" ] && [ -n "${HTTP_PROXY:-}" ]; then
     echo "Waiting for proxy"
-    curl --silent --retry ${PROXY_RETRY_ATTEMPTS:-3} --retry-connrefused --retry-delay ${PROXY_RETRY_DELAY:-10} \
-      ${PROXY_HOST}:${PROXY_OBSERVABILITY_PORT}
+    curl --silent  --retry ${PROXY_RETRY_ATTEMPTS:-3} --retry-connrefused --retry-delay ${PROXY_RETRY_DELAY:-10} \
+      --proxy ${HTTP_PROXY} ${PROXY_HOST}:${PROXY_OBSERVABILITY_PORT}
   fi
 fi
 
