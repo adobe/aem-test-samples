@@ -24,5 +24,19 @@ ps aux | grep Xvfb
 # disable color output when running Cypress
 export NO_COLOR=1
 #export ELECTRON_EXTRA_LAUNCH_ARGS=--remote-debugging-port=9222
+
+# setup proxy environment variables
+if [ -n "${PROXY_HOST:-}" ] && ( [ -n "${PROXY_HTTP_PORT:-}" ] || [ -n "${PROXY_HTTPS_PORT:-}" ] ); then
+  export HTTP_PROXY="http://${PROXY_HOST}:${PROXY_HTTPS_PORT:-$PROXY_HTTP_PORT}"
+  if [ -n "${PROXY_CA_PATH:-}" ]; then
+    export NODE_EXTRA_CA_CERTS=${PROXY_CA_PATH}
+  fi
+  if [ -n "${PROXY_OBSERVABILITY_PORT:-}" ] ; then
+    echo "Waiting for proxy"
+    curl --silent --retry ${PROXY_RETRY_ATTEMPTS:-3} --retry-connrefused --retry-delay ${PROXY_RETRY_DELAY:-10} \
+      ${PROXY_HOST}:${PROXY_OBSERVABILITY_PORT}
+  fi
+fi
+
 # execute tests
 npm test
