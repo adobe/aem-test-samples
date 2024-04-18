@@ -27,6 +27,7 @@ import java.util.concurrent.TimeoutException;
 
 import static java.util.concurrent.TimeUnit.SECONDS;
 
+@Ignore("https://github.com/adobe/aem-test-samples/issues/95")
 public class SearchIT {
 
     private static final long TIMEOUT = SECONDS.toMillis(30);
