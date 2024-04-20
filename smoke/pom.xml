@@ -19,7 +19,7 @@
 
     <groupId>com.adobe.cq.cloud</groupId>
     <artifactId>com.adobe.cq.cloud.testing.it.smoke</artifactId>
-    <version>0.21.1-SNAPSHOT</version>
+    <version>0.21.2-SNAPSHOT</version>
     <name>CQ Cloud Smoke HTTP Tests</name>
 
     <!-- SVN Settings -->
