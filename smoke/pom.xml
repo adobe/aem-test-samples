@@ -36,6 +36,27 @@
 
     <build>
         <plugins>
+            <!-- Require Maven version -->
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-enforcer-plugin</artifactId>
+                <version>3.5.0</version>
+                <executions>
+                    <execution>
+                        <id>enforce-maven-version</id>
+                        <goals>
+                            <goal>enforce</goal>
+                        </goals>
+                        <configuration>
+                            <rules>
+                                <requireMavenVersion>
+                                    <version>3.6.3</version>
+                                </requireMavenVersion>
+                            </rules>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
             <!-- Create self-contained jar with dependencies -->
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
@@ -70,7 +91,7 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-javadoc-plugin</artifactId>
-                <version>3.7.0</version>
+                <version>3.10.0</version>
                 <configuration>
                     <quiet>true</quiet>
                     <source>8</source>
@@ -113,7 +134,7 @@
                     <plugin>
                         <groupId>org.apache.maven.plugins</groupId>
                         <artifactId>maven-surefire-plugin</artifactId>
-                        <version>3.3.1</version>
+                        <version>3.5.0</version>
                         <configuration>
                             <skip>true</skip>
                         </configuration>
@@ -121,7 +142,7 @@
                     <plugin>
                         <groupId>org.apache.maven.plugins</groupId>
                         <artifactId>maven-failsafe-plugin</artifactId>
-                        <version>3.3.1</version>
+                        <version>3.5.0</version>
                         <configuration>
                             <testSourceDirectory>${basedir}/src/main/java/</testSourceDirectory>
                             <testClassesDirectory>${project.build.directory}/classes/</testClassesDirectory>
@@ -243,7 +264,7 @@
         <dependency>
             <groupId>com.adobe.cq</groupId>
             <artifactId>aem-cloud-testing-clients</artifactId>
-            <version>1.2.6</version>
+            <version>1.2.7</version>
         </dependency>
 
         <!-- logging -->
