@@ -31,6 +31,8 @@ import org.junit.ClassRule;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.RuleChain;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * End to end publication test.
@@ -39,6 +41,8 @@ import org.junit.rules.RuleChain;
  * publish ingress (CDN -&gt; Dispatcher -&gt; AEM publish tier).
  */
 public class PublishEndToEndIT {
+    private static final Logger LOG = LoggerFactory.getLogger(PublishEndToEndIT.class);
+
     protected static final long TIMEOUT = TimeUnit.MINUTES.toMillis(1);
     
     @ClassRule
@@ -81,6 +85,7 @@ public class PublishEndToEndIT {
         try {
             activateAndDeactivate();
         } catch (AssumptionViolatedException e) {
+            LOG.error("Assumption violated", e);
             throw e;
         } catch (SmokeTestException | RuntimeException e) {
             new Polling(this::activateAndDeactivate).poll(TIMEOUT, 500);
