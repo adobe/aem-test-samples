@@ -123,9 +123,8 @@ public class CreatePageAsAuthorUserIT {
         CQSecurityClient securityClient = creatorSupplier.get().adaptTo(CQSecurityClient.class);
         CQPermissions permissionsObj = new CQPermissions(securityClient);
         permissionsObj.changePermissions(groupRule.getGroupName(), temporaryPage.getParentPath(),
-                true, true, true, false,false, false, false,
+                true, true, true, false, false, false, false,
                 HttpStatus.SC_OK);
-
 
         // create test page
         SlingHttpResponse response = userRule.getClient().createPageWithRetry(
