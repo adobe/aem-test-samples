@@ -16,14 +16,18 @@
 package com.adobe.cq.cloud.testing.it.smoke;
 
 import com.adobe.cq.testing.client.CQClient;
+import com.adobe.cq.testing.client.CQSecurityClient;
+import com.adobe.cq.testing.client.security.CQPermissions;
 import com.adobe.cq.testing.junit.rules.CQAuthorClassRule;
 import com.adobe.cq.testing.junit.rules.CQRule;
 import com.adobe.cq.testing.junit.rules.Page;
 import com.adobe.cq.testing.junit.rules.TemporaryContentAuthorGroup;
 import com.adobe.cq.testing.junit.rules.TemporaryUser;
+import com.fasterxml.jackson.databind.JsonNode;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.http.HttpStatus;
 import org.apache.sling.testing.clients.ClientException;
+import org.apache.sling.testing.clients.SlingClient;
 import org.apache.sling.testing.clients.SlingHttpResponse;
 import org.apache.sling.testing.clients.exceptions.TestingIOException;
 import org.junit.Assert;
@@ -38,8 +42,10 @@ import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 import java.util.UUID;
+import java.util.function.Supplier;
 
 import static java.util.concurrent.TimeUnit.MINUTES;
+import static java.util.concurrent.TimeUnit.SECONDS;
 import static org.junit.Assert.assertFalse;
 
 public class CreatePageAsAuthorUserIT {
@@ -77,13 +83,15 @@ public class CreatePageAsAuthorUserIT {
         String pageName = "testpage_" +  UUID.randomUUID();
         String pagePathExpected = temporaryPage.getParentPath() + "/" + pageName;
         String pagePath = pagePathExpected;
+
         try (
-                SlingHttpResponse response = userRule.getClient().createPageWithRetry(pageName, "Page created by CreatePageAsAuthorUserIT",
-                temporaryPage.getParentPath(), "", MINUTES.toMillis(1), 500, HttpStatus.SC_OK, HttpStatus.SC_UNAUTHORIZED)
+                SlingHttpResponse response = createTestPage(pageName, 1)
         ) {
             assert response != null;
             if (response.getStatusLine().getStatusCode() == HttpStatus.SC_UNAUTHORIZED) {
-                throw new AssumptionViolatedException("Author User " + userRule.getClient().getUser() + " not authorized to create page. Skipping...");
+                AssumptionViolatedException e = new AssumptionViolatedException("Author User " + userRule.getClient().getUser() + " not authorized to create page. Skipping...");
+                LOG.error("Unable to create test page", e);
+                throw e;
             }
             pagePath = response.getSlingLocation();
             if (StringUtils.isEmpty(pagePath)) {
@@ -109,4 +117,34 @@ public class CreatePageAsAuthorUserIT {
         }
     }
 
+    private SlingHttpResponse createTestPage(String pageName, int authRetries) throws ClientException, InterruptedException {
+        // update the test group permissions in case test page path is blocked for "everyone" group
+        Supplier<SlingClient> creatorSupplier = cqBaseClassRule.authorRule::getAdminClient;
+        CQSecurityClient securityClient = creatorSupplier.get().adaptTo(CQSecurityClient.class);
+        CQPermissions permissionsObj = new CQPermissions(securityClient);
+        permissionsObj.changePermissions(groupRule.getGroupName(), temporaryPage.getParentPath(),
+                true, true, true, false, false, false, false,
+                HttpStatus.SC_OK);
+
+        // create test page
+        SlingHttpResponse response = userRule.getClient().createPageWithRetry(
+                pageName,
+                "Page created by CreatePageAsAuthorUserIT",
+                temporaryPage.getParentPath(),
+                "",
+                MINUTES.toMillis(1),
+                500,
+                HttpStatus.SC_OK,
+                HttpStatus.SC_UNAUTHORIZED
+        );
+
+        // retry in case not fully synced on time
+        if (response.getStatusLine().getStatusCode() == HttpStatus.SC_UNAUTHORIZED && authRetries > 0) {
+            LOG.info("Got response status {} while creating page {}, retrying...", HttpStatus.SC_UNAUTHORIZED, pageName);
+            SECONDS.sleep(5);
+            return createTestPage(pageName, --authRetries);
+        }
+
+        return response;
+    }
 }
