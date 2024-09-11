@@ -85,7 +85,7 @@ public class CreatePageAsAuthorUserIT {
         String pagePath = pagePathExpected;
 
         try (
-                SlingHttpResponse response = createTestPage(pageName, 2)
+                SlingHttpResponse response = createTestPage(pageName, 1)
         ) {
             assert response != null;
             if (response.getStatusLine().getStatusCode() == HttpStatus.SC_UNAUTHORIZED) {
@@ -118,28 +118,14 @@ public class CreatePageAsAuthorUserIT {
     }
 
     private SlingHttpResponse createTestPage(String pageName, int authRetries) throws ClientException, InterruptedException {
+        // update the test group permissions in case test page path is blocked for "everyone" group
         Supplier<SlingClient> creatorSupplier = cqBaseClassRule.authorRule::getAdminClient;
         CQSecurityClient securityClient = creatorSupplier.get().adaptTo(CQSecurityClient.class);
         CQPermissions permissionsObj = new CQPermissions(securityClient);
+        permissionsObj.changePermissions(groupRule.getGroupName(), temporaryPage.getParentPath(),
+                true, true, true, false,false, false, false,
+                HttpStatus.SC_OK);
 
-        // check if the parent path of the test page is not blocked for "everyone" group, update the test group permissions if needed
-        JsonNode everyonePerms = null;
-        try {
-            everyonePerms = permissionsObj.getPermissions("everyone", temporaryPage.getParentPath(),0, HttpStatus.SC_OK);
-        } catch (ClientException e) {
-            if (e.getHttpStatusCode() != HttpStatus.SC_NOT_FOUND){
-                throw e;
-            }
-        }
-        if (everyonePerms != null) {
-            JsonNode permsEntry = everyonePerms.at("/entries/0");
-            if (!permsEntry.get("read").asBoolean() || !permsEntry.get("modify").asBoolean() || !permsEntry.get("create").asBoolean()) {
-                LOG.info("Updating group permissions for {}", temporaryPage.getParentPath());
-                permissionsObj.changePermissions(groupRule.getGroupName(), temporaryPage.getParentPath(),
-                        true, true, true, false,false, false, false,
-                        HttpStatus.SC_OK);
-            }
-        }
 
         // create test page
         SlingHttpResponse response = userRule.getClient().createPageWithRetry(
@@ -153,10 +139,10 @@ public class CreatePageAsAuthorUserIT {
                 HttpStatus.SC_UNAUTHORIZED
         );
 
-        // retry in case user wasn't fully set up on time
+        // retry in case not fully synced on time
         if (response.getStatusLine().getStatusCode() == HttpStatus.SC_UNAUTHORIZED && authRetries > 0) {
             LOG.info("Got response status {} while creating page {}, retrying...", HttpStatus.SC_UNAUTHORIZED, pageName);
-            SECONDS.sleep(1);
+            SECONDS.sleep(5);
             return createTestPage(pageName, --authRetries);
         }
 
