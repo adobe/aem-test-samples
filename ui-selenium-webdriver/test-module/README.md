@@ -12,12 +12,9 @@ Some examples of basic tasks like logging in-out of AEM instances, taking screen
 
 - Start selenium locally
   ```shell
-  # Start selenium docker image (for Linux, Windows, Intel-based Macbooks)
+  # Start selenium docker image
   # we mount /tmp/shared as a shared volume that will be used between selenium and the test module for uploads
-  docker run --platform linux/amd64 -d -p 4444:4444 -v /tmp/shared:/tmp/shared selenium/standalone-chrome-debug:latest
-  
-  # Start selenium docker image with ARM (for Apple M1/M2 CPUs)
-  docker run -d -p 4444:4444 -v /tmp/shared:/tmp/shared seleniarm/standalone-chromium
+  docker run -d -p 4444:4444 -v /tmp/shared:/tmp/shared selenium/standalone-chromium:latest
   ```
 
 * If you don't have docker installed, you can download and run [Selenium Server](https://www.selenium.dev/downloads/) on your machine.

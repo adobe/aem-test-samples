@@ -21,7 +21,7 @@ section of the documentation.
 
 - `wait-for-grid.sh` Bash script helper to check Selenium readiness in the Docker image
 - `Dockerfile` commands to assemble the image, including the maven profile to be executed to run the tests
-- `docker-compose-(chrome|firefox).yaml` all-in-one setup to run the test module against AEM instance in the desired browser
+- `docker-compose-(chromium|firefox).yaml` all-in-one setup to run the test module against AEM instance in the desired browser
 - `pom.xml` defines project dependencies and build configuration which will be used by Cloud Manager to build the test module image
 - `/test-module` The test project (add your tests there)
 
@@ -31,12 +31,9 @@ section of the documentation.
 
 * Start selenium locally
   ```shell
-  # Start selenium docker image (for Linux, Windows, Intel-based Macbooks)
+  # Start selenium docker image
   # we mount /tmp/shared as a shared volume that will be used between selenium and the test module for uploads
-  docker run --platform linux/amd64 -d -p 4444:4444 -v /tmp/shared:/tmp/shared  selenium/standalone-chrome-debug:latest
-  
-  # Start selenium docker image with ARM (for Apple M1/M2 CPUs)
-  docker run -d -p 4444:4444 seleniarm/standalone-chromium
+  docker run -d -p 4444:4444 -v /tmp/shared:/tmp/shared selenium/standalone-chromium:latest
   ```
   
 * If you don't have docker installed, you can download and run [Selenium Server](https://www.selenium.dev/downloads/) on your machine.

@@ -17,7 +17,7 @@ package com.adobe.cq.cloud.testing.ui.java.ui.tests.lib;
 
 public class Config {
     // Selenium
-    public static String SELENIUM_BROWSER = System.getProperty("SELENIUM_BROWSER", "chrome");
+    public static String SELENIUM_BROWSER = System.getProperty("SELENIUM_BROWSER", "chromium");
     public static String SELENIUM_BASE_URL = System.getProperty("SELENIUM_BASE_URL", "http://localhost:4444");
 
     // AEM Author

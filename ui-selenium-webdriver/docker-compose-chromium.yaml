@@ -20,8 +20,8 @@ version: '3'
 services:
   tests:
     environment:
-      - SELENIUM_BASE_URL=http://selenium-chrome:4444
-      - SELENIUM_BROWSER=chrome
+      - SELENIUM_BASE_URL=http://selenium-chromium:4444
+      - SELENIUM_BROWSER=chromium
       - AEM_AUTHOR_URL
       - AEM_AUTHOR_USERNAME
       - AEM_AUTHOR_PASSWORD
@@ -36,10 +36,8 @@ services:
       - 'shared:/tmp/shared'
       - 'shared:/usr/src/app/assets'
     image: 'com.adobe.cq.cloud-com.adobe.cq.cloud.testing.ui.java.ui.tests/ui.tests:latest'
-  selenium-chrome:
-    image: 'selenium/standalone-chrome-debug:latest'
-    # Switch for ARM-based developer machines
-    # image: 'seleniarm/standalone-chromium:latest'
+  selenium-chromium:
+    image: 'selenium/standalone-chromium:latest'
     ports:
       - 4444:4444
     volumes:
