@@ -37,9 +37,7 @@ services:
       - 'shared:/usr/src/app/assets'
     image: 'com.adobe.cq.cloud-com.adobe.cq.cloud.testing.ui.java.ui.tests/ui.tests:latest'
   selenium-chrome:
-    image: 'selenium/standalone-chrome-debug:latest'
-    # Switch for ARM-based developer machines
-    # image: 'seleniarm/standalone-chromium:latest'
+    image: 'selenium/standalone-chromium:latest'
     ports:
       - 4444:4444
     volumes:
