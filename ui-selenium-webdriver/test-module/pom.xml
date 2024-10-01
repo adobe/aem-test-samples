@@ -41,7 +41,7 @@
 
         <!-- AEMaaCS UI testing convention properties -->
         <SELENIUM_BASE_URL>http://localhost:4444</SELENIUM_BASE_URL>
-        <SELENIUM_BROWSER>chromium</SELENIUM_BROWSER>
+        <SELENIUM_BROWSER>chrome</SELENIUM_BROWSER>
 
         <AEM_AUTHOR_URL>http://localhost:4502</AEM_AUTHOR_URL>
         <AEM_AUTHOR_USERNAME>admin</AEM_AUTHOR_USERNAME>

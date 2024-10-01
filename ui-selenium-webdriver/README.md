@@ -21,7 +21,7 @@ section of the documentation.
 
 - `wait-for-grid.sh` Bash script helper to check Selenium readiness in the Docker image
 - `Dockerfile` commands to assemble the image, including the maven profile to be executed to run the tests
-- `docker-compose-(chromium|firefox).yaml` all-in-one setup to run the test module against AEM instance in the desired browser
+- `docker-compose-(chrome|firefox).yaml` all-in-one setup to run the test module against AEM instance in the desired browser
 - `pom.xml` defines project dependencies and build configuration which will be used by Cloud Manager to build the test module image
 - `/test-module` The test project (add your tests there)
 

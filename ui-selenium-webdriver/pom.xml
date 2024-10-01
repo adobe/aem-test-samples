@@ -45,7 +45,7 @@
         <AEM_PUBLISH_URL />
         <AEM_PUBLISH_USERNAME>admin</AEM_PUBLISH_USERNAME>
         <AEM_PUBLISH_PASSWORD>admin</AEM_PUBLISH_PASSWORD>
-        <SELENIUM_BROWSER>chromium</SELENIUM_BROWSER>
+        <SELENIUM_BROWSER>chrome</SELENIUM_BROWSER>
     </properties>
 
     <build>

@@ -48,7 +48,7 @@ public abstract class AEMTestBase {
     @BeforeClass
     public static void init() throws Exception {
         // Initialize remote web driver session
-        String browser = System.getProperty("SELENIUM_BROWSER", "chromium");
+        String browser = System.getProperty("SELENIUM_BROWSER", "chrome");
         DesiredCapabilities dc = new DesiredCapabilities();
         // Enable browser logs
         LoggingPreferences logPrefs = new LoggingPreferences();
@@ -58,7 +58,7 @@ public abstract class AEMTestBase {
         dc.setPlatform(Platform.LINUX);
 
         switch (browser) {
-            case "chromium":
+            case "chrome":
                 ChromeOptions options = new ChromeOptions();
                 options.addArguments("--verbose", "--headless", "--disable-gpu", "--no-sandbox", "--disable-dev-shm-usage");
                 dc.setCapability(ChromeOptions.CAPABILITY, options);
