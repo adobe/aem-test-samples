@@ -145,7 +145,7 @@
                     <plugin>
                         <groupId>org.apache.maven.plugins</groupId>
                         <artifactId>maven-failsafe-plugin</artifactId>
-                        <version>3.2.5</version>
+                        <version>3.5.1</version>
                         <configuration>
                             <redirectTestOutputToFile>true</redirectTestOutputToFile>
                             <reportsDirectory>${REPORTS_PATH}</reportsDirectory>
@@ -257,7 +257,7 @@
                     <plugin>
                         <groupId>org.apache.maven.plugins</groupId>
                         <artifactId>maven-failsafe-plugin</artifactId>
-                        <version>3.2.5</version>
+                        <version>3.5.1</version>
                         <configuration>
                             <redirectTestOutputToFile>true</redirectTestOutputToFile>
                             <reportsDirectory>${env.REPORTS_PATH}</reportsDirectory>
