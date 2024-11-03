@@ -1,8 +1,9 @@
 
 name: Maven Build
 
-# Run workflow on commits to default branch
-on: workflow_dispatch
+on:
+  pull_request:
+    types: [assigned, opened, synchronize, reopened]
 
 jobs:
   build:
