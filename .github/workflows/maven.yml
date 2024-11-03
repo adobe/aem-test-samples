@@ -1,0 +1,42 @@
+
+name: Maven Build
+
+on:
+  pull_request:
+    paths:
+      - 'cf-smoke/**'
+      - 'smoke/**'
+      - 'wcm-smoke/**'
+      - 'xf-smoke/**'
+      - 'ui-selenium-webdriver/**'
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      # Check out Git repository
+      - uses: actions/checkout@v4
+
+      # Check out Git repository
+      - name: Set up JDK 21 for x64
+        uses: actions/setup-java@v4
+        with:
+          java-version: '21'
+          distribution: 'temurin'
+          architecture: x64
+          cache: maven
+
+      - name: mvn verify cf-smoke
+        run: mvn --batch-mode --update-snapshots -f cf-smoke/pom.xml clean verify
+
+      - name: mvn verify smoke
+        run: mvn --batch-mode --update-snapshots -f smoke/pom.xml clean verify
+
+      - name: mvn verify wcm-smoke
+        run: mvn --batch-mode --update-snapshots -f wcm-smoke/pom.xml clean verify
+
+      - name: mvn verify xf-smoke
+        run: mvn --batch-mode --update-snapshots -f xf-smoke/pom.xml clean verify
+
+      - name: mvn verify ui-selenium-webdriver
+        run: mvn --batch-mode --update-snapshots -f ui-selenium-webdriver/pom.xml clean verify
