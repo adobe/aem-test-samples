@@ -3,7 +3,12 @@ name: Maven Build
 
 on:
   pull_request:
-    types: [assigned, opened, synchronize, reopened]
+    paths:
+      - 'cf-smoke/**'
+      - 'smoke/**'
+      - 'wcm-smoke/**'
+      - 'xf-smoke/**'
+      - 'ui-selenium-webdriver/**'
 
 jobs:
   build:
@@ -21,5 +26,17 @@ jobs:
           architecture: x64
           cache: maven
 
-      - name: Run the Maven verify phase
+      - name: mvn verify cf-smoke
         run: mvn --batch-mode --update-snapshots -f cf-smoke/pom.xml clean verify
+
+      - name: mvn verify smoke
+        run: mvn --batch-mode --update-snapshots -f smoke/pom.xml clean verify
+
+      - name: mvn verify wcm-smoke
+        run: mvn --batch-mode --update-snapshots -f wcm-smoke/pom.xml clean verify
+
+      - name: mvn verify xf-smoke
+        run: mvn --batch-mode --update-snapshots -f xf-smoke/pom.xml clean verify
+
+      - name: mvn verify ui-selenium-webdriver
+        run: mvn --batch-mode --update-snapshots -f ui-selenium-webdriver/pom.xml clean verify
