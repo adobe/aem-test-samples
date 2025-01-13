@@ -1,0 +1,5 @@
+# Dependency directories
+node_modules/
+test-module/node_modules
+
+test-module/reports/

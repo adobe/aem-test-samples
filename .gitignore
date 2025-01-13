@@ -24,3 +24,6 @@ generated
 # Ignore Quickstart launches in the source tree
 license.properties
 crx-quickstart
+
+release.properties
+pom.xml.releaseBackup

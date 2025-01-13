@@ -35,6 +35,7 @@ async function AEMLogin(username,password){
         }
         // Form field not interactive, not visible
         // Need to open the Accordion
+        // eslint-disable-next-line no-unused-vars
         catch (e) {
             await $('[class*="Accordion"] button').click();
             // eslint-disable-next-line wdio/no-pause

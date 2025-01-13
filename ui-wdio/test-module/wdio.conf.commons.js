@@ -20,12 +20,10 @@
 import {aem, reports_path} from './lib/config.js';
 // eslint-disable-next-line no-unused-vars
 import {ReportAggregator, HtmlReporter}    from 'wdio-html-nice-reporter';
-// eslint-disable-next-line no-unused-vars
 import path from 'path';
 import log4js from 'log4js';
 import { commands } from './lib/wdio.commands.js';
 
-// eslint-disable-next-line no-unused-vars
 let reportAggregator = ReportAggregator;
 
 export const config = {

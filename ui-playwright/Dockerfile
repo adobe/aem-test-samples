@@ -1,4 +1,4 @@
-FROM mcr.microsoft.com/playwright:v1.48.1-jammy
+FROM mcr.microsoft.com/playwright:v1.49.1-jammy
 
 RUN apt -y update \
     && apt -y --no-install-recommends install curl libnss3-tools \
