@@ -39,4 +39,13 @@ jobs:
         run: mvn --batch-mode --update-snapshots -f xf-smoke/pom.xml clean verify
 
       - name: mvn verify ui-selenium-webdriver
+        run: mvn --batch-mode --update-snapshots -f ui-cypress/pom.xml clean verify
+
+      - name: mvn verify ui-selenium-webdriver
+        run: mvn --batch-mode --update-snapshots -f ui-playwright/pom.xml clean verify
+
+      - name: mvn verify ui-selenium-webdriver
         run: mvn --batch-mode --update-snapshots -f ui-selenium-webdriver/pom.xml clean verify
+
+      - name: mvn verify ui-selenium-webdriver
+        run: mvn --batch-mode --update-snapshots -f ui-wdio/pom.xml clean verify
