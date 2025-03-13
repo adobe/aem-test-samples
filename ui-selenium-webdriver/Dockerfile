@@ -38,6 +38,11 @@ ENV AEM_PUBLISH_PASSWORD admin
 # ENV SHARED_FOLDER
 # ENV UPLOAD_URL
 
+# install jq which is required for wait-for-grid.sh
+RUN apt-get update -yqq && \
+    apt-get install -yqq rsync libfreetype6 fontconfig tzdata less gosu unzip sysvinit-utils && \
+    rm -rf /var/lib/apt/lists/* && apt-get clean autoclean && apt-get autoremove \
+
 # <<< End CloudManager Convention
 
 # Set Application Environment
@@ -56,4 +61,3 @@ COPY wait-for-grid.sh .
 RUN chmod 555 wait-for-grid.sh
 
 CMD ./wait-for-grid.sh ${TEST_RUN_COMMAND}
-# <<< End CloudManager Convention
