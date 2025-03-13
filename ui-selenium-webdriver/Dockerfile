@@ -41,7 +41,7 @@ ENV AEM_PUBLISH_PASSWORD admin
 # install jq which is required for wait-for-grid.sh
 RUN apt-get update -yqq && \
     apt-get install -yqq rsync libfreetype6 fontconfig tzdata less gosu unzip sysvinit-utils && \
-    rm -rf /var/lib/apt/lists/* && apt-get clean autoclean && apt-get autoremove \
+    rm -rf /var/lib/apt/lists/* && apt-get clean autoclean && apt-get autoremove
 
 # <<< End CloudManager Convention
 
