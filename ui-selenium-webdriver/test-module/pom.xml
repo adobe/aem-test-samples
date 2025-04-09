@@ -62,7 +62,7 @@
             <plugins>
                 <plugin>
                     <artifactId>maven-clean-plugin</artifactId>
-                    <version>3.4.0</version>
+                    <version>3.4.1</version>
                 </plugin>
                 <plugin>
                     <artifactId>maven-resources-plugin</artifactId>
@@ -137,7 +137,7 @@
                     <plugin>
                         <groupId>org.apache.maven.plugins</groupId>
                         <artifactId>maven-surefire-plugin</artifactId>
-                        <version>3.5.2</version>
+                        <version>3.5.3</version>
                         <configuration>
                             <skip>true</skip>
                         </configuration>
@@ -145,7 +145,7 @@
                     <plugin>
                         <groupId>org.apache.maven.plugins</groupId>
                         <artifactId>maven-failsafe-plugin</artifactId>
-                        <version>3.5.2</version>
+                        <version>3.5.3</version>
                         <configuration>
                             <redirectTestOutputToFile>true</redirectTestOutputToFile>
                             <reportsDirectory>${REPORTS_PATH}</reportsDirectory>
@@ -214,7 +214,7 @@
                     <plugin>
                         <groupId>org.apache.maven.plugins</groupId>
                         <artifactId>maven-surefire-report-plugin</artifactId>
-                        <version>3.5.2</version>
+                        <version>3.5.3</version>
                         <configuration>
                             <outputDirectory>${REPORTS_PATH}/html_report</outputDirectory>
                             <reportsDirectory>${REPORTS_PATH}</reportsDirectory>
@@ -248,7 +248,7 @@
                     <plugin>
                         <groupId>org.apache.maven.plugins</groupId>
                         <artifactId>maven-surefire-plugin</artifactId>
-                        <version>3.5.2</version>
+                        <version>3.5.3</version>
                         <configuration>
                             <skip>true</skip>
                         </configuration>
@@ -302,7 +302,7 @@
                     <plugin>
                         <groupId>org.apache.maven.plugins</groupId>
                         <artifactId>maven-surefire-report-plugin</artifactId>
-                        <version>3.5.2</version>
+                        <version>3.5.3</version>
                         <configuration>
                             <outputDirectory>${env.REPORTS_PATH}/html_report</outputDirectory>
                             <reportsDirectory>${env.REPORTS_PATH}</reportsDirectory>
@@ -326,7 +326,7 @@
         <dependency>
             <groupId>org.seleniumhq.selenium</groupId>
             <artifactId>selenium-java</artifactId>
-            <version>4.27.0</version>
+            <version>4.31.0</version>
         </dependency>
         <dependency>
             <groupId>junit</groupId>
