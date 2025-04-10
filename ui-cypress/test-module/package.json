@@ -4,9 +4,9 @@
   "description": "test cypress on eaas",
   "main": "index.js",
   "devDependencies": {
-    "cypress": "13.17.0",
+    "cypress": "14.3.0",
     "cypress-fail-on-console-error": "^5.1.1",
-    "cypress-multi-reporters": "^2.0.4",
+    "cypress-multi-reporters": "^2.0.5",
     "mocha-junit-reporter": "^2.2.1",
     "cypress-terminal-report": "^7.1.0"
   },
