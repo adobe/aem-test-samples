@@ -26,7 +26,7 @@ Select a profile:
    ```
    **NOTE** if running against a local AEM instance (Quickstart) make sure that the AUTHOR/PUBLISH URL are resolvable from
    both the test module and the selenium instance.
- 
+
 - `ui-tests-cloud-execution` expects that all values required by convention are passed as environment variables.
    This is the profile which is executed during CM tests in this sample module
    ```
@@ -36,38 +36,33 @@ Select a profile:
 
 ### Reports
 
-The reports produced by the failsafe plugin are saved in the directory specified by the REPORTS_PATH parameter. 
+The reports produced by the failsafe plugin are saved in the directory specified by the REPORTS_PATH parameter.
 This sample module includes a step that generates HTML reports using the surefire-report-plugin, utilizing the output from the XML report as the source.
 
 `$REPORTS_PATH/html_report` will contain the HTML report.
 
-### Screenshots 
+### Screenshots
 
 A sample TestRule `FailureScreenShotRule` is included which illustrates how a screenshot can be taken in case of test failure.
 ````java
 @Rule
 public FailureScreenShotRule failure = new FailureScreenShotRule(driver);
 ````
- 
+
 `$REPORTS_PATH/screenshots` will contain the images.
 
 ### Browser logs
 
-The test module configures the Selenium driver to be able to capture browser logs and demonstrates how the logs can be 
+The test module configures the Selenium driver to be able to capture browser logs and demonstrates how the logs can be
 dumped after a test execution and appended to the test report by using the following TestRule
 
 ```java
 @Rule
 public BrowserLogsDumpRule browserLogs =  new BrowserLogsDumpRule(driver);
 ```
-example output 
+example output
 ```
 ***** Browser logs *****
 Thu Feb 09 12:58:32 CET 2023 SEVERE https://example.com/foo - Failed to load resource: the server responded with a status of 403 ()
 
 ```
-
-
-
-
-

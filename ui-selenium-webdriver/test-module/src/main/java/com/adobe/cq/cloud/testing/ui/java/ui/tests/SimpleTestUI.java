@@ -21,36 +21,27 @@ import com.adobe.cq.cloud.testing.ui.java.ui.tests.lib.FailureScreenShotRule;
 import org.junit.Assert;
 import org.junit.Rule;
 import org.junit.Test;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
-/**
- * Test case which illustrates Selenium and Java Webdriver interacting
- */
+/** Test case which illustrates Selenium and Java Webdriver interacting */
 public class SimpleTestUI extends AEMTestBase {
-    /**
-     * Takes a screenshot in case of test failure
-     */
-    @Rule
-    public FailureScreenShotRule failure = new FailureScreenShotRule(driver);
-    /**
-     * Adds browser logs to the test execution reports for troubleshooting
-     */
-    @Rule
-    public BrowserLogsDumpRule browserLogs =  new BrowserLogsDumpRule(driver);
+  private static Logger logger = LoggerFactory.getLogger(SimpleTestUI.class);
 
+  /** Takes a screenshot in case of test failure */
+  @Rule public FailureScreenShotRule failure = new FailureScreenShotRule(driver);
 
-    /**
-     * Calls static page and verifies the page title on a generic website
-     */
+  /** Adds browser logs to the test execution reports for troubleshooting */
+  @Rule public BrowserLogsDumpRule browserLogs = new BrowserLogsDumpRule(driver);
 
-    @Test
-    public void testPageTitle() {
-        logger.info("getting title");
-        driver.get(Config.AEM_AUTHOR_URL);
-        String pageTitle = "AEM Sign In";
-        Assert.assertEquals("Unexpected page title", pageTitle, driver.getTitle());
-        // uncomment the line below force failure to demonstrate screenshot in case of failure.
-        // Assert.fail();
-    }
-
-
+  /** Calls static page and verifies the page title on a generic website */
+  @Test
+  public void testPageTitle() {
+    logger.info("getting title");
+    driver.get(Config.AEM_AUTHOR_URL);
+    String pageTitle = "AEM Sign In";
+    Assert.assertEquals("Unexpected page title", pageTitle, driver.getTitle());
+    // uncomment the line below force failure to demonstrate screenshot in case of failure.
+    // Assert.fail();
+  }
 }

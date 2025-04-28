@@ -49,7 +49,7 @@ RUN apt-get update -yqq && \
 WORKDIR ${APP_PATH}
 
 # Copy project
-ENV TEST_RUN_COMMAND "mvn verify -Pui-tests-cloud-execution"
+ENV TEST_RUN_COMMAND "mvn verify -Pui-tests-cloud-execution -Dorg.slf4j.simpleLogger.showDateTime=true -Dorg.slf4j.simpleLogger.dateTimeFormat=HH:mm:ss,SSS"
 COPY test-module ./
 
 # download all Maven dependency into image to prevent download / timeout during each execution
