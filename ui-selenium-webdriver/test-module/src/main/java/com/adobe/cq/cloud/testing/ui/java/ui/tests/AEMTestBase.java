@@ -17,6 +17,8 @@ package com.adobe.cq.cloud.testing.ui.java.ui.tests;
 
 import com.adobe.cq.cloud.testing.ui.java.ui.tests.lib.Commands;
 import com.adobe.cq.cloud.testing.ui.java.ui.tests.lib.Config;
+import java.net.URL;
+import java.util.logging.Level;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.openqa.selenium.Platform;
@@ -31,57 +33,50 @@ import org.openqa.selenium.remote.RemoteWebDriver;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.net.URL;
-import java.util.logging.Level;
-
-
-/**
- * This base class will initialize the web driver instance used within the tests.
- */
+/** This base class will initialize the web driver instance used within the tests. */
 public abstract class AEMTestBase {
-    protected static WebDriver driver;
+  protected static WebDriver driver;
 
-    protected static Commands commands;
+  protected static Commands commands;
 
-    public static Logger logger = LoggerFactory.getLogger(AEMTestBase.class);
+  private static Logger logger = LoggerFactory.getLogger(AEMTestBase.class);
 
-    @BeforeClass
-    public static void init() throws Exception {
-        // Initialize remote web driver session
-        String browser = System.getProperty("SELENIUM_BROWSER", "chrome");
-        DesiredCapabilities dc = new DesiredCapabilities();
-        // Enable browser logs
-        LoggingPreferences logPrefs = new LoggingPreferences();
-        logPrefs.enable(LogType.BROWSER, Level.INFO);
+  @BeforeClass
+  public static void init() throws Exception {
+    // Initialize remote web driver session
+    String browser = System.getProperty("SELENIUM_BROWSER", "chrome");
+    DesiredCapabilities dc = new DesiredCapabilities();
+    // Enable browser logs
+    LoggingPreferences logPrefs = new LoggingPreferences();
+    logPrefs.enable(LogType.BROWSER, Level.INFO);
 
-        dc.setBrowserName(browser);
-        dc.setPlatform(Platform.LINUX);
+    dc.setBrowserName(browser);
+    dc.setPlatform(Platform.LINUX);
 
-        switch (browser) {
-            case "chrome":
-                ChromeOptions options = new ChromeOptions();
-                options.addArguments("--verbose", "--headless", "--disable-gpu", "--no-sandbox", "--disable-dev-shm-usage");
-                dc.setCapability(ChromeOptions.CAPABILITY, options);
-                dc.setCapability("goog:loggingPrefs", logPrefs);
-                break;
-            case "firefox":
-                FirefoxOptions ffOptions = new FirefoxOptions();
-                ffOptions.addArguments("-headless");
-                dc.setCapability(ChromeOptions.CAPABILITY, ffOptions);
-                ffOptions.setLogLevel(FirefoxDriverLogLevel.INFO);
-                break;
-        }
-        URL webDriverUrl = new URL(Config.SELENIUM_BASE_URL + "/wd/hub");
-        driver = new RemoteWebDriver(webDriverUrl, dc);
-        commands = new Commands(driver);
+    switch (browser) {
+      case "chrome":
+        ChromeOptions options = new ChromeOptions();
+        options.addArguments(
+            "--verbose", "--headless", "--disable-gpu", "--no-sandbox", "--disable-dev-shm-usage");
+        dc.setCapability(ChromeOptions.CAPABILITY, options);
+        dc.setCapability("goog:loggingPrefs", logPrefs);
+        break;
+      case "firefox":
+        FirefoxOptions ffOptions = new FirefoxOptions();
+        ffOptions.addArguments("-headless");
+        dc.setCapability(ChromeOptions.CAPABILITY, ffOptions);
+        ffOptions.setLogLevel(FirefoxDriverLogLevel.INFO);
+        break;
     }
+    URL webDriverUrl = new URL(Config.SELENIUM_BASE_URL + "/wd/hub");
+    driver = new RemoteWebDriver(webDriverUrl, dc);
+    commands = new Commands(driver);
+  }
 
-
-
-    @AfterClass
-    public static void cleanup() {
-        if (driver != null) {
-            driver.quit();
-        }
+  @AfterClass
+  public static void cleanup() {
+    if (driver != null) {
+      driver.quit();
     }
+  }
 }

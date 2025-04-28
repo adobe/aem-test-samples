@@ -15,6 +15,8 @@
  */
 package com.adobe.cq.cloud.testing.ui.java.ui.tests.lib;
 
+import java.util.Date;
+import java.util.logging.Level;
 import org.junit.rules.TestRule;
 import org.junit.runner.Description;
 import org.junit.runners.model.Statement;
@@ -22,42 +24,48 @@ import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.logging.LogEntries;
 import org.openqa.selenium.logging.LogEntry;
 import org.openqa.selenium.logging.LogType;
-
-import java.util.Date;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class BrowserLogsDumpRule implements TestRule {
+  public static Logger logger = LoggerFactory.getLogger(BrowserLogsDumpRule.class);
 
-    private WebDriver driver;
-    public BrowserLogsDumpRule(WebDriver driver) {
-        this.driver = driver;
-    }
+  private WebDriver driver;
 
-    @Override
-    public Statement apply(Statement base, Description description) {
-        return new Statement() {
-            @Override
-            public void evaluate() throws Throwable {
-                try {
-                    // clear logs
-                    driver.manage().logs().get(LogType.BROWSER);
-                    base.evaluate();
-                } finally {
-                    dumpBrowserLogs();
-                }
-            }
-        };
-    }
+  public BrowserLogsDumpRule(WebDriver driver) {
+    this.driver = driver;
+  }
 
-    /**
-     * Fetches browser logs and prints them in stdout
-     */
-    public  void dumpBrowserLogs() {
-        LogEntries logEntries = driver.manage().logs().get(LogType.BROWSER);
-        if (logEntries.iterator().hasNext()) {
-            System.out.println("\n\n***** Browser logs *****");
+  @Override
+  public Statement apply(Statement base, Description description) {
+    return new Statement() {
+      @Override
+      public void evaluate() throws Throwable {
+        try {
+          // clear logs
+          driver.manage().logs().get(LogType.BROWSER);
+          base.evaluate();
+        } finally {
+          dumpBrowserLogs();
         }
-        for (LogEntry entry : logEntries) {
-            System.out.println(new Date(entry.getTimestamp()) + " " + entry.getLevel() + " " + entry.getMessage());
-        }
+      }
+    };
+  }
+
+  /** Fetches browser logs and prints them in stdout */
+  public void dumpBrowserLogs() {
+    LogEntries logEntries = driver.manage().logs().get(LogType.BROWSER);
+    if (logEntries.iterator().hasNext()) {
+      logger.info("\n\n***** Browser logs *****");
     }
+    for (LogEntry entry : logEntries) {
+      if (entry.getLevel() == Level.SEVERE) {
+        logger.error("{} {}", new Date(entry.getTimestamp()), entry.getMessage());
+      } else if (entry.getLevel() == Level.WARNING) {
+        logger.warn("{} {}", new Date(entry.getTimestamp()), entry.getMessage());
+      } else {
+        logger.info("{} {}", new Date(entry.getTimestamp()), entry.getMessage());
+      }
+    }
+  }
 }

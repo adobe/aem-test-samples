@@ -14,60 +14,58 @@
  *  limitations under the License.
  */
 package com.adobe.cq.cloud.testing.ui.java.ui.tests;
+
 import com.adobe.cq.cloud.testing.ui.java.ui.tests.lib.AssetsPage;
 import com.adobe.cq.cloud.testing.ui.java.ui.tests.lib.BrowserLogsDumpRule;
 import com.adobe.cq.cloud.testing.ui.java.ui.tests.lib.Config;
 import com.adobe.cq.cloud.testing.ui.java.ui.tests.lib.FailureScreenShotRule;
+import java.io.IOException;
 import org.apache.sling.testing.clients.ClientException;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.openqa.selenium.TimeoutException;
-import java.io.IOException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
-public class AssetUploadTestUI extends AEMTestBase{
+public class AssetUploadTestUI extends AEMTestBase {
+  private static Logger logger = LoggerFactory.getLogger(SimpleTestUI.class);
 
-    /**
-     * Takes a screenshot in case of test failure
-     */
-    @Rule
-    public FailureScreenShotRule failure = new FailureScreenShotRule(driver);
-    /**
-     * Adds browser logs to the test execution reports for troubleshooting
-     */
-    @Rule
-    public BrowserLogsDumpRule browserLogs =  new BrowserLogsDumpRule(driver);
+  /** Takes a screenshot in case of test failure */
+  @Rule public FailureScreenShotRule failure = new FailureScreenShotRule(driver);
 
+  /** Adds browser logs to the test execution reports for troubleshooting */
+  @Rule public BrowserLogsDumpRule browserLogs = new BrowserLogsDumpRule(driver);
 
-    @Before
-    public void forceLogout() {
-        // End any existing user session
-        commands.forceLogout();
-        // start new one
-        commands.aemLogin(Config.AEM_AUTHOR_USERNAME, Config.AEM_AUTHOR_PASSWORD);
+  @Before
+  public void forceLogout() {
+    // End any existing user session
+    commands.forceLogout();
+    // start new one
+    commands.aemLogin(Config.AEM_AUTHOR_USERNAME, Config.AEM_AUTHOR_PASSWORD);
+  }
+
+  @Test
+  public void assetUpload() throws IOException, ClientException {
+    logger.info("uploading asset");
+
+    String image = "image.png";
+    AssetsPage assets = new AssetsPage(driver, "src/main/resources/assets");
+
+    try {
+      assets.uploadFile(image);
+      commands.snapshot("assetupload");
+      assets.waitForAsset(image);
+    } catch (TimeoutException e) {
+      Assert.fail("Asset " + image + " should be uploaded " + e);
     }
 
-    @Test
-    public void assetUpload() throws IOException, ClientException {
-
-        String image = "image.png";
-        AssetsPage assets = new AssetsPage(driver, "src/main/resources/assets");
-
-        try {
-            assets.uploadFile(image);
-            commands.snapshot("assetupload");
-            assets.waitForAsset(image);
-        } catch (TimeoutException e) {
-            Assert.fail("Asset " + image + " should be uploaded " + e);
-        }
-
-        try {
-            assets.deleteAsset(image);
-            assets.waitForAssetDeletion(image);
-        } catch (TimeoutException | ClientException e) {
-            Assert.fail("Asset " + image + " should not exist " + e);
-        }
+    try {
+      assets.deleteAsset(image);
+      assets.waitForAssetDeletion(image);
+    } catch (TimeoutException | ClientException e) {
+      Assert.fail("Asset " + image + " should not exist " + e);
     }
-
+  }
 }

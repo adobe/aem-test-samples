@@ -22,36 +22,34 @@ import org.openqa.selenium.WebDriver;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-
 public class FailureScreenShotRule implements TestRule {
-    private WebDriver driver;
-    protected static Commands commands;
+  private WebDriver driver;
+  protected static Commands commands;
 
-    public FailureScreenShotRule(WebDriver driver){
-        this.driver = driver;
-        this.commands = new Commands(driver);
-    }
+  public FailureScreenShotRule(WebDriver driver) {
+    this.driver = driver;
+    this.commands = new Commands(driver);
+  }
 
-    public static Logger logger = LoggerFactory.getLogger(FailureScreenShotRule.class);
+  public static Logger logger = LoggerFactory.getLogger(FailureScreenShotRule.class);
 
-
-    @Override
-    public Statement apply(Statement statement, Description description) {
-        return new Statement() {
-            @Override
-            public void evaluate() throws Throwable {
-                try {
-                    statement.evaluate();
-                } catch (Throwable t) {
-                    try  {
-                        String snapshotName = description.getMethodName();
-                        commands.snapshot(snapshotName);
-                    } catch (Exception e) {
-                        logger.error("could not take snapshot " + e);
-                    }
-                    throw t;
-                }
-            }
-        };
-    }
+  @Override
+  public Statement apply(Statement statement, Description description) {
+    return new Statement() {
+      @Override
+      public void evaluate() throws Throwable {
+        try {
+          statement.evaluate();
+        } catch (Throwable t) {
+          try {
+            String snapshotName = description.getMethodName();
+            commands.snapshot(snapshotName);
+          } catch (Exception e) {
+            logger.error("could not take snapshot " + e);
+          }
+          throw t;
+        }
+      }
+    };
+  }
 }
