@@ -1,5 +1,4 @@
-// @ts-check
-const { defineConfig, devices } = require('@playwright/test');
+import {devices, PlaywrightTestConfig} from "@playwright/test";
 
 const reportsPath = process.env.REPORTS_PATH || '/var/task/results'
 const proxyServer = process.env.HTTP_PROXY || ''
@@ -7,7 +6,7 @@ const proxyServer = process.env.HTTP_PROXY || ''
 /**
  * @see https://playwright.dev/docs/test-configuration
  */
-let cfg = {
+const config: PlaywrightTestConfig = {
   testDir: './tests',
   outputDir: reportsPath+'/output',
   fullyParallel: true,
@@ -35,10 +34,9 @@ let cfg = {
 
 // enable proxy if set
 if (proxyServer !== '') {
-  cfg.use.proxy = {
+  config.use.proxy = {
     server: proxyServer,
   }
 }
 
-module.exports = defineConfig(cfg);
-
+export default config;

@@ -1,5 +1,4 @@
-// @ts-check
-const { test, expect } = require('@playwright/test');
+import { test, expect } from "@playwright/test";
 
 const authorURL = process.env.AEM_AUTHOR_URL || 'http://localhost'
 const authorName = process.env.AEM_AUTHOR_USERNAME || 'username'
