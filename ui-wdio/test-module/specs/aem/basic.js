@@ -18,10 +18,6 @@ import { aem } from '../../lib/config.js';
 describe('AEM Basic', () => {
 
     // AEM Login
-
-    console.log(aem.author.base_url);
-
-
     beforeEach(async () => {
         await browser.AEMForceLogout();
         await browser.url(aem.author.base_url);

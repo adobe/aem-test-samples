@@ -17,7 +17,6 @@ import { aem } from '../../lib/config.js';
 import { expect } from 'chai';
 import url from 'url';
 
-
 describe('AEM Login Page', () => {
 
     // Force AEM Logout
@@ -32,7 +31,7 @@ describe('AEM Login Page', () => {
     });
 
     it('should contain the login form', async () => {
-        browser.url(aem.author.base_url);
+        await browser.url(aem.author.base_url);
 
         await $('#username').waitForExist();
         await $('#password').waitForExist();

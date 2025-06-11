@@ -39,6 +39,7 @@ wdio_config.services = [
 let capabilities = {
     maxInstances: 1,
     browserName: selenium.browser,
+    'wdio:enforceWebDriverClassic': true
 };
 
 // Set common startup arguments to improve stability in Docker

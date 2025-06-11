@@ -251,7 +251,7 @@
                                     <goal>exec</goal>
                                 </goals>
                                 <configuration>
-                                    <executable>docker-compose</executable>
+                                    <executable>docker</executable>
                                     <workingDirectory>.</workingDirectory>
                                     <environmentVariables>
                                         <AEM_AUTHOR_URL>${AEM_AUTHOR_URL}</AEM_AUTHOR_URL>
@@ -265,6 +265,7 @@
                                         <REPORTS_PATH>${REPORTS_PATH}</REPORTS_PATH>
                                     </environmentVariables>
                                     <arguments>
+                                        <argument>compose</argument>
                                         <argument>-f</argument>
                                         <argument>docker-compose-wdio-${SELENIUM_BROWSER}.yaml</argument>
                                         <argument>up</argument>
@@ -281,9 +282,10 @@
                                     <goal>exec</goal>
                                 </goals>
                                 <configuration>
-                                    <executable>docker-compose</executable>
+                                    <executable>docker</executable>
                                     <workingDirectory>${project.basedir}</workingDirectory>
                                     <arguments>
+                                        <argument>compose</argument>
                                         <argument>-f</argument>
                                         <argument>docker-compose-wdio-${SELENIUM_BROWSER}.yaml</argument>
                                         <argument>down</argument>
