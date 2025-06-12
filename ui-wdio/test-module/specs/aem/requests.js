@@ -13,18 +13,21 @@
  *  See the License for the specific language governing permissions and
  *  limitations under the License.
  */
-import axios from "axios";
+import { aem } from "../../lib/config.js";
 import { expect } from "chai";
+import axios from "axios";
 import request from "request";
 
 describe("Test requests", () => {
-    it.skip("requests should pass", async () => {
+    it.skip("axios should pass", async () => {
         console.log("Checking Google with axios...");
-        const axiosResponse = await axios.get("https://www.google.com");
+        const axiosResponse = await axios.get(aem.publish.base_url + "?type=axios");
         expect(axiosResponse.status).to.equal(200);
-   
+    });
+
+    it.skip("request should pass", async () => {
         console.log("Checking Facebook with request...");
-        const requestResponse = await requestAsync("https://www.facebook.com");
+        const requestResponse = await requestAsync(aem.publish.base_url + "?type=request");
         expect(requestResponse.statusCode).to.equal(200);
     });
 });

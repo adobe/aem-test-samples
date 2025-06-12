@@ -11,8 +11,6 @@ if [ -n "${PROXY_HOST:-}" ]; then
   fi
   if [ -n "${PROXY_CA_PATH:-}" ]; then
     echo "installing certificate"
-    mkdir -p $HOME/.pki/nssdb
-    certutil -d sql:$HOME/.pki/nssdb -A -t "CT,c,c" -n "EaaS Client Proxy Root" -i $PROXY_CA_PATH
     export NODE_EXTRA_CA_CERTS=${PROXY_CA_PATH}
   fi
   if [ -n "${PROXY_OBSERVABILITY_PORT:-}" ] && [ -n "${HTTP_PROXY:-}" ]; then
