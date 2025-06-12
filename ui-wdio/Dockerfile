@@ -42,7 +42,6 @@ RUN apt -qqy update \
     && apt -qqy --no-install-recommends install \
     curl \
     jq \
-    libnss3-tools \
     && rm -rf /var/lib/apt/lists/*
 
 # <<< End CloudManager Convention
