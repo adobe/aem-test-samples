@@ -55,10 +55,8 @@ COPY test-module/ ./
 RUN npm ci
 
 # Begin CloudManager Convention >>>
-COPY run.sh .
 COPY wait-for-grid.sh .
-RUN chmod 555 run.sh
 RUN chmod 555 wait-for-grid.sh
 
-ENTRYPOINT ["bash","run.sh"]
+CMD ./wait-for-grid.sh ${TEST_RUN_COMMAND}
 # <<< End CloudManager Convention
