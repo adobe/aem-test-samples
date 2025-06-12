@@ -41,7 +41,10 @@ RUN apt -qqy update \
     # for wait_for_grid script
     && apt -qqy --no-install-recommends install \
     curl \
-    jq
+    jq \
+    libnss3-tools \
+    && rm -rf /var/lib/apt/lists/*
+
 # <<< End CloudManager Convention
 
 # Set Application Environment
@@ -53,8 +56,10 @@ COPY test-module/ ./
 RUN npm ci
 
 # Begin CloudManager Convention >>>
+COPY run.sh .
 COPY wait-for-grid.sh .
+RUN chmod 555 run.sh
 RUN chmod 555 wait-for-grid.sh
 
-CMD ./wait-for-grid.sh ${TEST_RUN_COMMAND}
+ENTRYPOINT ["bash","run.sh"]
 # <<< End CloudManager Convention
