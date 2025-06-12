@@ -20,13 +20,11 @@ import request from "request";
 
 describe("Test requests", () => {
     it.skip("axios should pass", async () => {
-        console.log("Checking Google with axios...");
         const axiosResponse = await axios.get(aem.publish.base_url + "?type=axios");
         expect(axiosResponse.status).to.equal(200);
     });
 
     it.skip("request should pass", async () => {
-        console.log("Checking Facebook with request...");
         const requestResponse = await requestAsync(aem.publish.base_url + "?type=request");
         expect(requestResponse.statusCode).to.equal(200);
     });
