@@ -41,7 +41,9 @@ RUN apt -qqy update \
     # for wait_for_grid script
     && apt -qqy --no-install-recommends install \
     curl \
-    jq
+    jq \
+    && rm -rf /var/lib/apt/lists/*
+
 # <<< End CloudManager Convention
 
 # Set Application Environment
