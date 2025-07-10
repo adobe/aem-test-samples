@@ -15,7 +15,6 @@
  */
 package com.adobe.cq.cloud.testing.it.wcm.smoke;
 
-import com.gargoylesoftware.htmlunit.*;
 import org.apache.http.auth.AuthScope;
 import org.apache.http.auth.Credentials;
 import org.apache.http.auth.UsernamePasswordCredentials;
@@ -24,6 +23,7 @@ import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClientBuilder;
 import org.apache.sling.testing.clients.ClientException;
 import org.apache.sling.testing.clients.SlingClientConfig;
+import org.htmlunit.*;
 
 import java.io.IOException;
 import java.net.URI;
@@ -35,8 +35,8 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import com.adobe.cq.testing.client.CQClient;
-import com.gargoylesoftware.htmlunit.html.DomNode;
-import com.gargoylesoftware.htmlunit.html.HtmlPage;
+import org.htmlunit.html.DomNode;
+import org.htmlunit.html.HtmlPage;
 import org.apache.sling.testing.clients.exceptions.TestingIOException;
 import org.w3c.dom.Node;
 
@@ -108,7 +108,7 @@ public class HtmlUnitClient extends CQClient {
         URI baseUri = getUrl();
         AuthScope scope = new AuthScope(baseUri.getHost(), baseUri.getPort());
         DefaultCredentialsProvider credProvider = new DefaultCredentialsProvider();
-        credProvider.addCredentials(getUser(), getPassword());
+        credProvider.addCredentials(getUser(), getPassword().toCharArray());
         Credentials creds = new UsernamePasswordCredentials(getUser(), getPassword());
         BasicCredentialsProvider credentialsProvider = new BasicCredentialsProvider();
         credentialsProvider.setCredentials(scope, creds);
