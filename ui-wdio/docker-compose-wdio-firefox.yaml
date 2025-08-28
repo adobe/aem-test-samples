@@ -36,11 +36,19 @@ services:
       - 'shared:/tmp/shared'
       - 'shared:/usr/src/app/assets'
     image: 'com.adobe.cq.cloud-com.adobe.cq.cloud.testing.ui.wdio.tests/ui.tests:latest'
+    cap_drop:
+      - NET_RAW
+    security_opt:
+      - no-new-privileges:true
   selenium-firefox:
     image: 'selenium/standalone-firefox:latest'
     ports:
       - 4444:4444
     volumes:
       - 'shared:/tmp/shared'
+    cap_drop:
+      - NET_RAW
+    security_opt:
+      - no-new-privileges:true
 volumes:
   shared:

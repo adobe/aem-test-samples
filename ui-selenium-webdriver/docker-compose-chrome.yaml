@@ -36,11 +36,19 @@ services:
       - 'shared:/tmp/shared'
       - 'shared:/usr/src/app/assets'
     image: 'com.adobe.cq.cloud-com.adobe.cq.cloud.testing.ui.java.ui.tests/ui.tests:latest'
+    cap_drop:
+      - NET_RAW
+    security_opt:
+      - no-new-privileges:true
   selenium-chrome:
     image: 'selenium/standalone-chromium:latest'
     ports:
       - 4444:4444
     volumes:
       - 'shared:/tmp/shared'
+    cap_drop:
+      - NET_RAW
+    security_opt:
+      - no-new-privileges:true
 volumes:
   shared:
