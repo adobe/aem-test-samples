@@ -9,6 +9,7 @@ on:
       - 'wcm-smoke/**'
       - 'xf-smoke/**'
       - 'ui-selenium-webdriver/**'
+      - '.github/workflows/**'
 
 jobs:
   build:
