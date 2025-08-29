@@ -90,35 +90,6 @@
                     <groupId>com.diffplug.spotless</groupId>
                     <artifactId>spotless-maven-plugin</artifactId>
                     <version>2.46.1</version>
-                    <configuration>
-                        <formats>
-                            <!-- you can define as many formats as you want, each is independent -->
-                            <format>
-                                <!-- define the files to apply to -->
-                                <includes>
-                                    <include>*.md</include>
-                                    <include>.gitignore</include>
-                                    <include>pom.xml</include>
-                                </includes>
-                                <!-- define the steps to apply to those files -->
-                                <trimTrailingWhitespace />
-                                <endWithNewline />
-                                <indent>
-                                    <spaces>true</spaces>
-                                    <spacesPerTab>4</spacesPerTab>
-                                </indent>
-                            </format>
-                        </formats>
-                        <!-- define a language-specific format -->
-                        <java>
-                            <!-- apply a specific flavor of google-java-format -->
-                            <googleJavaFormat>
-                                <version>1.21.0</version>
-                                <style>GOOGLE</style>
-                            </googleJavaFormat>
-                            <removeUnusedImports />
-                        </java>
-                    </configuration>
                 </plugin>
             </plugins>
         </pluginManagement>
@@ -157,6 +128,49 @@
                         <phase>package</phase>
                         <goals>
                             <goal>single</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+            <plugin>
+                <groupId>com.diffplug.spotless</groupId>
+                <artifactId>spotless-maven-plugin</artifactId>
+                <configuration>
+                    <formats>
+                        <!-- you can define as many formats as you want, each is independent -->
+                        <format>
+                            <!-- define the files to apply to -->
+                            <includes>
+                                <include>*.md</include>
+                                <include>.gitignore</include>
+                                <include>pom.xml</include>
+                            </includes>
+                            <!-- define the steps to apply to those files -->
+                            <trimTrailingWhitespace />
+                            <endWithNewline />
+                            <indent>
+                                <spaces>true</spaces>
+                                <spacesPerTab>4</spacesPerTab>
+                            </indent>
+                        </format>
+                    </formats>
+                    <!-- define a language-specific format -->
+                    <java>
+                        <!-- apply a specific flavor of google-java-format -->
+                        <googleJavaFormat>
+                            <version>1.28.0</version>
+                            <style>GOOGLE</style>
+                        </googleJavaFormat>
+                        <removeUnusedImports />
+                    </java>
+                </configuration>
+                <executions>
+                    <execution>
+                        <!-- Runs in compile phase to fail fast in case of formatting issues.-->
+                        <id>spotless-check</id>
+                        <phase>compile</phase>
+                        <goals>
+                            <goal>check</goal>
                         </goals>
                     </execution>
                 </executions>
