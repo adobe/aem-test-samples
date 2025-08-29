@@ -40,11 +40,13 @@ describe('AEM Assets', () => {
         // Wait for any lazy loaded dialogs to appear
         cy.wait(3000)
 
-
         cy.intercept({url: '/content/dam.completeUpload.json', method: 'POST'}).as('completeupload')
 
         // Add the file handle to the upload form
         cy.get('dam-chunkfileupload.dam-ChunkFileUpload > input').first().selectFile(localPath, {force: true})
+
+        // Wait for any lazy loaded dialogs to appear
+        cy.wait(3000)
 
         // rename image
         cy.get('input#dam-asset-upload-rename-input').clear().type(remoteImageName, {force: true});

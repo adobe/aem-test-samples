@@ -22,10 +22,10 @@
     xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
-    <groupId>com.adobe.cq.cloud</groupId>
+    <groupId>com.adobe.aem.cloud</groupId>
     <version>0.0.1-SNAPSHOT</version>
-    <artifactId>com.adobe.cq.cloud.testing.ui.wdio.tests</artifactId>
-    <name>com.adobe.cq.cloud.testing.ui.wdio - UI Tests</name>
+    <artifactId>test-samples.wdio</artifactId>
+    <name>AEM Cloud Service Test Samples - WDIO</name>
     <description></description>
 
     <properties>
@@ -51,7 +51,7 @@
             <plugins>
                 <plugin>
                     <artifactId>maven-clean-plugin</artifactId>
-                    <version>3.4.1</version>
+                    <version>3.5.0</version>
                 </plugin>
                 <plugin>
                     <artifactId>maven-resources-plugin</artifactId>
@@ -69,7 +69,7 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-enforcer-plugin</artifactId>
-                <version>3.5.0</version>
+                <version>3.6.1</version>
                 <executions>
                     <execution>
                         <id>enforce-maven-version</id>
@@ -191,7 +191,7 @@
                     <plugin>
                         <groupId>org.codehaus.mojo</groupId>
                         <artifactId>exec-maven-plugin</artifactId>
-                        <version>3.5.0</version>
+                        <version>3.5.1</version>
                         <executions>
                             <execution>
                             <id>docker-build</id>

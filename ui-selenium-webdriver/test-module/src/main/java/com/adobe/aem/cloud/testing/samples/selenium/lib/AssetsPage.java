@@ -14,7 +14,7 @@
  *  limitations under the License.
  */
 
-package com.adobe.cq.cloud.testing.ui.java.ui.tests.lib;
+package com.adobe.aem.cloud.testing.samples.selenium.lib;
 
 import com.adobe.cq.testing.client.CQAssetsClient;
 import java.io.IOException;
@@ -30,8 +30,12 @@ import org.openqa.selenium.support.events.EventFiringDecorator;
 import org.openqa.selenium.support.events.WebDriverListener;
 import org.openqa.selenium.support.ui.ExpectedCondition;
 import org.openqa.selenium.support.ui.WebDriverWait;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class AssetsPage {
+  private static Logger logger = LoggerFactory.getLogger(AssetsPage.class);
+
   private final WebDriver driver;
 
   private final String ASSETS_PATH = "/content/dam";
@@ -104,8 +108,13 @@ public class AssetsPage {
         try {
           CQAssetsClient client = slingClient.adaptTo(CQAssetsClient.class);
           String status = client.getAssetStatus(url);
+          logger.info("Asset exists: {}", url);
           return true;
         } catch (ClientException e) {
+
+          logger.error("Asset check failed: {}", url, e);
+
+          logger.info("Asset does not exist: {}", url);
           return false;
         }
       }

@@ -13,7 +13,7 @@
  *  See the License for the specific language governing permissions and
  *  limitations under the License.
  */
-package com.adobe.cq.cloud.testing.ui.java.ui.tests.lib;
+package com.adobe.aem.cloud.testing.samples.selenium.lib;
 
 import java.lang.reflect.Method;
 import org.openqa.selenium.*;

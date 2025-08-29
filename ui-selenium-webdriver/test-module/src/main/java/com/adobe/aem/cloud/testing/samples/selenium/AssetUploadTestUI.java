@@ -13,12 +13,12 @@
  *  See the License for the specific language governing permissions and
  *  limitations under the License.
  */
-package com.adobe.cq.cloud.testing.ui.java.ui.tests;
+package com.adobe.aem.cloud.testing.samples.selenium;
 
-import com.adobe.cq.cloud.testing.ui.java.ui.tests.lib.AssetsPage;
-import com.adobe.cq.cloud.testing.ui.java.ui.tests.lib.BrowserLogsDumpRule;
-import com.adobe.cq.cloud.testing.ui.java.ui.tests.lib.Config;
-import com.adobe.cq.cloud.testing.ui.java.ui.tests.lib.FailureScreenShotRule;
+import com.adobe.aem.cloud.testing.samples.selenium.lib.AssetsPage;
+import com.adobe.aem.cloud.testing.samples.selenium.lib.BrowserLogsDumpRule;
+import com.adobe.aem.cloud.testing.samples.selenium.lib.Config;
+import com.adobe.aem.cloud.testing.samples.selenium.lib.FailureScreenShotRule;
 import java.io.IOException;
 import org.apache.sling.testing.clients.ClientException;
 import org.junit.Assert;
@@ -58,14 +58,17 @@ public class AssetUploadTestUI extends AEMTestBase {
       commands.snapshot("assetupload");
       assets.waitForAsset(image);
     } catch (TimeoutException e) {
-      Assert.fail("Asset " + image + " should be uploaded " + e);
+      logger.error("Asset {} could not be uploaded", image, e);
+      Assert.fail("Asset " + image + " should be uploaded");
     }
 
     try {
+      logger.info("deleting asset");
       assets.deleteAsset(image);
       assets.waitForAssetDeletion(image);
     } catch (TimeoutException | ClientException e) {
-      Assert.fail("Asset " + image + " should not exist " + e);
+      logger.error("Asset {} could not be deleted", image, e);
+      Assert.fail("Asset " + image + " should not exist");
     }
   }
 }

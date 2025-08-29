@@ -2,27 +2,25 @@
 name: Maven Build
 
 on:
-  pull_request:
-    paths:
-      - 'cf-smoke/**'
-      - 'smoke/**'
-      - 'wcm-smoke/**'
-      - 'xf-smoke/**'
-      - 'ui-selenium-webdriver/**'
+  pull_request
 
 jobs:
   build:
-    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        os: [ ubuntu-latest ]
+        java: [21]
+    runs-on: ${{ matrix.os }}
     steps:
       # Check out Git repository
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
 
       # Check out Git repository
-      - name: Set up JDK 21 for x64
-        uses: actions/setup-java@v4
+      - name: Set up JDK
+        uses: actions/setup-java@v5
         with:
-          java-version: '21'
-          distribution: 'temurin'
+          java-version: ${{ matrix.java }}
+          distribution: 'microsoft'
           architecture: x64
           cache: maven
 
@@ -38,14 +36,14 @@ jobs:
       - name: mvn verify xf-smoke
         run: mvn --batch-mode --update-snapshots -f xf-smoke/pom.xml clean verify
 
-      - name: mvn verify ui-selenium-webdriver
+      - name: mvn verify ui-cypress
         run: mvn --batch-mode --update-snapshots -f ui-cypress/pom.xml clean verify
 
-      - name: mvn verify ui-selenium-webdriver
+      - name: mvn verify ui-playwrigh
         run: mvn --batch-mode --update-snapshots -f ui-playwright/pom.xml clean verify
 
       - name: mvn verify ui-selenium-webdriver
         run: mvn --batch-mode --update-snapshots -f ui-selenium-webdriver/pom.xml clean verify
 
-      - name: mvn verify ui-selenium-webdriver
+      - name: mvn verify ui-wdio
         run: mvn --batch-mode --update-snapshots -f ui-wdio/pom.xml clean verify

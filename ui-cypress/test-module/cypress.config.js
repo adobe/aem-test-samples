@@ -15,6 +15,7 @@
  */
 
 const { defineConfig } = require("cypress");
+const { unlinkSync } = require("node:fs");
 const reportsPath = process.env.REPORTS_PATH || 'cypress/results'
 const authorURL = process.env.AEM_AUTHOR_URL || 'http://localhost:4502'
 const authorName = process.env.AEM_AUTHOR_USERNAME || 'admin'
@@ -38,6 +39,18 @@ let config = {
       require('cypress-terminal-report/src/installLogsPrinter')(on, {
         printLogsToConsole: "always",
       });
+
+      // Delete videos for passing tests
+      on('after:spec', (spec, results) => {
+        if (results && results.video) {
+          const failures = results.tests.some((test) =>
+              test.attempts.some((attempt) => attempt.state === 'failed')
+          );
+          if (!failures) {
+            unlinkSync(results.video);
+          }
+        }
+      });
     },
     baseUrl: authorURL,
     reporter: 'cypress-multi-reporters',
@@ -45,6 +58,7 @@ let config = {
       configFile: 'reporter.config.js',
     },
   },
+  video: true,
   videosFolder: reportsPath + "/videos",
   screenshotsFolder: reportsPath + "/screenshots",
 }
