@@ -35,7 +35,7 @@ services:
       - ./target/reports:/tmp/reports
       - 'shared:/tmp/shared'
       - 'shared:/usr/src/app/assets'
-    image: 'com.adobe.cq.cloud-com.adobe.cq.cloud.testing.ui.wdio.tests/ui.tests:latest'
+    image: 'com.adobe.aem.cloud-test-samples.wdio/ui.tests:latest'
     cap_drop:
       - NET_RAW
     security_opt:
