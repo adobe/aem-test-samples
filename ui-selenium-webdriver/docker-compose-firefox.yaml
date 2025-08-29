@@ -16,7 +16,6 @@
 # DO NOT MODIFY
 #
 
-version: '3'
 services:
   tests:
     environment:
@@ -35,7 +34,7 @@ services:
       - ./target/reports:/tmp/reports
       - 'shared:/tmp/shared'
       - 'shared:/usr/src/app/assets'
-    image: 'com.adobe.cq.cloud-com.adobe.cq.cloud.testing.ui.java.ui.tests/ui.tests:latest'
+    image: 'com.adobe.aem.cloud-test-samples.selenium/ui.tests:latest'
     cap_drop:
       - NET_RAW
     security_opt:

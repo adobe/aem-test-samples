@@ -58,14 +58,17 @@ public class AssetUploadTestUI extends AEMTestBase {
       commands.snapshot("assetupload");
       assets.waitForAsset(image);
     } catch (TimeoutException e) {
-      Assert.fail("Asset " + image + " should be uploaded " + e);
+      logger.error("Asset {} could not be uploaded", image, e);
+      Assert.fail("Asset " + image + " should be uploaded");
     }
 
     try {
+      logger.info("deleting asset");
       assets.deleteAsset(image);
       assets.waitForAssetDeletion(image);
     } catch (TimeoutException | ClientException e) {
-      Assert.fail("Asset " + image + " should not exist " + e);
+      logger.error("Asset {} could not be deleted", image, e);
+      Assert.fail("Asset " + image + " should not exist");
     }
   }
 }

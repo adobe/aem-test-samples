@@ -319,6 +319,12 @@
                             <testSourceDirectory>${basedir}/src/main/java/</testSourceDirectory>
                             <testClassesDirectory>${project.build.directory}/classes/</testClassesDirectory>
                             <systemPropertyVariables>
+                                <http.proxyHost>${env.PROXY_HOST}</http.proxyHost>
+                                <http.proxyPort>${env.PROXY_HTTP_PORT}</http.proxyPort>
+                                <http.nonProxyHosts>localhost</http.nonProxyHosts>
+                                <https.proxyHost>${env.PROXY_HOST}</https.proxyHost>
+                                <https.proxyPort>${env.PROXY_HTTPS_PORT}</https.proxyPort>
+
                                 <SELENIUM_BROWSER>${env.SELENIUM_BROWSER}</SELENIUM_BROWSER>
                                 <SELENIUM_BASE_URL>${env.SELENIUM_BASE_URL}</SELENIUM_BASE_URL>
 

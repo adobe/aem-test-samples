@@ -22,7 +22,7 @@
     xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
-    <groupId>com.adobe.cq.cloud</groupId>
+    <groupId>com.adobe.aem.cloud</groupId>
     <version>0.0.1-SNAPSHOT</version>
     <artifactId>test-samples.selenium</artifactId>
     <name>AEM Cloud Service Test Samples - Selenium WebDriver</name>
@@ -216,7 +216,7 @@
                                     <goal>exec</goal>
                                 </goals>
                                 <configuration>
-                                    <executable>docker-compose</executable>
+                                    <executable>docker</executable>
                                     <workingDirectory>.</workingDirectory>
                                     <environmentVariables>
                                         <AEM_AUTHOR_URL>${AEM_AUTHOR_URL}</AEM_AUTHOR_URL>
@@ -230,6 +230,7 @@
                                         <REPORTS_PATH>${REPORTS_PATH}</REPORTS_PATH>
                                     </environmentVariables>
                                     <arguments>
+                                        <argument>compose</argument>
                                         <argument>-f</argument>
                                         <argument>${project.basedir}/docker-compose-${SELENIUM_BROWSER}.yaml</argument>
                                         <argument>up</argument>
@@ -246,9 +247,10 @@
                                     <goal>exec</goal>
                                 </goals>
                                 <configuration>
-                                    <executable>docker-compose</executable>
+                                    <executable>docker</executable>
                                     <workingDirectory>.</workingDirectory>
                                     <arguments>
+                                        <argument>compose</argument>
                                         <argument>-f</argument>
                                         <argument>${project.basedir}/docker-compose-${SELENIUM_BROWSER}.yaml</argument>
                                         <argument>down</argument>

@@ -49,7 +49,6 @@ RUN apt-get update -yqq && \
 WORKDIR ${APP_PATH}
 
 # Copy project
-ENV TEST_RUN_COMMAND "mvn verify -Pui-tests-cloud-execution -Dorg.slf4j.simpleLogger.showDateTime=true -Dorg.slf4j.simpleLogger.dateTimeFormat=HH:mm:ss,SSS"
 COPY test-module ./
 
 # download all Maven dependency into image to prevent download / timeout during each execution
@@ -57,7 +56,7 @@ RUN mvn --batch-mode dependency:resolve-plugins dependency:go-offline install -D
 RUN mvn --batch-mode dependency:resolve-plugins dependency:go-offline verify -Pui-tests-local-execution -DskipTests -Dassembly.skipAssembly=true
 
 # Begin CloudManager Convention >>>
-COPY wait-for-grid.sh .
-RUN chmod 555 wait-for-grid.sh
+COPY entrypoint.sh .
+RUN chmod 555 entrypoint.sh
 
-CMD ./wait-for-grid.sh ${TEST_RUN_COMMAND}
+CMD ./entrypoint.sh
