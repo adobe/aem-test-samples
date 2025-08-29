@@ -15,7 +15,7 @@
 #
 # DO NOT MODIFY
 #
-FROM maven:3.9.9-eclipse-temurin-11
+FROM maven:3.9.11-eclipse-temurin-21
 
 # Java options playing well with k8s
 ENV JAVA_OPTIONS="-server -XX:+UnlockExperimentalVMOptions -XX:+UseCGroupMemoryLimitForHeap -XX:MaxRAMFraction=2 -XX:+UseG1GC -XshowSettings:vm $JAVA_OPTIONS"

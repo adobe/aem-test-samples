@@ -13,12 +13,12 @@
  *  See the License for the specific language governing permissions and
  *  limitations under the License.
  */
-package com.adobe.cq.cloud.testing.ui.java.ui.tests;
+package com.adobe.aem.cloud.testing.samples.selenium;
 
-import com.adobe.cq.cloud.testing.ui.java.ui.tests.lib.AssetsPage;
-import com.adobe.cq.cloud.testing.ui.java.ui.tests.lib.BrowserLogsDumpRule;
-import com.adobe.cq.cloud.testing.ui.java.ui.tests.lib.Config;
-import com.adobe.cq.cloud.testing.ui.java.ui.tests.lib.FailureScreenShotRule;
+import com.adobe.aem.cloud.testing.samples.selenium.lib.AssetsPage;
+import com.adobe.aem.cloud.testing.samples.selenium.lib.BrowserLogsDumpRule;
+import com.adobe.aem.cloud.testing.samples.selenium.lib.Config;
+import com.adobe.aem.cloud.testing.samples.selenium.lib.FailureScreenShotRule;
 import java.io.IOException;
 import org.apache.sling.testing.clients.ClientException;
 import org.junit.Assert;

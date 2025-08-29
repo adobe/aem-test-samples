@@ -14,7 +14,7 @@
  *  limitations under the License.
  */
 
-package com.adobe.cq.cloud.testing.ui.java.ui.tests.lib;
+package com.adobe.aem.cloud.testing.samples.selenium.lib;
 
 import com.adobe.cq.testing.client.CQAssetsClient;
 import java.io.IOException;

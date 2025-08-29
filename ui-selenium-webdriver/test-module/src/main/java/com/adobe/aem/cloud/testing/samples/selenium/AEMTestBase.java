@@ -13,10 +13,10 @@
  *  See the License for the specific language governing permissions and
  *  limitations under the License.
  */
-package com.adobe.cq.cloud.testing.ui.java.ui.tests;
+package com.adobe.aem.cloud.testing.samples.selenium;
 
-import com.adobe.cq.cloud.testing.ui.java.ui.tests.lib.Commands;
-import com.adobe.cq.cloud.testing.ui.java.ui.tests.lib.Config;
+import com.adobe.aem.cloud.testing.samples.selenium.lib.Commands;
+import com.adobe.aem.cloud.testing.samples.selenium.lib.Config;
 import java.net.URL;
 import java.util.logging.Level;
 import org.junit.AfterClass;
