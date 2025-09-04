@@ -15,6 +15,7 @@ WORKDIR /usr/src/app
 COPY ./test-module ./
 RUN npm install
 
+# Execute tests as non-root user
 USER runner
 
-ENTRYPOINT ["bash","run.sh"]
+ENTRYPOINT ["bash", "run.sh"]
