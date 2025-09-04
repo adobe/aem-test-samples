@@ -12,20 +12,21 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-FROM cypress/included:15.0.0
+FROM cypress/included:15.1.0
 
-ENV APP_PATH /usr/src/app
+# Install dependencies
 RUN apt -qqy update \
     # Generic dependencies
     && apt -qqy --no-install-recommends install \
     curl \
     build-essential
-# <<< End EAAS Convention \
 
 # Set Application Environment
-WORKDIR ${APP_PATH}
+WORKDIR /usr/src/app
 COPY ./test-module ./
 RUN npm install
-# no need to wait for selenium
-ENTRYPOINT ["bash","run.sh"]
 
+# Execute tests as non-root user
+USER node
+
+ENTRYPOINT ["bash", "run.sh"]
