@@ -81,7 +81,8 @@ public class ErrorHandlerIT {
         try {
             SlingHttpResponse response = adminAuthor.doGet(path, 404, SC_UNAUTHORIZED, SC_FORBIDDEN);
 
-            if (response.getStatusLine().getStatusCode() == SC_UNAUTHORIZED || response.getStatusLine().getStatusCode() == SC_FORBIDDEN) {
+            if (response != null &&
+                    (response.getStatusLine().getStatusCode() == SC_UNAUTHORIZED || response.getStatusLine().getStatusCode() == SC_FORBIDDEN)) {
                 throw new AssumptionViolatedException("Skipping test...");
             }
         } catch (ClientException e) {
@@ -100,7 +101,8 @@ public class ErrorHandlerIT {
         try {
             SlingHttpResponse response = adminPublish.doGet(path, 404, SC_UNAUTHORIZED, SC_FORBIDDEN);
 
-            if (response.getStatusLine().getStatusCode() == SC_UNAUTHORIZED || response.getStatusLine().getStatusCode() == SC_FORBIDDEN) {
+            if (response != null &&
+                    (response.getStatusLine().getStatusCode() == SC_UNAUTHORIZED || response.getStatusLine().getStatusCode() == SC_FORBIDDEN)) {
                 throw new AssumptionViolatedException("Skipping test...");
             }
         } catch (ClientException e) {
