@@ -25,7 +25,6 @@ import java.util.concurrent.TimeoutException;
 import java.util.concurrent.atomic.AtomicReference;
 
 import com.adobe.cq.cloud.testing.it.smoke.exception.PublishException;
-import com.adobe.cq.cloud.testing.it.smoke.exception.ReplicationException;
 import com.adobe.cq.cloud.testing.it.smoke.exception.SmokeTestException;
 import com.adobe.cq.cloud.testing.it.smoke.replication.ReplicationClient;
 import com.adobe.cq.cloud.testing.it.smoke.replication.data.Agent;
