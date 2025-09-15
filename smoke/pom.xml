@@ -25,7 +25,7 @@
     <!-- SVN Settings -->
     <scm>
         <connection>scm:git:https://github.com/adobe/aem-test-samples.git</connection>
-        <developerConnection>scm:git:https://github.com/adobe/aem-test-samples.git</developerConnection>
+        <developerConnection>scm:git:git@github.com:adobe/aem-test-samples.git</developerConnection>
         <url>https://github.com/adobe/aem-test-samples</url>
         <tag>com.adobe.cq.cloud.testing.it.smoke-0.17.0</tag>
     </scm>
