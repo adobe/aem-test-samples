@@ -79,6 +79,9 @@ public class ErrorHandlerIT {
     public void testAuthorResponseCode404() throws ClientException {
         String path = String.format(testPage, UUID.randomUUID());
         try {
+            // The execution within AEM as a Cloud Service is adding automatic retries for certain status codes.
+            // ErrorHandlerIT test case is interested in 404 response codes - for 401 + 403 the test is explicitly skipped.
+            // Therefore, we need to exclude 401 and 403 from the automatic retries.
             SlingHttpResponse response = adminAuthor.doGet(path, 404, SC_UNAUTHORIZED, SC_FORBIDDEN);
 
             if (response != null &&
@@ -99,6 +102,9 @@ public class ErrorHandlerIT {
     public void testPublishResponseCode404() throws ClientException {
         String path = String.format(testPage, UUID.randomUUID());
         try {
+            // The execution within AEM as a Cloud Service is adding automatic retries for certain status codes.
+            // ErrorHandlerIT test case is interested in 404 response codes - for 401 + 403 the test is explicitly skipped.
+            // Therefore, we need to exclude 401 and 403 from the automatic retries.
             SlingHttpResponse response = adminPublish.doGet(path, 404, SC_UNAUTHORIZED, SC_FORBIDDEN);
 
             if (response != null &&
