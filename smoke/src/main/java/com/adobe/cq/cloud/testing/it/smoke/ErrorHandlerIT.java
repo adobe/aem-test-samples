@@ -18,6 +18,7 @@ package com.adobe.cq.cloud.testing.it.smoke;
 import com.adobe.cq.testing.client.CQClient;
 import com.adobe.cq.testing.junit.rules.CQAuthorPublishClassRule;
 import org.apache.sling.testing.clients.ClientException;
+import org.apache.sling.testing.clients.SlingHttpResponse;
 import org.junit.AssumptionViolatedException;
 import org.junit.BeforeClass;
 import org.junit.ClassRule;
@@ -78,7 +79,15 @@ public class ErrorHandlerIT {
     public void testAuthorResponseCode404() throws ClientException {
         String path = String.format(testPage, UUID.randomUUID());
         try {
-            adminAuthor.doGet(path, 404);
+            // The execution within AEM as a Cloud Service is adding automatic retries for certain status codes.
+            // ErrorHandlerIT test case is interested in 404 response codes - for 401 + 403 the test is explicitly skipped.
+            // Therefore, we need to exclude 401 and 403 from the automatic retries.
+            SlingHttpResponse response = adminAuthor.doGet(path, 404, SC_UNAUTHORIZED, SC_FORBIDDEN);
+
+            if (response != null &&
+                    (response.getStatusLine().getStatusCode() == SC_UNAUTHORIZED || response.getStatusLine().getStatusCode() == SC_FORBIDDEN)) {
+                throw new AssumptionViolatedException("Skipping test...");
+            }
         } catch (ClientException e) {
             handleAuthorClientException(e, path);
         }
@@ -93,7 +102,15 @@ public class ErrorHandlerIT {
     public void testPublishResponseCode404() throws ClientException {
         String path = String.format(testPage, UUID.randomUUID());
         try {
-            adminPublish.doGet(path, 404);
+            // The execution within AEM as a Cloud Service is adding automatic retries for certain status codes.
+            // ErrorHandlerIT test case is interested in 404 response codes - for 401 + 403 the test is explicitly skipped.
+            // Therefore, we need to exclude 401 and 403 from the automatic retries.
+            SlingHttpResponse response = adminPublish.doGet(path, 404, SC_UNAUTHORIZED, SC_FORBIDDEN);
+
+            if (response != null &&
+                    (response.getStatusLine().getStatusCode() == SC_UNAUTHORIZED || response.getStatusLine().getStatusCode() == SC_FORBIDDEN)) {
+                throw new AssumptionViolatedException("Skipping test...");
+            }
         } catch (ClientException e) {
             handlePublishClientException(e, path);
         }
