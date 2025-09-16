@@ -1,0 +1,22 @@
+
+name: NodeJS Build
+
+on:
+  pull_request:
+    paths:
+      - 'ui-wdio/**'
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+      - name: Setup Node.js
+        uses: actions/setup-node@v5
+        with:
+          node-version: '22.x'
+
+      - run: npm install
+        working-directory: ./ui-wdio/test-module
+      - run: npm run lint
+        working-directory: ./ui-wdio/test-module
