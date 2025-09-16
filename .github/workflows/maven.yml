@@ -45,7 +45,7 @@ jobs:
       - name: mvn verify ui-selenium-webdriver
         run: mvn --batch-mode --update-snapshots -f ui-selenium-webdriver/pom.xml clean verify
 
-      - name: mvn verify ui-selenium-webdriver
+      - name: mvn verify ui-selenium-webdriver/test-module
         run: mvn --batch-mode --update-snapshots -f ui-selenium-webdriver/test-module/pom.xml clean verify
 
       - name: mvn verify ui-wdio
