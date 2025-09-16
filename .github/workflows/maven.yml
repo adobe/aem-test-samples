@@ -25,25 +25,28 @@ jobs:
           cache: maven
 
       - name: mvn verify cf-smoke
-        run: mvn --batch-mode --update-snapshots -f cf-smoke/pom.xml clean verify
+        run: mvn --batch-mode -f cf-smoke/pom.xml clean verify
 
       - name: mvn verify smoke
-        run: mvn --batch-mode --update-snapshots -f smoke/pom.xml clean verify
+        run: mvn --batch-mode -f smoke/pom.xml clean verify
 
       - name: mvn verify wcm-smoke
-        run: mvn --batch-mode --update-snapshots -f wcm-smoke/pom.xml clean verify
+        run: mvn --batch-mode -f wcm-smoke/pom.xml clean verify
 
       - name: mvn verify xf-smoke
-        run: mvn --batch-mode --update-snapshots -f xf-smoke/pom.xml clean verify
+        run: mvn --batch-mode -f xf-smoke/pom.xml clean verify
 
       - name: mvn verify ui-cypress
-        run: mvn --batch-mode --update-snapshots -f ui-cypress/pom.xml clean verify
+        run: mvn --batch-mode -f ui-cypress/pom.xml clean verify
 
       - name: mvn verify ui-playwrigh
-        run: mvn --batch-mode --update-snapshots -f ui-playwright/pom.xml clean verify
+        run: mvn --batch-mode -f ui-playwright/pom.xml clean verify
 
       - name: mvn verify ui-selenium-webdriver
-        run: mvn --batch-mode --update-snapshots -f ui-selenium-webdriver/pom.xml clean verify
+        run: mvn --batch-mode -f ui-selenium-webdriver/pom.xml clean verify
+
+      - name: mvn verify ui-selenium-webdriver
+        run: mvn --batch-mode -f ui-selenium-webdriver/test-module/pom.xml clean verify
 
       - name: mvn verify ui-wdio
-        run: mvn --batch-mode --update-snapshots -f ui-wdio/pom.xml clean verify
+        run: mvn --batch-mode -f ui-wdio/pom.xml clean verify
