@@ -39,7 +39,7 @@ jobs:
       - name: mvn verify ui-cypress
         run: mvn --batch-mode --update-snapshots -f ui-cypress/pom.xml clean verify
 
-      - name: mvn verify ui-playwrigh
+      - name: mvn verify ui-playwright
         run: mvn --batch-mode --update-snapshots -f ui-playwright/pom.xml clean verify
 
       - name: mvn verify ui-selenium-webdriver
