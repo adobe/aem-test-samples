@@ -60,6 +60,7 @@ public class ReplicationClient extends CQClient {
     private static final Logger log = LoggerFactory.getLogger(ContentPublishRule.class);
 
     private static final String BLOCKED = "BLOCKED";
+    private static final String CONTENT_TYPE_JSON = "application/json";
 
     // uses "NOSONAR" because CQRules:CQBP-71 is triggering, but can be ignored for this test case
     protected static final String DIST_AGENTS_PATH = "/libs/sling/distribution/services/agents"; //NOSONAR
@@ -87,6 +88,11 @@ public class ReplicationClient extends CQClient {
             ReplicationResponse response = ReplicationResponse.from(activateInternal("Activate", agent, nodePath));
             if (response.getCode() != HttpStatus.SC_OK) {
                 throw getReplicationException(ACTIVATION_REQUEST_FAILED, response.getMessage(), null);
+            }
+            if (!response.getContentType().equals(CONTENT_TYPE_JSON)) {
+                String msg = String.format("for the call to /bin/replicate.json received incorrect content-type '%s' instead of '%s'",
+                        response.getContentType(), CONTENT_TYPE_JSON);
+                throw new SmokeTestException(ACTIVATION_REQUEST_FAILED,msg, null);
             }
             log.info("Activation response received {}", response);
             return response;

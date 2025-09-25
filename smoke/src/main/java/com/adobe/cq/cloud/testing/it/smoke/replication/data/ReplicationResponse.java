@@ -18,6 +18,7 @@ package com.adobe.cq.cloud.testing.it.smoke.replication.data;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.http.Header;
 import org.apache.sling.testing.clients.ClientException;
 import org.apache.sling.testing.clients.SlingHttpResponse;
 
@@ -30,10 +31,19 @@ public class ReplicationResponse {
     private int code;
     private String message;
     private String artifactId;
+    private String contentType;
+
+    private static final String HEADER_CONTENT_TYPE = "content-type";
 
     public static ReplicationResponse from(SlingHttpResponse response) {
         ReplicationResponse res = new ReplicationResponse();
         res.setCode(response.getStatusLine().getStatusCode());
+        Header[] ct = response.getHeaders(HEADER_CONTENT_TYPE);
+        if (ct.length == 0) {
+            res.setContentType("(no content header set)");
+        } else {
+            res.setContentType(ct[0].getValue());
+        }
         try {
             JsonNode jsonNode = getJsonNodeFromString(response.getContent());
             parseJson(res, jsonNode);
@@ -81,9 +91,17 @@ public class ReplicationResponse {
         this.code = code;
     }
 
-    @Override 
+    private void setContentType(String contentType) {
+        this.contentType = contentType;
+    }
+
+    public String getContentType() {
+        return this.contentType;
+    }
+
+    @Override
     public String toString() {
-        return "ReplicationResponse{code=" + code + ", message=\"" + StringUtils.normalizeSpace(message) + "\", artifactId=\"" + artifactId
-            + "\"}";
+        return String.format("ReplicationResponse{code=%s, content-type=\"%s\", message=\"%s\", artifactId=\"%s\"}",
+            code, contentType, StringUtils.normalizeSpace(message), artifactId);
     }
 }
