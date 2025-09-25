@@ -90,7 +90,8 @@ public class ReplicationClient extends CQClient {
                 throw getReplicationException(ACTIVATION_REQUEST_FAILED, response.getMessage(), null);
             }
             if (!response.getContentType().equals(CONTENT_TYPE_JSON)) {
-                String msg = String.format("received content-type '%s' instead of '%s'",response.getContentType(),CONTENT_TYPE_JSON);
+                String msg = String.format("for the call to /bin/replicate.json received incorrect content-type '%s' instead of '%s'",
+                        response.getContentType(), CONTENT_TYPE_JSON);
                 throw new SmokeTestException(ACTIVATION_REQUEST_FAILED,msg, null);
             }
             log.info("Activation response received {}", response);
