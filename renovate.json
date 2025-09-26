@@ -16,5 +16,21 @@
       "depNameTemplate": "com.google.googlejavaformat:google-java-format",
       "datasourceTemplate": "maven"
     }
+  ],
+  "packageRules": [
+    {
+      "groupName": "Cypress",
+      "matchPackageNames": [
+        "cypress",
+        "cypress/included"
+      ]
+    },
+    {
+      "groupName": "Playwright",
+      "matchPackageNames": [
+        "@playwright/**",
+        "mcr.microsoft.com/playwright"
+      ]
+    }
   ]
 }
