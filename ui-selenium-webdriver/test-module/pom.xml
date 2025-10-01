@@ -269,7 +269,7 @@
                     <plugin>
                         <groupId>org.apache.maven.plugins</groupId>
                         <artifactId>maven-surefire-report-plugin</artifactId>
-                        <version>3.5.3</version>
+                        <version>3.5.4</version>
                         <configuration>
                             <outputDirectory>${REPORTS_PATH}/html_report</outputDirectory>
                             <reportsDirectory>${REPORTS_PATH}</reportsDirectory>
@@ -363,7 +363,7 @@
                     <plugin>
                         <groupId>org.apache.maven.plugins</groupId>
                         <artifactId>maven-surefire-report-plugin</artifactId>
-                        <version>3.5.3</version>
+                        <version>3.5.4</version>
                         <configuration>
                             <outputDirectory>${env.REPORTS_PATH}/html_report</outputDirectory>
                             <reportsDirectory>${env.REPORTS_PATH}</reportsDirectory>
