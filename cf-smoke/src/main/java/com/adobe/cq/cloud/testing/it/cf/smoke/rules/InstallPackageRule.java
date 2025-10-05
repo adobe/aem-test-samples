@@ -46,7 +46,7 @@ import java.util.jar.Manifest;
 import java.util.stream.Stream;
 
 import static java.lang.Integer.MAX_VALUE;
-import static org.apache.http.HttpStatus.SC_OK;
+import static org.apache.hc.core5.http.HttpStatus.SC_OK;
 
 /**
  * Install the test content package from resources.
