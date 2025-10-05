@@ -18,7 +18,7 @@ package com.adobe.cq.cloud.testing.it.smoke.replication.data;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import org.apache.commons.lang3.StringUtils;
-import org.apache.http.Header;
+import org.apache.hc.core5.http.Header;
 import org.apache.sling.testing.clients.ClientException;
 import org.apache.sling.testing.clients.SlingHttpResponse;
 
@@ -37,7 +37,7 @@ public class ReplicationResponse {
 
     public static ReplicationResponse from(SlingHttpResponse response) {
         ReplicationResponse res = new ReplicationResponse();
-        res.setCode(response.getStatusLine().getStatusCode());
+        res.setCode(response.getCode());
         Header[] ct = response.getHeaders(HEADER_CONTENT_TYPE);
         if (ct.length == 0) {
             res.setContentType("(no content header set)");

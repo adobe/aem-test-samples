@@ -23,11 +23,12 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 import com.adobe.cq.cloud.testing.it.smoke.exception.ServiceException;
 import com.adobe.cq.testing.client.CQClient;
-import org.apache.http.HttpResponse;
-import org.apache.http.client.config.RequestConfig;
-import org.apache.http.client.methods.HttpGet;
-import org.apache.http.impl.client.HttpClientBuilder;
-import org.apache.http.util.EntityUtils;
+import org.apache.hc.client5.http.classic.methods.HttpGet;
+import org.apache.hc.client5.http.config.RequestConfig;
+import org.apache.hc.client5.http.impl.classic.CloseableHttpResponse;
+import org.apache.hc.client5.http.impl.classic.HttpClientBuilder;
+import org.apache.hc.core5.http.io.entity.EntityUtils;
+import org.apache.hc.core5.util.Timeout;
 import org.apache.sling.testing.clients.util.poller.Polling;
 import org.apache.sling.testing.clients.ClientException;
 import org.apache.sling.testing.clients.SlingClient;
@@ -67,8 +68,8 @@ public class ServiceAccessibleRule implements TestRule {
         try {
             // Alternatively, rely on setting -Dsling.client.connection.timeout.seconds=10 from the outside
             RequestConfig requestConfig = RequestConfig.custom()
-                    .setConnectTimeout(10000)
-                    .setSocketTimeout(10000)
+                    .setConnectTimeout(Timeout.ofMilliseconds(10000))
+                    .setResponseTimeout(Timeout.ofMilliseconds(10000))
                     .build();
 
             // See https://github.com/apache/sling-org-apache-sling-testing-clients#how-can-i-customize-the-underlying-httpclient
@@ -80,8 +81,8 @@ public class ServiceAccessibleRule implements TestRule {
             AtomicInteger counter = new AtomicInteger();
             polling = new Polling(() -> {
                 counter.incrementAndGet();
-                HttpResponse httpResponse = client.execute(new HttpGet(adminClient.getUrl(SYSTEM_READY)));
-                int status = httpResponse.getStatusLine().getStatusCode();
+                CloseableHttpResponse httpResponse = client.execute(new HttpGet(adminClient.getUrl(SYSTEM_READY)));
+                int status = httpResponse.getCode();
                 String response = EntityUtils.toString(httpResponse.getEntity());
                 if (status != 200) {
                     String errMsg = String.format("Status Code - %s, response - %s", status, response);
