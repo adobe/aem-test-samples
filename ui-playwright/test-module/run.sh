@@ -12,6 +12,15 @@ if [ -n "${PROXY_HOST:-}" ]; then
     mkdir -p $HOME/.pki/nssdb
     certutil -d sql:$HOME/.pki/nssdb -A -t "CT,c,c" -n "EaaS Client Proxy Root" -i $PROXY_CA_PATH
     export NODE_EXTRA_CA_CERTS=${PROXY_CA_PATH}
+
+    # Create policies.json for Firefox to trust the proxy CA
+    mkdir -p "$HOME/.mozilla/firefox/playwright-profile"
+    echo "{\"policies\":{\"Certificates\":{\"Install\":[\"$PROXY_CA_PATH\"]}}}" > "$HOME/.mozilla/firefox/playwright-profile/policies.json"
+    export PLAYWRIGHT_FIREFOX_POLICIES_JSON="$HOME/.mozilla/firefox/playwright-profile/policies.json"
+
+    # add certificate to system trusted certificates for webkit
+     cp $PROXY_CA_PATH /usr/local/share/ca-certificates/eaas-proxy.crt
+     update-ca-certificates
   fi
   if [ -n "${PROXY_OBSERVABILITY_PORT:-}" ] && [ -n "${HTTP_PROXY:-}" ]; then
     echo "Waiting for proxy"
@@ -24,6 +33,9 @@ if [ -n "${PROXY_HOST:-}" ]; then
     fi
   fi
 fi
+
+# switch user to non-root
+su runner
 
 # execute tests
 npx playwright test

@@ -1,4 +1,4 @@
-FROM mcr.microsoft.com/playwright:v1.55.1-noble
+FROM mcr.microsoft.com/playwright:v1.56.0-noble
 
 # Install dependencies
 RUN apt -y update \
@@ -14,8 +14,5 @@ RUN groupadd "runner" && useradd -g "runner" --shell /bin/bash "runner" \
 WORKDIR /usr/src/app
 COPY ./test-module ./
 RUN npm install
-
-# Execute tests as non-root user
-USER runner
 
 ENTRYPOINT ["bash", "run.sh"]
