@@ -28,8 +28,8 @@ import org.slf4j.LoggerFactory;
 
 import java.util.UUID;
 
-import static org.apache.http.HttpStatus.SC_FORBIDDEN;
-import static org.apache.http.HttpStatus.SC_UNAUTHORIZED;
+import static org.apache.hc.core5.http.HttpStatus.SC_FORBIDDEN;
+import static org.apache.hc.core5.http.HttpStatus.SC_UNAUTHORIZED;
 
 /**
  * This test class is protecting from flawed AEM error handler implementations that are not returning 404s in case
@@ -85,7 +85,7 @@ public class ErrorHandlerIT {
             SlingHttpResponse response = adminAuthor.doGet(path, 404, SC_UNAUTHORIZED, SC_FORBIDDEN);
 
             if (response != null &&
-                    (response.getStatusLine().getStatusCode() == SC_UNAUTHORIZED || response.getStatusLine().getStatusCode() == SC_FORBIDDEN)) {
+                    (response.getCode() == SC_UNAUTHORIZED || response.getCode() == SC_FORBIDDEN)) {
                 throw new AssumptionViolatedException("Skipping test...");
             }
         } catch (ClientException e) {
@@ -108,7 +108,7 @@ public class ErrorHandlerIT {
             SlingHttpResponse response = adminPublish.doGet(path, 404, SC_UNAUTHORIZED, SC_FORBIDDEN);
 
             if (response != null &&
-                    (response.getStatusLine().getStatusCode() == SC_UNAUTHORIZED || response.getStatusLine().getStatusCode() == SC_FORBIDDEN)) {
+                    (response.getCode() == SC_UNAUTHORIZED || response.getCode() == SC_FORBIDDEN)) {
                 throw new AssumptionViolatedException("Skipping test...");
             }
         } catch (ClientException e) {

@@ -32,11 +32,11 @@ import com.adobe.cq.cloud.testing.it.smoke.replication.data.Agents;
 import com.adobe.cq.cloud.testing.it.smoke.replication.data.ReplicationResponse;
 import com.adobe.cq.testing.client.CQClient;
 import com.adobe.cq.testing.junit.rules.Page;
-import org.apache.http.NameValuePair;
-import org.apache.http.client.methods.HttpGet;
-import org.apache.http.client.methods.HttpUriRequest;
-import org.apache.http.client.utils.URIBuilder;
-import org.apache.http.message.BasicNameValuePair;
+import org.apache.hc.client5.http.classic.methods.HttpGet;
+import org.apache.hc.client5.http.classic.methods.HttpUriRequest;
+import org.apache.hc.core5.http.NameValuePair;
+import org.apache.hc.core5.http.message.BasicNameValuePair;
+import org.apache.hc.core5.net.URIBuilder;
 import org.apache.sling.testing.clients.ClientException;
 import org.apache.sling.testing.clients.SlingHttpResponse;
 import org.apache.sling.testing.clients.util.poller.Polling;
@@ -51,12 +51,12 @@ import static com.adobe.cq.cloud.testing.it.smoke.exception.ReplicationException
 import static com.adobe.cq.cloud.testing.it.smoke.exception.ReplicationException.QUEUE_BLOCKED;
 import static com.adobe.cq.cloud.testing.it.smoke.exception.ReplicationException.REPLICATION_NOT_AVAILABLE;
 import static com.adobe.cq.cloud.testing.it.smoke.replication.ReplicationClient.checkPackageInQueue;
-import static org.apache.http.HttpStatus.SC_FORBIDDEN;
-import static org.apache.http.HttpStatus.SC_MOVED_PERMANENTLY;
-import static org.apache.http.HttpStatus.SC_MOVED_TEMPORARILY;
-import static org.apache.http.HttpStatus.SC_NOT_FOUND;
-import static org.apache.http.HttpStatus.SC_OK;
-import static org.apache.http.HttpStatus.SC_UNAUTHORIZED;
+import static org.apache.hc.core5.http.HttpStatus.SC_FORBIDDEN;
+import static org.apache.hc.core5.http.HttpStatus.SC_MOVED_PERMANENTLY;
+import static org.apache.hc.core5.http.HttpStatus.SC_MOVED_TEMPORARILY;
+import static org.apache.hc.core5.http.HttpStatus.SC_NOT_FOUND;
+import static org.apache.hc.core5.http.HttpStatus.SC_OK;
+import static org.apache.hc.core5.http.HttpStatus.SC_UNAUTHORIZED;
 
 /**
  * Junit test rule to check content distribution functionality
@@ -167,16 +167,16 @@ public class ContentPublishRule extends ExternalResource {
             res  = getPublishClient().doStreamRequest(request, null);
             
             // Special handling for 401,403, logging for 301,302
-            if (null != res && (res.getStatusLine().getStatusCode() == SC_UNAUTHORIZED
-                || res.getStatusLine().getStatusCode() == SC_FORBIDDEN)) {
-                log.warn("Got status {} while checking page, expected status {}", res.getStatusLine().getStatusCode(),
+            if (null != res && (res.getCode() == SC_UNAUTHORIZED
+                || res.getCode() == SC_FORBIDDEN)) {
+                log.warn("Got status {} while checking page, expected status {}", res.getCode(),
                     expectedStatus);
                 throw new AssumptionViolatedException("Publish requires auth for (SAML?) or not authorized. Skipping...");
-            } else if (null != res && (res.getStatusLine().getStatusCode() == SC_MOVED_PERMANENTLY 
-                || res.getStatusLine().getStatusCode() == SC_MOVED_TEMPORARILY)) {
-                log.info("Redirect status {} detected for page {}", res.getStatusLine().getStatusCode(), path);
-            } else if (null != res && (res.getStatusLine().getStatusCode() == expectedStatus)) {
-                log.info("Page check completed with status {}", res.getStatusLine().getStatusCode());
+            } else if (null != res && (res.getCode() == SC_MOVED_PERMANENTLY
+                || res.getCode() == SC_MOVED_TEMPORARILY)) {
+                log.info("Redirect status {} detected for page {}", res.getCode(), path);
+            } else if (null != res && (res.getCode() == expectedStatus)) {
+                log.info("Page check completed with status {}", res.getCode());
                 return;
             }
             
@@ -190,7 +190,7 @@ public class ContentPublishRule extends ExternalResource {
                         : Collections.emptyList();
                     SlingHttpResponse slingHttpResponse =
                         getPublishClient().doGet(path, newQueryParams, Collections.emptyList(), expectedStatus);
-                    log.info("Page check completed with status {}", slingHttpResponse.getStatusLine().getStatusCode());
+                    log.info("Page check completed with status {}", slingHttpResponse.getCode());
                     return true;
                 });
                 // Changing the delay to be 10 seconds so that the check page runs every 10 seconds
