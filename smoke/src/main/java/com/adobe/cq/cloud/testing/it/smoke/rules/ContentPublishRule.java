@@ -22,13 +22,11 @@ import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
-import java.util.concurrent.atomic.AtomicReference;
 
 import com.adobe.cq.cloud.testing.it.smoke.exception.PublishException;
 import com.adobe.cq.cloud.testing.it.smoke.exception.SmokeTestException;
 import com.adobe.cq.cloud.testing.it.smoke.replication.ReplicationClient;
 import com.adobe.cq.cloud.testing.it.smoke.replication.data.Agent;
-import com.adobe.cq.cloud.testing.it.smoke.replication.data.Agents;
 import com.adobe.cq.cloud.testing.it.smoke.replication.data.ReplicationResponse;
 import com.adobe.cq.testing.client.CQClient;
 import com.adobe.cq.testing.junit.rules.Page;
@@ -262,22 +260,24 @@ public class ContentPublishRule extends ExternalResource {
      */
     private void doReplicationChecks() throws SmokeTestException {
         Polling polling = null;
-        AtomicReference<Agents> agentsRef = new AtomicReference<>();
 
         log.info("Checking Replication agents available and not blocked");
 
-        // Check if the publish agent is present and retry till timeout
+        // Resolve the publish agent name and retry till timeout
         try {
             polling = new Polling(() -> {
-                agentsRef.set(replicationClient.getAgentQueueJson());
-                log.info("Replication agents list: {}", agentsRef.get());
-                boolean internalPublishAgentExists = ReplicationClient.checkDistributionAgentExists(agentsRef.get(), INTERNAL_PUBLISH_DIST_AGENT);
-                if (!internalPublishAgentExists) {
-                    log.info("Internal publish agent does not exist");
-                    this.publishDistAgent = PUBLISH_DIST_AGENT;
-                    return ReplicationClient.checkDistributionAgentExists(agentsRef.get(), PUBLISH_DIST_AGENT);
+                boolean internalPublishAgentExists =
+                    replicationClient.distributionAgentExists(INTERNAL_PUBLISH_DIST_AGENT);
+                if (internalPublishAgentExists) {
+                    this.publishDistAgent = INTERNAL_PUBLISH_DIST_AGENT;
+                    return true;
                 }
-                return internalPublishAgentExists;
+                log.info("Internal publish agent does not exist");
+                boolean publishAgentExists = replicationClient.distributionAgentExists(PUBLISH_DIST_AGENT);
+                if (publishAgentExists) {
+                    this.publishDistAgent = PUBLISH_DIST_AGENT;
+                }
+                return publishAgentExists;
             });
             polling.poll(TIMEOUT, 500);
         } catch (TimeoutException e) {
@@ -286,46 +286,43 @@ public class ContentPublishRule extends ExternalResource {
         } catch (InterruptedException | RuntimeException e) {
             throw replicationClient.getGenericException("Replication agent unavailable", e);
         }
-
-        Agents agents = agentsRef.get();
-        
-        boolean agentQueueBlocked = ReplicationClient.isAgentQueueBlocked(agents, this.publishDistAgent);
-        if (agentQueueBlocked) {
+        Agent publishAgent = replicationClient.getAgent(this.publishDistAgent);
+        if (publishAgent.isBlocked()) {
             if (!this.publishDistAgent.equals(INTERNAL_PUBLISH_DIST_AGENT)) {
                 // throw if publish agent is blocked
                 throw replicationClient.getReplicationException(QUEUE_BLOCKED,
-                        "Replication agent queue blocked - " + agents.getAgent(this.publishDistAgent), null);
+                    "Replication agent queue blocked - " + publishAgent, null);
             }
-            Agent publishAgent = agents.getAgent(this.publishDistAgent);
-            log.warn("Replication internal publish agent queue blocked - " + agents.getAgent(this.publishDistAgent));
+            log.warn("Replication internal publish agent queue blocked - {}", publishAgent);
             replicationClient.clearQueue(publishAgent);
         }
-        
+
         // Check if preview agent is available and not blocked
-        this.previewAvailable = doPreviewChecks(agents);
+        this.previewAvailable = doPreviewChecks();
     }
     
-    private boolean doPreviewChecks(Agents agents) throws SmokeTestException {
-        boolean internalPreviewAgentExists = ReplicationClient.checkDistributionAgentExists(agents, INTERNAL_PREVIEW_DIST_AGENT);
-        boolean previewAgentExists = ReplicationClient.checkDistributionAgentExists(agents, PREVIEW_DIST_AGENT);
-        if (!internalPreviewAgentExists) {
+    private boolean doPreviewChecks() throws SmokeTestException {
+        boolean internalPreviewAgentExists = replicationClient.distributionAgentExists(INTERNAL_PREVIEW_DIST_AGENT);
+        boolean previewAgentExists = replicationClient.distributionAgentExists(PREVIEW_DIST_AGENT);
+        if (internalPreviewAgentExists) {
+            this.previewDistAgent = INTERNAL_PREVIEW_DIST_AGENT;
+        } else {
             log.info("Internal preview agent does not exist");
             this.previewDistAgent = PREVIEW_DIST_AGENT;
         }
         if (previewAgentExists || internalPreviewAgentExists) {
-            boolean previewBlocked = ReplicationClient.isAgentQueueBlocked(agents, this.previewDistAgent);
-            if (previewBlocked) {
+            Agent previewAgent = replicationClient.getAgent(this.previewDistAgent);
+            if (previewAgent.isBlocked()) {
                 if (!this.previewDistAgent.equals(INTERNAL_PREVIEW_DIST_AGENT)) {
                     //throw if preview agent is blocked
                     throw replicationClient.getReplicationException(QUEUE_BLOCKED,
-                            "Replication agent queue blocked - " + agents.getAgent(this.previewDistAgent), null);
+                            "Replication agent queue blocked - " + previewAgent, null);
                 }
-                Agent previewAgent = agents.getAgent(this.previewDistAgent);
-                log.warn("Replication internal preview agent queue blocked - " + agents.getAgent(this.previewDistAgent));
+                log.warn("Replication internal preview agent queue blocked - {}", previewAgent);
                 replicationClient.clearQueue(previewAgent);
             }
         }
-        return previewAgentExists;
+        return previewAgentExists || internalPreviewAgentExists;
     }
     
     /**
@@ -340,7 +337,6 @@ public class ContentPublishRule extends ExternalResource {
     public void waitQueueEmptyOfPath(final String agent, final String path, final String id, final String action)
         throws SmokeTestException {
         Polling polling = null;
-        AtomicReference<Agents> agentsRef = new AtomicReference<>();
         
         log.info("Checking the replication queue [{}] for action [{}] contains item [pkgId: {}] with paths [{}]",
             agent, action, id, path);
@@ -348,12 +344,12 @@ public class ContentPublishRule extends ExternalResource {
         // Check if the agent has the package
         try {
             polling = new Polling(() -> {
-                agentsRef.set(replicationClient.getAgentQueueJson());
-                return !checkPackageInQueue(agentsRef.get().getAgent(agent), path, id);
+                Agent agentJson = replicationClient.getAgent(agent);
+                return !checkPackageInQueue(agentJson, path, id);
             });
             polling.poll(TIMEOUT, 2000);
         } catch (TimeoutException e) {
-            log.warn("Agent not empty of item {}", ((agentsRef.get() != null) ? agentsRef.get().getAgent(agent) : ""));
+            log.warn("Agent not empty of item {}", agent);
             throw replicationClient.getReplicationException(ACTION_NOT_REPLICATED,
                 String.format("Item not activated within %s ms", TIMEOUT),
                 polling.getLastException());

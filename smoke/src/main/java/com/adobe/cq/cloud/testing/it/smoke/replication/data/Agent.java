@@ -48,6 +48,10 @@ public class Agent {
     public Map<String, Queue> getQueues() {
         return queues;
     }
+
+    public void setQueues(Map<String, Queue> queues) {
+        this.queues = queues != null ? new HashMap<>(queues) : new HashMap<>();
+    }
     
     public void setState(String state) {
         this.state = state;
@@ -67,7 +71,7 @@ public class Agent {
     
     @JsonIgnore
     public boolean isBlocked() {
-        return getState().equalsIgnoreCase(BLOCKED);
+        return state != null && state.equalsIgnoreCase(BLOCKED);
     }
 
     @Override 
