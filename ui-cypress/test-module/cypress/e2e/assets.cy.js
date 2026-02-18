@@ -48,8 +48,8 @@ describe('AEM Assets', () => {
         // Wait for any lazy loaded dialogs to appear
         cy.wait(3000)
 
-        // rename image
-        cy.get('input#dam-asset-upload-rename-input').clear().type(remoteImageName, {force: true});
+        // rename image (works with static or unique ID: dam-asset-upload-rename-input or dam-asset-upload-rename-input-{timestamp}-{random})
+        cy.get('input[id^="dam-asset-upload-rename-input"]').clear().type(remoteImageName, {force: true});
 
         // Press the upload button.
         cy.get('coral-dialog.is-open coral-dialog-footer [variant="primary"]').click({force: true});
