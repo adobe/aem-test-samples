@@ -6,6 +6,9 @@ on:
     paths:
       - 'ui-wdio/**'
 
+permissions:
+  contents: read
+
 jobs:
   build:
     runs-on: ubuntu-latest
