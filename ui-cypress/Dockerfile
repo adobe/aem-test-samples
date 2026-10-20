@@ -12,7 +12,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-FROM cypress/included:15.3.0
+FROM cypress/included:15.21.1
 
 # Install dependencies
 RUN apt -qqy update \
