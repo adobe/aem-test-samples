@@ -13,11 +13,11 @@ jobs:
     runs-on: ${{ matrix.os }}
     steps:
       # Check out Git repository
-      - uses: actions/checkout@v5
+      - uses: actions/checkout@v7
 
       # Check out Git repository
       - name: Set up JDK
-        uses: actions/setup-java@v5
+        uses: actions/setup-java@v6
         with:
           java-version: ${{ matrix.java }}
           distribution: 'microsoft'
