@@ -22,26 +22,13 @@ import commons from './commons.js';
 import axios from 'axios';
 import { wrapper } from 'axios-cookiejar-support';
 import FormData  from 'form-data';
+
 const AEM_SITES_PATH = '/sites.html';
 
-
-
-
 async function AEMLogin(username,password){
-    // Check presence of local sign-in Accordion
-    if (await $('[class*="Accordion"] form').isExisting({timeout: 5000})) {
-        try {
-            await $('#username').setValue(username);
-        }
-        // Form field not interactive, not visible
-        // Need to open the Accordion
-        // eslint-disable-next-line no-unused-vars
-        catch (e) {
-            await $('[class*="Accordion"] button').click();
-            // eslint-disable-next-line wdio/no-pause
-            await browser.pause(500);
-        }
-    }
+    await $('#coral-id-0').click();
+    // eslint-disable-next-line wdio/no-pause
+    await browser.pause(500);
 
     await $('#username').setValue(username);
     await $('#password').setValue(password);
@@ -117,8 +104,6 @@ async function AEMSitesSetView(type) {
 }
 //
 async function AEMSitesSetPageTitle(parentPath, name, title) {
-    let originalTitle = '';
-
     // Navigate to page parent path
     await browser.url(path.posix.join(AEM_SITES_PATH, parentPath));
     const checkboxSelector = `[data-foundation-collection-item-id="${path.posix.join(parentPath, name)}"] [type="checkbox"]`;
@@ -133,7 +118,7 @@ async function AEMSitesSetPageTitle(parentPath, name, title) {
     // Access page properties form
     await $('[data-foundation-collection-action*="properties"]').click();
     // Store original title
-    originalTitle = await $('[name="./jcr:title"]').getValue();
+    const originalTitle = await $('[name="./jcr:title"]').getValue();
     // Modify title
     await $('[name="./jcr:title"]').setValue(title);
     // Submit

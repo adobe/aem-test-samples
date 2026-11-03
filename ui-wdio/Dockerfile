@@ -5,7 +5,7 @@
 # You may obtain a copy of the License at
 #
 #     http://www.apache.org/licenses/LICENSE-2.0
-# 
+#
 # Unless required by applicable law or agreed to in writing, software
 # distributed under the License is distributed on an "AS IS" BASIS,
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -15,21 +15,20 @@
 #
 # DO NOT MODIFY
 #
-FROM node:22.20.0-slim
+FROM node:26.13.0-slim
 
-ENV APP_PATH /usr/src/app
-ENV SELENIUM_STARTUP_TIMEOUT 60
+ENV SELENIUM_STARTUP_TIMEOUT=60
 
 # Begin CloudManager Convention >>>
-ENV SELENIUM_BASE_URL http://localhost:4444
-ENV SELENIUM_BROWSER chrome
-ENV REPORTS_PATH reports
-ENV AEM_AUTHOR_URL http://localhost:4502
-ENV AEM_AUTHOR_USERNAME admin
-ENV AEM_AUTHOR_PASSWORD admin
-ENV AEM_PUBLISH_URL http://localhost:4503
-ENV AEM_PUBLISH_USERNAME admin
-ENV AEM_PUBLISH_PASSWORD admin
+ENV SELENIUM_BASE_URL=http://localhost:4444
+ENV SELENIUM_BROWSER=chrome
+ENV REPORTS_PATH=reports
+ENV AEM_AUTHOR_URL=http://localhost:4502
+ENV AEM_AUTHOR_USERNAME=admin
+ENV AEM_AUTHOR_PASSWORD=admin
+ENV AEM_PUBLISH_URL=http://localhost:4503
+ENV AEM_PUBLISH_USERNAME=admin
+ENV AEM_PUBLISH_PASSWORD=admin
 # Following convention variables are null by default
 # ENV SHARED_FOLDER
 # ENV UPLOAD_URL
