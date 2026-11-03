@@ -17,23 +17,15 @@
 /**
  * DO NOT MODIFY
  */
-import {PixelMatchPlugin} from './lib/wdio-pixelmatch-service/launcher.js';
-
 import { config as wdio_config } from './wdio.conf.commons.js';
 import { CHROME } from './lib/config.js';
 import { FIREFOX } from './lib/config.js';
 import { selenium } from './lib/config.js';
 
 wdio_config.hostname = 'localhost';
-wdio_config.services = [
-    [PixelMatchPlugin, {
-        viewportSize: { height: 768, width: 1366 },
-        pixelmatchDirectory: './assets'
-    }]
-];
 
 // Define capabilities based on configuration
-let capabilities = {};
+let capabilities;
 
 switch(selenium.browser) {
 case CHROME:

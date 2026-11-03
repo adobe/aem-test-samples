@@ -18,7 +18,7 @@
 <!--
  | DO NOT MODIFY
 -->
-<project xmlns="http://maven.apache.org/POM/4.0.0" 
+<project xmlns="http://maven.apache.org/POM/4.0.0"
     xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
@@ -30,8 +30,7 @@
 
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <node.version>v20.18.0</node.version>
-        <npm.version>10.9.0</npm.version>
+        <node.version>v26.13.0</node.version>
 
         <HEADLESS_BROWSER>false</HEADLESS_BROWSER>
         <REPORTS_PATH>${project.basedir}/target/reports</REPORTS_PATH>
@@ -55,12 +54,12 @@
                 </plugin>
                 <plugin>
                     <artifactId>maven-resources-plugin</artifactId>
-                    <version>3.3.1</version>
+                    <version>3.5.0</version>
                 </plugin>
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-jar-plugin</artifactId>
-                    <version>3.4.2</version>
+                    <version>3.5.1</version>
                 </plugin>
             </plugins>
         </pluginManagement>
@@ -69,7 +68,7 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-enforcer-plugin</artifactId>
-                <version>3.6.2</version>
+                <version>3.7.0</version>
                 <executions>
                     <execution>
                         <id>enforce-maven-version</id>
@@ -81,6 +80,9 @@
                                 <requireMavenVersion>
                                     <version>3.6.3</version>
                                 </requireMavenVersion>
+                                <requireJavaVersion>
+                                    <version>21</version>
+                                </requireJavaVersion>
                             </rules>
                         </configuration>
                     </execution>
@@ -99,7 +101,7 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-assembly-plugin</artifactId>
-                <version>3.7.1</version>
+                <version>3.8.0</version>
                 <configuration>
                     <descriptors>
                         <descriptor>assembly-ui-test-docker-context.xml</descriptor>
@@ -127,7 +129,7 @@
                     <plugin>
                         <groupId>com.github.eirslett</groupId>
                         <artifactId>frontend-maven-plugin</artifactId>
-                        <version>1.15.4</version>
+                        <version>2.0.2</version>
                         <executions>
                             <execution>
                                 <id>install node and npm</id>
@@ -136,8 +138,7 @@
                                     <goal>install-node-and-npm</goal>
                                 </goals>
                                 <configuration>
-                                    <nodeVersion>v20.18.0</nodeVersion>
-                                    <npmVersion>10.9.0</npmVersion>
+                                    <nodeVersion>${node.version}</nodeVersion>
                                     <installDirectory>test-module</installDirectory>
                                 </configuration>
                             </execution>
@@ -191,7 +192,7 @@
                     <plugin>
                         <groupId>org.codehaus.mojo</groupId>
                         <artifactId>exec-maven-plugin</artifactId>
-                        <version>3.6.1</version>
+                        <version>3.6.4</version>
                         <executions>
                             <execution>
                             <id>docker-build</id>
@@ -199,7 +200,7 @@
                             <goals>
                                 <goal>exec</goal>
                             </goals>
-                            <configuration> 
+                            <configuration>
                                 <executable>docker</executable>
                                 <workingDirectory>.</workingDirectory>
                                 <arguments>
@@ -216,7 +217,7 @@
                             <goals>
                                 <goal>exec</goal>
                             </goals>
-                            <configuration> 
+                            <configuration>
                                 <executable>docker</executable>
                                 <workingDirectory>.</workingDirectory>
                                 <arguments>
@@ -242,7 +243,7 @@
                     <plugin>
                         <groupId>org.codehaus.mojo</groupId>
                         <artifactId>exec-maven-plugin</artifactId>
-                        <version>3.6.1</version>
+                        <version>3.6.4</version>
                         <executions>
                             <execution>
                                 <id>docker-compose-up</id>
