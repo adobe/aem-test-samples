@@ -21,13 +21,13 @@ describe('AEM Login Page', () => {
     })
 
     it('should redirect to login page by default', () => {
-        cy.visit(Cypress.env('AEM_AUTHOR_URL'))
+        cy.visit(Cypress.expose('AEM_AUTHOR_URL'))
 
         cy.url().should('match', /login.html/)
     });
 
     it('should contain the login form', () => {
-        cy.visit(Cypress.env('AEM_AUTHOR_URL'))
+        cy.visit(Cypress.expose('AEM_AUTHOR_URL'))
 
         cy.get('#username').should('exist')
         cy.get('#password').should('exist')
@@ -35,9 +35,9 @@ describe('AEM Login Page', () => {
     });
 
     it('should login with correct credentials', () => {
-        cy.visit(Cypress.env('AEM_AUTHOR_URL'))
+        cy.visit(Cypress.expose('AEM_AUTHOR_URL'))
 
-        cy.AEMLogin(Cypress.env('AEM_AUTHOR_USERNAME'), Cypress.env('AEM_AUTHOR_PASSWORD'))
+        cy.AEMLogin()
 
         cy.get('coral-shell', { timeout: 6000 }).should('exist')
         cy.get('coral-shell-header', { timeout: 6000 }).should('exist')

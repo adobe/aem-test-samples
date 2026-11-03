@@ -25,14 +25,17 @@ const publishName = process.env.AEM_PUBLISH_USERNAME || 'admin'
 const publishPass = process.env.AEM_PUBLISH_PASSWORD || 'admin'
 
 let config = {
-  env: {
+  // Public values are available synchronously through Cypress.expose().
+  expose: {
     AEM_AUTHOR_URL: authorURL,
+    AEM_PUBLISH_URL: publishURL,
+  },
+  // Sensitive values stay in the Node process and are retrieved with cy.env().
+  env: {
     AEM_AUTHOR_USERNAME: authorName,
     AEM_AUTHOR_PASSWORD: authorPass,
-    AEM_PUBLISH_URL: publishURL,
     AEM_PUBLISH_USERNAME: publishName,
     AEM_PUBLISH_PASSWORD: publishPass,
-    REPORTS_PATH: reportsPath,
   },
   e2e: {
     setupNodeEvents(on, config) {

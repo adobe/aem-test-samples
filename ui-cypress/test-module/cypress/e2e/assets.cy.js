@@ -20,8 +20,8 @@ describe('AEM Assets', () => {
         // End any existing user session
         cy.AEMForceLogout()
         // Start new one
-        cy.visit(Cypress.env('AEM_AUTHOR_URL'))
-        cy.AEMLogin(Cypress.env('AEM_AUTHOR_USERNAME'), Cypress.env('AEM_AUTHOR_PASSWORD'))
+        cy.visit(Cypress.expose('AEM_AUTHOR_URL'))
+        cy.AEMLogin()
     })
 
     // skip by default if the CDN is not accessible. Remove the .skip to run the test
@@ -35,7 +35,7 @@ describe('AEM Assets', () => {
         const imagePath = `${assetsPath}/${remoteImageName}`;
 
         // Go to the Assets page.
-        cy.visit(`${Cypress.env('AEM_AUTHOR_URL')}/assets.html${assetsPath}`);
+        cy.visit(`${Cypress.expose('AEM_AUTHOR_URL')}/assets.html${assetsPath}`);
 
         // Wait for any lazy loaded dialogs to appear
         cy.wait(3000)
@@ -58,7 +58,7 @@ describe('AEM Assets', () => {
         cy.wait(['@completeupload'], { responseTimeout: 10000 });
 
         // Wait until Asset exists
-        cy.waitUntil(() => cy.AEMPathExists(Cypress.env('AEM_AUTHOR_URL'), imagePath), {
+        cy.waitUntil(() => cy.AEMPathExists(Cypress.expose('AEM_AUTHOR_URL'), imagePath), {
             errorMsg: `asset ${imagePath} should exist`,
             timeout: 15000,
             interval: 1000
@@ -71,7 +71,7 @@ describe('AEM Assets', () => {
         cy.AEMDeleteAsset(imagePath);
 
         // Wait until Asset does not exist anymore
-        cy.waitUntil(() => cy.AEMPathExists(Cypress.env('AEM_AUTHOR_URL'), imagePath).then(result => !result), {
+        cy.waitUntil(() => cy.AEMPathExists(Cypress.expose('AEM_AUTHOR_URL'), imagePath).then(result => !result), {
             errorMsg: `asset ${imagePath} should not exist`,
             timeout: 15000,
             interval: 1000
