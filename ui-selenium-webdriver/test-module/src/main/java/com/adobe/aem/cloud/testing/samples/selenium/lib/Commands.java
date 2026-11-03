@@ -63,8 +63,8 @@ public class Commands {
     if (driver.findElements(By.cssSelector("[class*=\"Accordion\"]")).size() > 0) {
       // Check presence of local sign-in Accordion
       try {
-        driver.findElement(By.cssSelector("#username")).click();
-        driver.findElement(By.cssSelector("#password")).click();
+        driver.findElement(By.id("username")).click();
+        driver.findElement(By.id("password")).click();
       }
       // Form field not interactable, not visible
       // Need to open the Accordion
@@ -78,8 +78,8 @@ public class Commands {
       }
     }
 
-    driver.findElement(By.cssSelector("#username")).sendKeys(username);
-    driver.findElement(By.cssSelector("#password")).sendKeys(password);
+    driver.findElement(By.id("username")).sendKeys(username);
+    driver.findElement(By.id("password")).sendKeys(password);
 
     driver.findElement(By.cssSelector("form [type=\"submit\"]")).click();
 
