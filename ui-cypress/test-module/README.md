@@ -26,6 +26,10 @@ Some examples of basic tasks like logging in-out of AEM instances, taking screen
   export REPORTS_PATH=target/
   ```
 
+The Cypress configuration reads these operating-system environment variables with `process.env`.
+URLs are configured under `expose` and are available through `Cypress.expose()`; credentials
+are configured under `env` and must be retrieved asynchronously through `cy.env([...])`.
+
 - Run tests with one of the following commands
   ```shell
   npm test              # Using default Cypress browser

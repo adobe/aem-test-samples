@@ -20,12 +20,12 @@ describe('AEM Basic', () => {
         // End any existing user session
         cy.AEMForceLogout()
         // Start new one
-        cy.visit(Cypress.env('AEM_AUTHOR_URL'))
-        cy.AEMLogin(Cypress.env('AEM_AUTHOR_USERNAME'), Cypress.env('AEM_AUTHOR_PASSWORD'))
+        cy.visit(Cypress.expose('AEM_AUTHOR_URL'))
+        cy.AEMLogin()
     })
 
     it('should be possible to display Solutions panel', () => {
-        cy.visit(Cypress.env('AEM_AUTHOR_URL'))
+        cy.visit(Cypress.expose('AEM_AUTHOR_URL'))
 
         cy.get('[data-foundation-toggleable-control-src$="solutionswitcher.html"]').click()
         cy.get('coral-shell-menu[aria-label$="solutions"]').should('exist')
