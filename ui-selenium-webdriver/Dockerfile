@@ -5,7 +5,7 @@
 # You may obtain a copy of the License at
 #
 #     http://www.apache.org/licenses/LICENSE-2.0
-# 
+#
 # Unless required by applicable law or agreed to in writing, software
 # distributed under the License is distributed on an "AS IS" BASIS,
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -15,24 +15,24 @@
 #
 # DO NOT MODIFY
 #
-FROM maven:3.9.11-eclipse-temurin-21
+FROM maven:3.10.0-eclipse-temurin-21
 
 # Java options playing well with k8s
 ENV JAVA_OPTIONS="-server -XX:+UnlockExperimentalVMOptions -XX:+UseCGroupMemoryLimitForHeap -XX:MaxRAMFraction=2 -XX:+UseG1GC -XshowSettings:vm $JAVA_OPTIONS"
 
-ENV APP_PATH /usr/src/app
-ENV SELENIUM_STARTUP_TIMEOUT 60
+ENV APP_PATH=/usr/src/app
+ENV SELENIUM_STARTUP_TIMEOUT=60
 
 # Begin CloudManager Convention >>>
-ENV SELENIUM_BASE_URL http://localhost:4444
-ENV SELENIUM_BROWSER chrome
-ENV REPORTS_PATH reports
-ENV AEM_AUTHOR_URL http://localhost:4502
-ENV AEM_AUTHOR_USERNAME admin
-ENV AEM_AUTHOR_PASSWORD admin
-ENV AEM_PUBLISH_URL http://localhost:4503
-ENV AEM_PUBLISH_USERNAME admin
-ENV AEM_PUBLISH_PASSWORD admin
+ENV SELENIUM_BASE_URL=http://localhost:4444
+ENV SELENIUM_BROWSER=chrome
+ENV REPORTS_PATH=reports
+ENV AEM_AUTHOR_URL=http://localhost:4502
+ENV AEM_AUTHOR_USERNAME=admin
+ENV AEM_AUTHOR_PASSWORD=admin
+ENV AEM_PUBLISH_URL=http://localhost:4503
+ENV AEM_PUBLISH_USERNAME=admin
+ENV AEM_PUBLISH_PASSWORD=admin
 
 # Following convention variables are null by default
 # ENV SHARED_FOLDER
@@ -53,7 +53,7 @@ COPY test-module ./
 
 # download all Maven dependency into image to prevent download / timeout during each execution
 RUN mvn --batch-mode dependency:resolve-plugins dependency:go-offline install -DskipTests -Dassembly.skipAssembly=true
-RUN mvn --batch-mode dependency:resolve-plugins dependency:go-offline verify -Pui-tests-local-execution -DskipTests -Dassembly.skipAssembly=true
+RUN mvn --batch-mode dependency:resolve-plugins dependency:go-offline verify -Pui-tests-local-execution -DskipTests -Dmaven.test.skip=true -Dassembly.skipAssembly=true
 
 # Begin CloudManager Convention >>>
 COPY entrypoint.sh .
