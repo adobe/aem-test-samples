@@ -14,8 +14,6 @@
  *  limitations under the License.
  */
 
-import {PixelMatchPlugin} from './lib/wdio-pixelmatch-service/launcher.js';
-
 import { config as wdio_config } from './wdio.conf.commons.js';
 import { CHROME } from './lib/config.js';
 import { FIREFOX } from './lib/config.js';
@@ -30,12 +28,6 @@ wdio_config.protocol = 'http';
 
 
 wdio_config.maxInstances = 1;
-wdio_config.services = [
-    [PixelMatchPlugin, {
-        viewportSize: { height: 768, width: 1366 },
-        pixelmatchDirectory: './assets'
-    }]
-];
 let capabilities = {
     maxInstances: 1,
     browserName: selenium.browser,
