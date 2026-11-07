@@ -26,18 +26,23 @@ Cypress.Commands.add('AEMForceLogout', function () {
     cy.get('form[name="login"]', {timeout: 3000}).should('exist')
 })
 
-Cypress.Commands.add('AEMLogin', function (username, password) {
-    if (Cypress.config().baseUrl.includes('adobeaemcloud.com') || Cypress.config().baseUrl.includes('adobeaemcloud.net')) {
-        cy.get('#coral-id-0').click()
-    }
+Cypress.Commands.add('AEMLogin', function () {
+    return cy.env(['AEM_AUTHOR_USERNAME', 'AEM_AUTHOR_PASSWORD']).then(({
+        AEM_AUTHOR_USERNAME: username,
+        AEM_AUTHOR_PASSWORD: password,
+    }) => {
+        if (Cypress.config().baseUrl.includes('adobeaemcloud.com') || Cypress.config().baseUrl.includes('adobeaemcloud.net')) {
+            cy.get('#coral-id-0').click()
+        }
 
-    cy.get('#login').should('have.attr', 'action', '/libs/granite/core/content/login.html/j_security_check')
+        cy.get('#login').should('have.attr', 'action', '/libs/granite/core/content/login.html/j_security_check')
 
-    cy.get('#username').type(username)
-    cy.get('#password').type(password, {log: false, parseSpecialCharSequences: false})
+        cy.get('#username').type(username)
+        cy.get('#password').type(password, {log: false, parseSpecialCharSequences: false})
 
-    cy.get('#submit-button').click()
-    cy.get('coral-shell-content', {timeout: 5000}).should('exist')
+        cy.get('#submit-button').click()
+        cy.get('coral-shell-content', {timeout: 5000}).should('exist')
+    })
 })
 
 Cypress.Commands.add('AEMPathExists', function (baseUrl, path) {
@@ -55,7 +60,7 @@ Cypress.Commands.add('AEMPathExists', function (baseUrl, path) {
 })
 
 Cypress.Commands.add('AEMDeleteAsset', function (assetPath) {
-    const tokenUrl = new URL('/libs/granite/csrf/token.json', Cypress.env('AEM_AUTHOR_URL'))
+    const tokenUrl = new URL('/libs/granite/csrf/token.json', Cypress.expose('AEM_AUTHOR_URL'))
     let csrfToken;
 
     cy.request(tokenUrl.href).then((response) => {
@@ -74,9 +79,9 @@ Cypress.Commands.add('AEMDeleteAsset', function (assetPath) {
             "_charset_": 'utf-8',
         }
 
-        const url = new URL('/bin/wcmcommand', Cypress.env('AEM_AUTHOR_URL'))
+        const url = new URL('/bin/wcmcommand', Cypress.expose('AEM_AUTHOR_URL'))
 
-        const referrerUrl = new URL(assetPath, Cypress.env('AEM_AUTHOR_URL'))
+        const referrerUrl = new URL(assetPath, Cypress.expose('AEM_AUTHOR_URL'))
 
         // application/x-www-form-urlencoded; charset=UTF-8
 
