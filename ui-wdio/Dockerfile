@@ -15,7 +15,7 @@
 #
 # DO NOT MODIFY
 #
-FROM node:26.13.0-slim
+FROM node:26.13.1-slim
 
 ENV SELENIUM_STARTUP_TIMEOUT=60
 
