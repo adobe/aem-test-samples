@@ -1,4 +1,4 @@
-FROM mcr.microsoft.com/playwright:v1.65.0-noble
+FROM mcr.microsoft.com/playwright:v1.65.1-noble
 
 # Install dependencies
 RUN apt -y update \
